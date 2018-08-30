@@ -1,14 +1,12 @@
 # KESKEN
 
-**:exclamation: HUOM sudoa ei tule käyttää rbenv:iä tai muita rubyn versiomanagereja käyttäessä (poislukien kirjastojen asentaminen):exclamation:** 
-
-Asennus tehdään käyttäjän omaan kotihakemistoon.
+**HUOM** sudoa ei tule käyttää rbenv:iä tai muita rubyn versiomanagereja käyttäessä (poislukien kirjastojen asentaminen), sillä asennus tehdään käyttäjän omaan kotihakemistoon. 
 
 Varaa asennukseen kunnolla aikaa ja tee se mieluusti joskus kun levypalvelinten käyttö on muutoin vähäistä. Älä jätä asennusta ohjauksen alkuun, jos haluat tehdä muutakin kuin pyöritellä peukaloita.
  
 --
 
-Asennamme tässä Rubyn version 2.3.1 ja Railsin version 5.2.x viimeaikoina suosioon nousseella [rbenv-versiomanagerilla] (https://github.com/sstephenson/rbenv)
+Asennamme tässä Rubyn version 2.5.1 ja Railsin version 5.2.1 viimeaikoina suosioon nousseella [rbenv-versiomanagerilla] (https://github.com/sstephenson/rbenv)
 
 Voit halutessasi käyttää myös [RVM:ää](https://rvm.io/rvm/install)  eli rbenvin hieman vanhempaa lähisukulaista.
 
@@ -65,8 +63,6 @@ Siirry kohtaan [Rubyn ja railsin asennus](https://github.com/mluukkai/WebPalveli
 
 Rbenvin asennus onnistuu helpoiten homebrew:in avulla. Ohjeet homebrewin asennukseen löydät osoitteesta http://brew.sh/
 
-**HUOM**: jos kohta suoritettavien komentojen yhteydessä tulee valitusta liittyen _clock_gettime-symbol_iin, voi [tämä korjaus](http://miuku.net/tmp/ruby-mac-asennus.txt) auttaa.
-
 Homebrewin asennuksen jälkeen 
 
     brew update
@@ -93,7 +89,7 @@ Käynnistä tässä vaiheessa terminaali uudelleen.
 
 ## Rubyn ja Railsin asennus
 
-Tämän jälkeen asennetaan ja määritellään käytettävä Ruby:n versio komennoilla
+Kun _rbenv_ on asennettu, asennetaan ja määritellään käytettävä Ruby:n versio komennoilla
 
     rbenv install 2.5.1
     rbenv global 2.5.1
