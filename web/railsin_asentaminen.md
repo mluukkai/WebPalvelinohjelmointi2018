@@ -110,15 +110,3 @@ Asennetaan sitten Rails antamalla komentoriviltä seuraavat komennot (vastaa mah
     gem install rails -v 5.2.1
     rbenv rehash
 
-**Huom:** Jos saat seuraavan virheen käynnistäessäsi palvelinta: 
-<code> bin/rails:6: warning: already initialized constant APP_PATH
-/home/user/myProject/bin/rails:6: warning: previous 
-                     definition of APP_PATH was here
-</code>
-
-Tulee sinun lisätä projektin Gemfileen seuraava rivi:
-<code> gem 'rb-readline' </code>
-
-ja ajaa:
-
-<code> bundle install </code>
