@@ -25,6 +25,8 @@ Tällä kurssilla keskitymme lähes yksinomaan web-sovellusten palvelinpuolen to
 
 Kurssilla [Full stack -websovellushehitys](https://fullstackopen.github.io/) taas keskitytään pääosin selaimen puolella toteutettavaan toiminnallisuuteen. 
 
+## Kurssin materiaalin ja tehtävät
+
 Kurssilla kaikki tehtävät ovat upotettu tähän materiaaliin. Seuraavaa tehtävää lukuunottamatta kaikki tehtävät tullaan palauttamaan githubin kautta. github-palautusten lisäksi tehtävät merkataan tehdyksi tehtäväkirjanpitojärjestelmään. Tästä enemmän sivun lopussa. Aloitetaan kuitenkin nyt ensimmäisellä tehtävällä.
 
 > ## Tehtävä 1: HTTP in action
@@ -38,11 +40,11 @@ Kurssilla kaikki tehtävät ovat upotettu tähän materiaaliin. Seuraavaa tehtä
 >
 > Pyyntö palauttaa siis välilehdellä response näytettävän HTML-koodin. Koodi sisältää viitteitä css-tyylitiedostoihin, javascript-tiedostoihin sekä kuviin. Sivua renderöitäessä selain hakee kunkin näistä omalla GET-pyynnöllä.
 >
-> Pidä edelleen sama networking-välilehti auki. Paina sivun oikeassa ylälaidassa olevaa suurennuslasia, joka avaa hakukentän. Tyhjennä developer toolsin välilehti painamalla vasemman reunan halkaistu pallo -symbolia (:no_entry_sign:). Kirjoita jotain hakukenttään ja paina enter. Hakukenttä on toteutettu _html:n lomakkeena_ (engl. form). Lomakkeen tietojen lähetys palvelimelle tapahtuu HTTP-protokollan POST-metodin sisältävän pyynnön avulla.
+> Pidä edelleen sama networking-välilehti auki. Tyhjennä developer toolsin välilehti painamalla vasemman reunan halkaistu pallo -symbolia (:no_entry_sign:). Kirjoita jotain tekstikenttään ja paina "Talleta". Tekstikenttä on toteutettu _html:n lomakkeena_ (engl. form). Lomakkeen tietojen lähetys palvelimelle tapahtuu HTTP-protokollan POST-metodin sisältävän pyynnön avulla.
 >
 > Tutki POST-pyynnön sisältöä (listalla ylimpänä). Kohdan _headers_ alaosasta löytyy _Form data_, eli lomakkeen mukana lähtetety tieto. Huomaat, että pyyntöön vastattiin statuskoodilla 302, joka taas tarkoittaa sitä, että palvelin tekee selaimelle __uudelleenohjauksen__, eli pyytää selainta menemään vastauksen headereissa ilmoittamaan osoitteeseen. POST-pyynnön vastaus ei siis sisällä ollenkaan HTML-koodia jonka selain voisi renderöidä käyttäjälle. Heti POST-kutsun perään selain tekeekin automaattisesti GET-kutsun POST:in vastauksen headerissa __Location__ olevaan osoitteeseen. Vasta tämän uudelleenohjauksen aiheuttaman pyynnön vastauksena tullut sivu renderöidään käyttäjälle.
 >
-> Tutki vielä joillekin muille sivuille tekemisesi pyyntöjen aiheuttamaa HTTP-protokollan viestintää.
+> Tutki vielä joillekin muille www-sivuille tekemisesi pyyntöjen aiheuttamaa HTTP-protokollan viestintää.
 
 ## Ruby on Railsin perusteita
 
