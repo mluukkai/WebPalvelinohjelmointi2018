@@ -112,16 +112,17 @@ Uusi Rails-sovellus luodaan generaattorilla new. Mene sopivaan hakemistoon ja lu
 
     rails new ratebeer
 
-Syntyy sovelluksen sisältämä hakemisto _ratebeer_.
+Komenton suoritus luo sovelluksen sisältämän hakemiston _ratebeer_.
 
 Huom: jatkon kannalta on kätevintä, että luodusta hakemistosta tehdään git-repositorio. Älä siis sijoita sovellusta minkään muun git-repositorion sisälle!
 
-Siirry hakemistoon. Komennolla <code>tree</code> saat tuntumaa siitä, mitä kaikkea new-generaattorin suorittaminen sai aikaan. Huom: OSX:ssä ei ole oletusarvoisesti asennettuna tree-komentoa. Saat asennettua treen [homebrew:llä](http://brew.sh/) komennolla <code>brew install tree</code>
+Siirry hakemistoon antamalla komento _cd ratebeer_
+
+Komennolla <code>tree</code> saat tuntumaa siitä, mitä kaikkea new-generaattorin suorittaminen sai aikaan. Huom: OSX:ssä ei ole oletusarvoisesti asennettuna tree-komentoa. Saat asennettua treen [homebrew:llä](http://brew.sh/) komennolla <code>brew install tree</code>
 
 Seuraavassa hieman lyhennelty näkymä:
 
 <pre>
-  ratebeer  tree
 .
 |-- Gemfile
 |-- Rakefile
@@ -157,21 +158,17 @@ Käynnistä sovellus antamalla komentoriviltä komento
 
     rails server
 
-Saman asian ajaa lyhennetty muoto rails s
+Saman asian ajaa lyhennetty muoto _rails s_
 
-Komento käynnistää oletusarvoisesti WEBrick HTTP-palvelimen (ks. http://en.wikipedia.org/wiki/WEBrick), joka alkaa suorittamaan hakemistossa olevaa Rails-sovellusta paikallisen koneen (eli localhost:in) portissa 3000.
+Komento käynnistää oletusarvoisesti Puma HTTP-palvelimen (ks. https://github.com/puma/puma), joka alkaa suorittamaan hakemistossa olevaa Rails-sovellusta paikallisen koneen (eli localhost:in) portissa 3000.
 
-Huom: jos suoritat sovellusta virtuaalipalvelimella, tulee komento antaa muodossa
-
-    rails s -b 0.0.0.0
-
-Huom2: saatat törmätä tässä vaiheessa virheeseen joka johtuu siitä että koneellasi ei ole javascript-suoritusympäristöä. Yksi tapa kiertää ongelma on lisätä tiedostoon Gemfile seuraava rivi (tai riittää poistaa # tiedostossa jo valmiina olevan rivin edestä):
+Huom: saatat törmätä tässä vaiheessa virheeseen joka johtuu siitä että koneellasi ei ole javascript-suoritusympäristöä. Yksi tapa kiertää ongelma on lisätä tiedostoon Gemfile seuraava rivi (tai riittää poistaa # tiedostossa jo valmiina olevan rivin edestä):
 
     gem 'therubyracer', platforms: :ruby
 
 ja suorittaa komentoriviltä komento <code>bundle install</code>
 
-Kokeile selaimella osoitteessa [http://localhost:3000](http://localhost:3000) että sovellus on käynnissä. Virtuaalipalvelinta käyttäessäsi sovelluksen osoite on _http://virtuaalikoneenip-osoite:3000_
+Kokeile selaimella osoitteessa [http://localhost:3000](http://localhost:3000) että sovellus on käynnissä. 
 
 HUOM: **Tarkoituksena on, että tätä dokumenttia lukiessasi teet koko ajan samat asiat itse omaan sovellukseesi kuin mitä tässä dokumentissa esimerkkisovellukselle tehdään**. Osa toteutettavista asioista on muotoiltu tehtäviksi, kuten seuraava kohta, ja osa askelista taas tulee tehdä, jotta materiaalissa eteneminen on ylipäätään mahdollista.
 
@@ -179,7 +176,7 @@ HUOM: **Tarkoituksena on, että tätä dokumenttia lukiessasi teet koko ajan sam
 >
 > Talletamme kurssilla tehtävän sovelluksen Githubissa sijaitsevaan repositorioon.
 >
-> Tee sovelluksesi hakemistosta (eli siitä hakemistosta jonka komento rails new luo) git-repositorio suorittamalla hakemistossa komento <code>git init</code>
+> Tee sovelluksesi hakemistosta (eli siitä hakemistosta jonka komento _rails new_ luo) git-repositorio suorittamalla hakemistossa komento <code>git init</code>
 >
 > Luo sovellusta varten repositorio Githubiin ja liitä se etärepositorioksi sovelluksesi hakemiston repositorioon
 >
