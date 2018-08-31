@@ -50,38 +50,37 @@ Kurssilla kaikki tehtävät ovat upotettu tähän materiaaliin. Seuraavaa tehtä
 
 Tällä kurssilla käytämme Web-sovellusten toteuttamiseen Ruby on Rails -sovelluskehystä.
 
-Rails-sovellukset noudattavat [MVC-mallia](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) (tai WebMVC:tä, joka poikkeaa hiukan alkuperäisestä MVC:stä), jossa ideana on jakaa sovelluksen data- ja sovelluslogiikka (Model), näyttöjen muodostaminen (View) ja toiminnan koordinointi (Controller) selkeästi eriytettyihin osiin. Lähes kaikki moderni web-kehitys nykyään tapahtuu MVC-periaatetta noudattaen. MVC:n lisäksi moderneissa web-sovelluksissa on tosin myös kerrosarkkitehtuurien tai juuri nyt kovan kohun alla olevien [mikropalveluarkkitehtuurien](http://martinfowler.com/articles/microservices.html) piirteitä.
+Rails-sovellukset noudattavat [MVC-mallia](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) (tai WebMVC:tä, joka poikkeaa hiukan alkuperäisestä MVC:stä), jossa ideana on jakaa sovelluksen data- ja sovelluslogiikka (Model), näyttöjen muodostaminen (View) ja toiminnan koordinointi (Controller) selkeästi eriytettyihin osiin. Valtaosa web-palvelinpuolen sovelluskehityksestä tapahtuu nykyään MVC-periaatetta noudattaen.
 
 Tutkitaan mitä tapahtuu kun käyttäjä menee Railsilla toteutetulle web-sivulle, olkoon sivun URL esim. [http://wad-ratebeer.herokuapp.com/breweries](http://wad-ratebeer.herokuapp.com/breweries), eli kurssin aikana tekemämme esimerkkisovelluksen sivu, joka listaa kaikki esimerkkisovelluksen tuntemat panimot.
 
 ![mvc-kuva](http://www.cs.helsinki.fi/u/mluukkai/rails_mvc.png)
 
-1. käyttäjän kirjoitettua URL:n selaimen osoiteriville, tekee selain HTTP GET-pyynnön palvelimelle wad-ratebeer.herokuapp.com
+1. Käyttäjän kirjoitettua URL:n selaimen osoiteriville, tekee selain HTTP GET-pyynnön palvelimelle wad-ratebeer.herokuapp.com
 
-2. palvelimella pyörivä web-palvelinohjelmisto (esim. Apache tai Nginx) ohjaa pyynnön osoitteeseen rekisteröityyn Rails-sovellukseen. Sovellus selvittää mikä sovelluksen _kontrolleri_ on rekisteröity huolehtimaan resurssiin breweries kohdistuvia GET-kutsuja. Tätä vaihetta sanotaan Rails-sovelluksen sisäiseksi reititykseksi (routing), eli etsitään "reitti minkä varrella pyyntö käsitellään".
+2. Palvelimella pyörivä web-palvelinohjelmisto (esim. Apache tai Nginx) ohjaa pyynnön osoitteeseen rekisteröityyn Rails-sovellukseen. Sovellus selvittää mikä sovelluksen _kontrolleri_ on rekisteröity huolehtimaan resurssiin breweries kohdistuvia GET-kutsuja. Tätä vaihetta sanotaan Rails-sovelluksen sisäiseksi reititykseksi (routing), eli etsitään "reitti minkä varrella pyyntö käsitellään".
 
-3. kun oikea kontrolleri (esimerkissämme panimoista huolehtiva kontrolleri) ja sen metodi selviää, kutsuu sovellus metodia ja antaa sille parametriksi HTTP-pyynnön mukana mahdollisesti tulleen datan. kontrolleri hoitaa sitten operaatioon liittyvät toimenpiteet, yleensä toimenpiteiden suorittaminen edellyttää joihinkin sovelluksen dataa ja sovelluslogiikkaa sisältäviin _modeleihin_ tapahtuvaa metodikutsua.
+3. Kun oikea kontrolleri (esimerkissämme panimoista huolehtiva kontrolleri) ja sen metodi selviää, kutsuu sovellus metodia ja antaa sille parametriksi HTTP-pyynnön mukana mahdollisesti tulleen datan. kontrolleri hoitaa sitten operaatioon liittyvät toimenpiteet, yleensä toimenpiteiden suorittaminen edellyttää joihinkin sovelluksen dataa ja sovelluslogiikkaa sisältäviin _modeleihin_ tapahtuvaa metodikutsua.
 
-4. esimerkissämme kontrolleri pyytää panimoista huolehtivaa model-luokkaa lataamaan kaikkien panimoiden listan tietokannasta.
+4. Esimerkissämme kontrolleri pyytää panimoista huolehtivaa model-luokkaa lataamaan kaikkien panimoiden listan tietokannasta.
 
-5. saatuaan kaikkien oluiden listan, kontrolleri pyytää oluiden listan muodostavaa _näkymää_ renderöimään itsensä
+5. Saatuaan kaikkien oluiden listan, kontrolleri pyytää oluiden listan muodostavaa _näkymää_ renderöimään itsensä.
 
-6. näkymä renderöityy eli kontrolleri saa kaikki oluet listaavan HTML-sivun
+6. Näkymä renderöityy eli kontrolleri saa kaikki oluet listaavan HTML-sivun
 
-7. kontrolleri palauttaa HTML-sivun web-palvelimelle
+7. Kontrolleri palauttaa HTML-sivun web-palvelimelle
 
-8. ja web-palvelin palauttaa generoidun HTML-sivun ja siihen liittyvät headerit selaimelle
+8. ja web-palvelin palauttaa generoidun HTML-sivun ja siihen liittyvät headerit selaimelle.
 
 MVC-mallissa modelit ovat useimmiten olioita, joiden tila talletetaan tietokantaan. Tietokannan käsittely on yleensä abstrahoitu siten, että ohjelmakoodin tasolla on harvoin tarve kirjoittaa SQL-kieltä tai tietokannan konfiguraatioita. Detaljit hoituvat [Object Relational Mapping (ORM)](https://en.wikipedia.org/wiki/Object-relational_mapping) -kirjaston avulla. Railsissa käytettävä ORM on nimeltään ActiveRecord, joka toimii hieman eri tavalla kuin joillekin ehkä  Javamaailmasta tutut JPA-standardia noudattavat EclipseLink ja Hibernate.
 
-Railsin taustalla on vahvana periaatteena __convention over configuration__, mikä tarkoittaa tapaa, jolla Rails pyrkii minimoimaan konfiguraatioiden tekemisen tarpeen määrittelemällä joukon konventioita esim. tiedostojen nimennälle ja niiden sijainnille tiedostohierarkiassa. Tulemme pian näkemään mitä CoC-periaate tarkoittaa käytännössä sovellusohjelmoijan kannalta. Rails mahdollistaa toki konventiosta poikkeamisen, mutta siinä tapauksessa ohjelmoijan on jossain määrin konfiguroitava asioita käsin.
+Railsin taustalla on vahvana periaatteena __convention over configuration__, mikä tarkoittaa tapaa, jolla Rails pyrkii minimoimaan konfiguraatioiden tekemisen tarpeen määrittelemällä joukon konventioita, eli "sääntöjä", esim. tiedostojen nimennälle ja niiden sijainnille tiedostohierarkiassa. Tulemme pian näkemään mitä CoC-periaate tarkoittaa käytännössä sovellusohjelmoijan kannalta. Rails mahdollistaa toki konventiosta poikkeamisen, mutta siinä tapauksessa ohjelmoijan on jossain määrin konfiguroitava asioita käsin.
 
 Railsilla sovellusten tekeminen edellyttää luonnollisesti jonkinasteista Rubyn hallintaa. Ruby on dynaamisesti tyypitetty tulkattu oliokieli, joka mahdollistaa myös funktionaalisen ohjelmointityylin. Ruby-koodia ei siis käännetä ollenkaan, vaan tulkki suorittaa koodia komento komennolta. Koska kääntäjää ei ole, ilmenevät myös koodiin tehdyt syntaksivirheet vasta ajon aikana toisin kuin käännettävillä kielillä. Modernit kehitysympäristöt auttavat hiukan, tarjoten jonkin verran lennossa tapahtuvaa "syntaksitarkastusta", mutta kehitysympäristön tuki ei ole läheskään samaa luokkaa kuin esim. Javalla.
 
 > ## Tehtävä 2: Rubyn alkeet
 >
-> Tee/käy läpi seuraavat
-> * [http://tryruby.org/levels/1/challenges/0](http://tryruby.org/levels/1/challenges/0)
+> Tee/käy läpi seuraava
 > * [http://www.ruby-lang.org/en/documentation/quickstart/](http://www.ruby-lang.org/en/documentation/quickstart/)
 >
 > Jos aikaa ja intoa riittää, voit käydä läpi myös osoitteessa
@@ -89,21 +88,19 @@ Railsilla sovellusten tekeminen edellyttää luonnollisesti jonkinasteista Rubyn
 
 ## Komentorivi
 
-Railsilla tapahtuvassa sovelluskehityksessä komentorivin käyttön hallinta on suhteellisen tärkeää. Jos rutiinisi komentorivin käyttöön on huono, kannattaa tehdän syksyn 2016 Ohjelmistotekniikan menetelmien viikon 2 [tehtävät 3 ja 4](https://github.com/mluukkai/OTM2016/wiki/Viikon-2-kotitehtavat#3)
+Railsilla tapahtuvassa sovelluskehityksessä komentorivin käyttön hallinta on suhteellisen tärkeää. Jos rutiinisi komentorivin käyttöön on huono, kannattaa tehdän Ohjelmistotekniikan menetelmien viikon 1 tehtävistä [osat 1 ja 2](https://github.com/mluukkai/otm-2018/blob/master/tehtavat/viikko1.md)
 
 ## Kurssin suoritusmuoto
 
 Kurssin rakenne poikkeaa jossain määrin laitoksen kurssistandardista. Kurssilla tehdään ainoastaan yksi sovellus, samaa sovellusta tehdään sekä kurssimateriaalissa että materiaalin sekaan upotetuissa laskareissa. Kurssin materiaalia ei pystykään pelkästään lukemaan. Materiaalia seuratessa tulee itse rakentaa matkan varrella täydentyvää sovellusta, sillä muuten tehtävien tekeminen on mahdotonta. Toisin sanoen **kurssia on seurattava tasaisesti koko kurssin ajan**.
 
-Jokaisen viikon deadlinen (sunnuntai klo 23.59) jälkeen julkaistaan edellisen viikon esimerkkivastaus. Seuraavalla viikolla on mahdollista jatkaa joko oman sovelluksen rakentamista tai ottaa pohjaksi edellisen viikon esimerkkivastaus.
+Jokaisen viikon deadlinen (sunnuntai klo 23.59) jälkeen pääset näkemääm edellisen viikon esimerkkivastauksen. Seuraavalla viikolla on mahdollista jatkaa joko oman sovelluksen rakentamista tai ottaa pohjaksi edellisen viikon esimerkkivastaus.
 
 Osa viikon tehtävistä on käytännössä pakollisia, muuten eteneminen pysähtyy viikon osalta. Osa tehtävistä taas on vapaaehtoisia, eikriittisten ominaisuuksien toteutuksia. Osa näistä ominaisuuksista oletetaan olevan ohjelmistossa seuraavalla viikolla, joten jos et ole tehnyt kaikkia viikon tehtäviä, kannattaa aloittaa esimerkkivastauksesta tai vaihtoehtoisesti copypasteta sieltä tarvittavat asiat koodiisi.
 
 ## Railsin asennus
 
-**HUOM** Railsin versio 5.0 on jo ilmestynyt, emme kuitenkaan käytä kurssilla sitä. Voit omalla vastuulla käyttää myös versiota 5.0, mutta siinä tapauksessa joudut itse selvittämään versioiden välillä tapahtuneet muutokset.
-
-Asennusohje osoitteessa https://github.com/mluukkai/WebPalvelinohjelmointi2017/wiki/railsin-asennus
+Asennusohje osoitteessa https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/railsin_asentaminen.md
 
 ## Sovelluksen luominen
 
