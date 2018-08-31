@@ -164,7 +164,7 @@ Komento käynnistää oletusarvoisesti Puma HTTP-palvelimen (ks. https://github.
 
 Huom: saatat törmätä tässä vaiheessa virheeseen joka johtuu siitä että koneellasi ei ole javascript-suoritusympäristöä. Yksi tapa kiertää ongelma on lisätä tiedostoon Gemfile seuraava rivi (tai riittää poistaa # tiedostossa jo valmiina olevan rivin edestä):
 
-    gem 'therubyracer', platforms: :ruby
+    gem 'mini_racer', platforms: :ruby
 
 ja suorittaa komentoriviltä komento <code>bundle install</code>
 
