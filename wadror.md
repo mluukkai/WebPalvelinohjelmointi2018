@@ -1,17 +1,14 @@
 ## Web-palvelinohjelmointi Ruby on Rails, syksy 2018
 
 ## Ajankohtaista
-* 
+
 * materiaali ja tehtävät 
  * [viikko 1](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md) 
-
 * [tehtäväkirjanpito](https://studies.cs.helsinki.fi/courses/#/rails2018) 
-
 * paja
   * ajat sovitaan tiistaina 
-
 * kurssin [telegram](https://telegram.org)-kanava <https://t.me/rorwepa>
-
+  *  **Huom:** kaikki epäasialliset, halventavat ja jotain ihmisryhmää syrjivät kommentit kanavalla ovat kiellettyjä ja tälläisten kommenttien esittäjät poistetaan kanavalta
 * Rubyn harjoitteluun tarkoitetun materiaalin [ensimmäinen osa](https://github.com/HY-TKTL/ruby-materiaali/blob/master/Perusteet.md) ja [toinen osa](https://github.com/HY-TKTL/ruby-materiaali/blob/master/LuokkiaJaOlioita.md)
 
 ## Yleistä
