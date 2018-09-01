@@ -194,9 +194,9 @@ Railsissa konventiona on, että (melkein) jokaista tietokantaan talletettavaa 'a
 
 Luodaan kaikki nämä Railsin valmista scaffold-generaattoria käyttäen. Panimolla on nimi (merkkijono) ja perustusvuosi (kokonaisluku). Annetaan komentoriviltä (sovelluksen sisältävästä hakemistosta) seuraava komento:
 
-    rails generate scaffold brewery name:string year:integer
+    rails g scaffold brewery name:string year:integer
 
-Syntyy melkoinen määrä tiedostoja. Tärkeimmät näistä ovat
+Syntyy joukko tiedostoja. Tärkeimmät näistä ovat
 * app/models/Brewery.rb
 * app/controllers/breweries_controller.rb
 * app/views/breweries/index.html.erb
@@ -221,23 +221,22 @@ Railsin konventioiden mukaan kaikkien oluiden lista näkyy osoitteessa breweries
 Tästä aiheutuu kuitenkin virheilmoitus:
 
 ```ruby
-Migrations are pending; run 'bin/rake db:migrate RAILS_ENV=development' to resolve this issue.
+Migrations are pending; run 'bin/rails db:migrate RAILS_ENV=development' to resolve this issue.
 ```
 
 Syynä virheelle on se, että panimot tallettavan tietokantataulun luomisesta huolehtiva *tietokantamigraatio* on suorittamatta.
 
 Scaffoldin suorittaminen luo hieman erikoisella tavalla nimetyn tiedoston
 
-    db/migrate/20170116173907_create_breweries.rb
+    db/migrate/20180901092214_create_breweries.rb
 
-Kyseessä on ns. migraatiotiedosto, joka sisältää ohjeen breweries-tietokantataulun luomiseksi. Tietokantataulu saadaan luotua suorittamalla migraatio antamalla komentoriviltä komento <code>rake db:migrate</code>:
+Kyseessä on ns. migraatiotiedosto, joka sisältää ohjeen breweries-tietokantataulun luomiseksi. Tietokantataulu saadaan luotua suorittamalla migraatio antamalla komentoriviltä (eli terminaalista) komento <code>rails db:migrate</code>:
 
 ```ruby
-➜  ratebeer  rake db:migrate
-== 20170111131426 CreateBreweries: migrating ==================================
+== 20180901092214 CreateBreweries: migrating ==================================
 -- create_table(:breweries)
-   -> 0.0011s
-== 20170111131426 CreateBreweries: migrated (0.0012s) =========================
+   -> 0.0017s
+== 20180901092214 CreateBreweries: migrated (0.0018s) =========================
 ```
 
 Panimot tallettava tietokantataulu on nyt luotu ja sovelluksen pitäisi toimia.
@@ -262,31 +261,18 @@ Avaa konsoli antamalla komentoriviltä (sovelluksen sisältävästä hakemistost
 
     rails c
 
-Jos konsoli antaa virheilmoituksen, johon sisältyy teksti "cannot load such file -- readline (LoadError), niin ainakin Ubuntu 13.10 -ympäristössä tämä korjataan asentamalla libreadline-dev ja kääntämällä ruby uudelleen
-
-    apt-get install libreadline-dev
-
-    rbenv install 2.3.0
-
-Jos edellinenkään ei auta, lisää seuraava rivi tiedostoon Gemfile
-
-    gem 'rb-readline'
-
-ja suorita komentoriviltä komento <code>bundle install</code>
-
-
 Tee kaikki seuraavat komennot myös itse (komentoa on merkin > jälkeen oleva merkkijono):
 
 ```ruby
-irb(main):001 > Brewery.all
-  Brewery Load (2.3ms)  SELECT "breweries".* FROM "breweries"
- => #<ActiveRecord::Relation [#<Brewery id: 1, name: "Koff", year: 1897, created_at: "2017-01-15 16:08:44", updated_at: "2017-01-15 16:08:44">, #<Brewery id: 2, name: "Weihenstephan", year: 1042, created_at: "2017-01-15 16:08:56", updated_at: "2017-01-15 16:08:56">]>
-irb(main):002 > Brewery.count
+irb(main):001:0> Brewery.all
+  Brewery Load (0.6ms)  SELECT  "breweries".* FROM "breweries" LIMIT ?  [["LIMIT", 11]]
+=> #<ActiveRecord::Relation [#<Brewery id: 1, name: "Koff", year: 1897, created_at: "2018-09-01 09:28:27", updated_at: "2018-09-01 09:28:27">, #<Brewery id: 2, name: "Malmgård", year: 1999, created_at: "2018-09-01 09:29:15", updated_at: "2018-09-01 09:29:15">, #<Brewery id: 3, name: "Weihenstephan", year: 1040, created_at: "2018-09-01 09:29:30", updated_at: "2018-09-01 09:29:30">]>
+irb(main):002:0> Brewery.count
    (0.2ms)  SELECT COUNT(*) FROM "breweries"
- => 2
-irb(main):003 > Brewery
- => Brewery(id: integer, name: string, year: integer, created_at: datetime, updated_at: datetime)
-irb(main):004 >
+=> 3
+irb(main):003:0> Brewery
+=> Brewery(id: integer, name: string, year: integer, created_at: datetime, updated_at: datetime)
+irb(main):004:0>
 ```
 
 Komento <code>Brewery.all</code> siis näyttää kaikki tietokannassa olevat panimot. Konsoli näyttää ensin tietokantaoperaation aiheuttaman SQL-kyselyn ja sen jälkeen kannasta saatavat panimo-oliot. Komento <code>Brewery.count</code> näyttää kannassa olevien panimoiden määrän.
@@ -296,11 +282,11 @@ Yhteys breweries-tietokantatauluun siis saadaan luokan <code>Brewery</code> kaut
 Jos katsotaan miltä luokka (eli tiedosto app/models/brewery.rb) näyttää, huomaamme että se sisältää varsin niukasti koodia:
 
 ```ruby
-class Brewery < ActiveRecord::Base
+class Brewery < ApplicationRecord
 end
 ```
 
-Kuten äskeinen konsolisessio paljasti, on luokalla kuitenkin metodit all ja count, nämä ja todella suuren määrän muita metodeja luokka saa __perimästään__ luokasta <code>ActiveRecord::Base</code>.
+Kuten äskeinen konsolisessio paljasti, on luokalla kuitenkin metodit all ja count, nämä ja todella suuren määrän muita metodeja luokka saa __perimästään__ luokasta <code>ApplicationRecord</code> joka taas perii toiminnallisuutensa luokasta <code>ActiveRecord</code>.
 
 Rails-guiden (http://guides.rubyonrails.org/active_record_basics.html) sanoin:
 
@@ -308,7 +294,6 @@ Rails-guiden (http://guides.rubyonrails.org/active_record_basics.html) sanoin:
 Active Record is the M in MVC - the model - which is the layer of the system responsible for representing business data and logic. Active Record facilitates the creation and use of business objects whose data requires persistent storage to a database. It is an implementation of the Active Record pattern (https://en.wikipedia.org/wiki/Active_record_pattern) which itself is a description of an Object Relational Mapping system.
 </blockquote>
 
-> **HUOM:** Railsin versiossa 5 model-luokat eivät enää peri suoraan luokkaa <code>ActiveRecord::Base</code> vaan ne perivät luokan <code>ApplicationRecord</code>. Tämä kannattaa muistaa dokumentaatiota lukiessa!
 
 Periaatteena ActiveRecordissa on lyhyesti sanottuna se, että jokaista tietokannan taulua (esim. breweries) vastaa koodissa oma luokka (Brewery). Luokka tarjoaa __luokkametodeina__ metodit, joiden avulla tietokantaa käsitellään. Kun tietokannasta haetaan rivillinen dataa (yhden panimon tiedot), luodaan siitä luokan instanssi (eli Brewery-olio).
 
@@ -329,12 +314,11 @@ Olio saadaan talletettua tietokantaan seuraavasti:
     b = Brewery.new name: "Stadin Panimo", year: 1997
     b.save
 
-Eli otettiin luotu olio talteen muuttujaan <code>b</code> ja kutsuttiin oliolle metodia <code>save</code>. Huomaa, että muuttujan tyyppiä ei tarvitse (eikä voi) määritellä sillä Ruby on dynaamisesti tyypitetty kieli!
-Save on ActiveRecordilta peritty oliometodi, joka kuten arvata saattaa, tallettaa olion tietokantaan.
+Eli otettiin luotu olio talteen muuttujaan <code>b</code> ja kutsuttiin oliolle metodia <code>save</code>. Save on ActiveRecordilta peritty oliometodi, joka kuten arvata saattaa, tallettaa olion tietokantaan. Huomaa, että muuttujan tyyppiä ei tarvitse (eikä voi) määritellä sillä Ruby on dynaamisesti tyypitetty kieli.
 
 Olion voi myös luoda ja tallettaa suoraan kantaan käyttämällä new:n sijaan luokan metodia create:
 
-    Brewery.create name: "Weihenstephan", year: 1042
+    Brewery.create name: "Weihenstephan", year: 1040
 
 Kun olio luodaan komennolla <code>new</code>, huomaamme, että olio sisältää kenttiä joiden arvoa ei ole asetettu:
 
@@ -348,12 +332,12 @@ Kun olio sitten talletetaan, tulee näillekin kentille arvo:
 ```ruby
 irb(main):008 > b.save
 irb(main):009 > b
- => #<Brewery id: 4, name: "Stadin Panimo", year: 1997, created_at: "2017-01-11 13:21:37", updated_at: "2017-01-11 13:21:37">
+ => #<Brewery id: 4, name: "Stadin Panimo", year: 1997, created_at: "2018-01-09 13:21:37", updated_at: "2018-01-09 13:21:37">
 ```
 
-Kuten arvata saattaa, oliomuuttujat eli olion kentät vastaavat tietokantataulun sarakkeita. Kun olio tallettuu tietokantaan generoi kanta automaattisesti oliolle pääavaimena (engl. primary key) toimivan id:n sekä pari aikaleimaa. Id on siis juuri luodun oluen yksikäsitteinen tunnus.
+Kuten arvata saattaa, oliomuuttujat eli olion kentät vastaavat tietokantataulun sarakkeita. Kun olio tallettuu tietokantaan, generoi kanta automaattisesti oliolle pääavaimena (engl. primary key) toimivan id:n sekä pari aikaleimaa. Id on siis juuri luodun oluen yksikäsitteinen tunnus.
 
-Katso tilannetta taas [www-sivulta](http://localhost:3000/breweries). Luotujen panimoiden pitäisi nyt olla näkyvissä sivulla.
+Katso tilannetta taas [selaimesta](http://localhost:3000/breweries). Luotujen panimoiden pitäisi nyt olla näkyvissä sivulla.
 
 Metodien <code>new</code> ja <code>create</code> kutsu näytti hieman erikoiselta
 
@@ -426,7 +410,7 @@ irb(main):014 > vanhat = _
 irb(main):015 > vanhat.count
  => 3
 irb(main):016 > vanhat.first
- => #<Brewery id: 1, name: "Schlenkerla", year: 1687, created_at: "2017-01-11 13:17:06", updated_at: "2017-01-11 13:17:06">
+ => #<Brewery id: 1, name: "Schlenkerla", year: 1687, created_at: "2018-01-09 13:17:06", updated_at: "2018-01-09 13:17:06">
 irb(main):017 >
 ```
 
@@ -498,9 +482,9 @@ Luodaan konsolista käsin muutama olut ja liitetään ne panimoon vierasavaimen 
 ```ruby
 irb(main):043 > koff = Brewery.first
 irb(main):044 > Beer.create name:"iso 3", style:"Lager", brewery_id:koff.id
- => #<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2017-01-11 13:54:09", updated_at: "2017-01-11 13:54:09">
+ => #<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:09", updated_at: "2018-01-09 13:54:09">
 irb(main):045 > Beer.create name:"Karhu", style:"Lager", brewery_id:koff.id
- => #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2017-01-11 13:54:20", updated_at: "2017-01-11 13:54:20">
+ => #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:20", updated_at: "2018-01-09 13:54:20">
 irb(main):046 >
 ```
 
@@ -529,7 +513,7 @@ irb(main):047 > koff = Brewery.find_by name:"Koff"
 irb(main):048 > koff.beers.count
  => 2
 irb(main):049 > koff.beers
- => #<ActiveRecord::Associations::CollectionProxy [#<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2017-01-11 13:54:09", updated_at: "2017-01-11 13:54:09">, #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2017-01-11 13:54:20", updated_at: "2017-01-11 13:54:20">]>
+ => #<ActiveRecord::Associations::CollectionProxy [#<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:09", updated_at: "2018-01-09 13:54:09">, #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:20", updated_at: "2018-01-09 13:54:20">]>
 ```
 
 <code>Brewery</code>-olioille on siis ilmestynyt metodi <code>beers</code>, joka palauttaa panimoon liittyvät <code>Beer</code>-oliot. Rails generoi automaattisesti tämän metodin nähtyään <code>Brewery</code>-luokassa rivin <code>has_many :beers</code>. Oikeastaan metodi <code>beers</code> ei palauta panimoon liittyviä olioita suoraan, vaan oluiden kokoelmaa edustavan <code>ActiveRecord::Associations::CollectionProxy</code>-tyyppisen olion, jonka kautta oluiden kokoelmaan pääsee käsiksi. Proxy-olio toimii Rubyn kokoelmien kaltaisesti, eli yksittäisiin panimoon liittyviin oluisiin pääsee käsiksi seuraavasti:
@@ -537,13 +521,13 @@ irb(main):049 > koff.beers
 ```ruby
 irb(main):050 > koff = Brewery.find_by name:"Koff"
 irb(main):051 > koff.beers.first
- => #<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2017-01-11 13:54:09", updated_at: "2017-01-11 13:54:09">
+ => #<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:09", updated_at: "2018-01-09 13:54:09">
 irb(main):052 > koff.beers.last
- => #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2017-01-11 13:54:20", updated_at: "2017-01-11 13:54:20">
+ => #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:20", updated_at: "2018-01-09 13:54:20">
 irb(main):053 > koff.beers[1]
- => #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2017-01-11 13:54:20", updated_at: "2017-01-11 13:54:20">
+ => #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:20", updated_at: "2018-01-09 13:54:20">
 irb(main):054 > koff.beers.to_a
- => [#<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2017-01-11 13:54:09", updated_at: "2017-01-11 13:54:09">, #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2017-01-11 13:54:20", updated_at: "2017-01-11 13:54:20">]
+ => [#<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:09", updated_at: "2018-01-09 13:54:09">, #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:20", updated_at: "2018-01-09 13:54:20">]
 irb(main):055 >
 ```
 
@@ -561,9 +545,9 @@ Myös olueeseen liittyvään panimoon pääsee käsiksi helposti kooditasolla:
 
 ```ruby
 irb(main):056 > bisse = Beer.first
- => #<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2017-01-11 13:54:09", updated_at: "2017-01-11 13:54:09">
+ => #<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:09", updated_at: "2018-01-09 13:54:09">
 irb(main):057 > bisse.brewery
- => #<Brewery id: 8, name: "Koff", year: 1897, created_at: "2017-01-11 13:51:26", updated_at: "2017-01-11 13:51:26">
+ => #<Brewery id: 8, name: "Koff", year: 1897, created_at: "2018-01-09 13:51:26", updated_at: "2018-01-09 13:51:26">
 irb(main):058 >
 ```
 
@@ -579,7 +563,7 @@ Kopioi seuraava sisältö sovelluksesi seeds.rb-tiedostoon:
 ```ruby
 b1 = Brewery.create name:"Koff", year:1897
 b2 = Brewery.create name:"Malmgard", year:2001
-b3 = Brewery.create name:"Weihenstephaner", year:1042
+b3 = Brewery.create name:"Weihenstephaner", year:1040
 
 b1.beers.create name:"Iso 3", style:"Lager"
 b1.beers.create name:"Karhu", style:"Lager"
@@ -608,9 +592,9 @@ Tutkitaan uutta dataa konsolista käsin:
 
 ```ruby
 irb(main):058 > koff = Brewery.first
- => #<Brewery id: 8, name: "Koff", year: 1897, created_at: "2017-01-11 13:51:26", updated_at: "2017-01-11 13:51:26">
+ => #<Brewery id: 8, name: "Koff", year: 1897, created_at: "2018-01-09 13:51:26", updated_at: "2018-01-09 13:51:26">
 irb(main):059 > koff.beers
- => #<ActiveRecord::Associations::CollectionProxy [#<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2017-01-11 13:54:09", updated_at: "2017-01-11 13:54:09">, #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2017-01-11 13:54:20", updated_at: "2017-01-11 13:54:20">]>
+ => #<ActiveRecord::Associations::CollectionProxy [#<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:09", updated_at: "2018-01-09 13:54:09">, #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:20", updated_at: "2018-01-09 13:54:20">]>
 irb(main):060 >
 ```
 
@@ -1158,19 +1142,19 @@ Seurauksena on kuitenkin ikävä virheilmoitus "We're sorry, but something went 
 Voimme koittaa selvittää vikaa katsomalla herokun lokeja komennolla <code>heroku logs</code>. Tulostusta tulee aika paljon, mutta pienen etsinnän jälkeen syy selviää:
 
 <pre>
-2017-01-11T14:55:55.010390+00:00 app[web.1]: Started GET "/breweries" for 87.92.42.254 at 2017-01-11 14:55:55 +0000
-2017-01-11T14:55:55.108506+00:00 heroku[router]: at=info method=GET path="/breweries" host=enigmatic-eyrie-1511.herokuapp.com request_id=35dfd5f8-bafb-40e5-96f5-c0351e8f6e91 fwd="87.92.42.254" dyno=web.1 connect=1ms service=106ms status=500 bytes=1754
-2017-01-11T14:55:55.102697+00:00 app[web.1]: PG::UndefinedTable: ERROR:  relation "breweries" does not exist
-2017-01-11T14:55:55.102703+00:00 app[web.1]: LINE 5:                WHERE a.attrelid = '"breweries"'::regclass
-2017-01-11T14:55:55.102705+00:00 app[web.1]:                                           ^
-2017-01-11T14:55:55.102706+00:00 app[web.1]: :               SELECT a.attname, format_type(a.atttypid, a.atttypmod),
-2017-01-11T14:55:55.102707+00:00 app[web.1]:                      pg_get_expr(d.adbin, d.adrelid), a.attnotnull, a.atttypid, a.atttypmod
-2017-01-11T14:55:55.102709+00:00 app[web.1]:                 FROM pg_attribute a LEFT JOIN pg_attrdef d
-2017-01-11T14:55:55.102710+00:00 app[web.1]:                   ON a.attrelid = d.adrelid AND a.attnum = d.adnum
-2017-01-11T14:55:55.102711+00:00 app[web.1]:                WHERE a.attrelid = '"breweries"'::regclass
-2017-01-11T14:55:55.102712+00:00 app[web.1]:                  AND a.attnum > 0 AND NOT a.attisdropped
-2017-01-11T14:55:55.102714+00:00 app[web.1]:                ORDER BY a.attnum
-2017-01-11T14:55:55.102715+00:00 app[web.1]:                                          ^
+2018-01-09T14:55:55.010390+00:00 app[web.1]: Started GET "/breweries" for 87.92.42.254 at 2018-01-09 14:55:55 +0000
+2018-01-09T14:55:55.108506+00:00 heroku[router]: at=info method=GET path="/breweries" host=enigmatic-eyrie-1511.herokuapp.com request_id=35dfd5f8-bafb-40e5-96f5-c0351e8f6e91 fwd="87.92.42.254" dyno=web.1 connect=1ms service=106ms status=500 bytes=1754
+2018-01-09T14:55:55.102697+00:00 app[web.1]: PG::UndefinedTable: ERROR:  relation "breweries" does not exist
+2018-01-09T14:55:55.102703+00:00 app[web.1]: LINE 5:                WHERE a.attrelid = '"breweries"'::regclass
+2018-01-09T14:55:55.102705+00:00 app[web.1]:                                           ^
+2018-01-09T14:55:55.102706+00:00 app[web.1]: :               SELECT a.attname, format_type(a.atttypid, a.atttypmod),
+2018-01-09T14:55:55.102707+00:00 app[web.1]:                      pg_get_expr(d.adbin, d.adrelid), a.attnotnull, a.atttypid, a.atttypmod
+2018-01-09T14:55:55.102709+00:00 app[web.1]:                 FROM pg_attribute a LEFT JOIN pg_attrdef d
+2018-01-09T14:55:55.102710+00:00 app[web.1]:                   ON a.attrelid = d.adrelid AND a.attnum = d.adnum
+2018-01-09T14:55:55.102711+00:00 app[web.1]:                WHERE a.attrelid = '"breweries"'::regclass
+2018-01-09T14:55:55.102712+00:00 app[web.1]:                  AND a.attnum > 0 AND NOT a.attisdropped
+2018-01-09T14:55:55.102714+00:00 app[web.1]:                ORDER BY a.attnum
+2018-01-09T14:55:55.102715+00:00 app[web.1]:                                          ^
 </pre>
 
 Syynä on siis se, että tietokantaa ei ole luotu _PG::UndefinedTable: ERROR:  relation "breweries" does not exist_ Meidän on siis suoritettava migraatiot Herokussa olevalle sovellukselle. Tämä onnistuu komennolla <code>heroku run rake db:migrate</code>
@@ -1188,7 +1172,7 @@ Voimme myös avata Rails-konsolin Herokussa sijaitsevalle sovellukselle komennol
 ```ruby
 $ heroku run console
 irb(main):001:0> Brewery.all
-=> #<ActiveRecord::Relation [#<Brewery id: 1, name: "Koff", year: 1897, created_at: "2017-01-11 14:57:30", updated_at: "2017-01-11 14:57:30">, #<Brewery id: 2, name: "Malmgard", year: 2001, created_at: "2017-01-11 14:57:30", updated_at: "2017-01-11 14:57:30">, #<Brewery id: 3, name: "Weihenstephaner", year: 1042, created_at: "2017-01-11
+=> #<ActiveRecord::Relation [#<Brewery id: 1, name: "Koff", year: 1897, created_at: "2018-01-09 14:57:30", updated_at: "2018-01-09 14:57:30">, #<Brewery id: 2, name: "Malmgard", year: 2001, created_at: "2018-01-09 14:57:30", updated_at: "2018-01-09 14:57:30">, #<Brewery id: 3, name: "Weihenstephaner", year: 1040, created_at: "2018-01-09
 ```
 
 Kyseessä on normaali Rails-konsolisessio, eli voit esim. tutkia Herokuun deployatun sovelluksen tietokannan tilaa session avulla.
