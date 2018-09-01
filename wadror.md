@@ -3,7 +3,7 @@
 ## Ajankohtaista
 
 * materiaali ja tehtävät 
- * [viikko 1](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md) 
+  * [viikko 1](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md) 
 * [tehtäväkirjanpito](https://studies.cs.helsinki.fi/courses/#/rails2018) 
 * paja
   * ajat sovitaan tiistaina 
