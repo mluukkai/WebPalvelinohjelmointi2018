@@ -673,13 +673,13 @@ Kontrolleri on siis nimetty Railsin konvention mukaan monikkomuodossa. Kontrolle
 
 ```ruby
 class BreweriesController < ApplicationController
-  // ...
+  # ...
 
   def index
     @breweries = Brewery.all
   end
 
-  // ...
+  # ...
 end
 ```
 
@@ -842,8 +842,8 @@ Metodi <code>show</code> renderöi lopuksi näkymätemplaten ```show.html.erb```
 Eksplisiittisesti auki kirjoitettuna metodin <code>show</code> suorituksen yhteydessä suoritettava koodi on siis seuraava:
 
 ```ruby
-    @brewery = Brewery.find(params[:id])
-    render :show
+@brewery = Brewery.find(params[:id])
+render :show
 ```
 
 Näkymätemplaten views/breweries/show.html.erb koodi on seuraavassa:
@@ -892,7 +892,7 @@ Jatketaan muutosten tekemistä.
 
 Sivusi tulisi näyttää tehtävän jälkeen seuraavalta
 
-![panimo ja oluet](http://www.cs.helsinki.fi/u/mluukkai/wadror/brewery-w1-1.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/brewery-w1-1.png)
 
 Parannellaan vielä hieman sovelluksemme navigaatiota.
 
@@ -914,13 +914,13 @@ Viritellään lopuksi kaikkien oluiden listaa.
 
 Lopputuloksen pitäisi näyttää seuraavalta:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2014/raw/master/images/brewery-w1-3.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/brewery-w1-2.png)
 
 ## nil
 
 Saatat törmätä seuraavanlaiseen virheilmoitukseen
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2014/raw/master/images/brewery-w1-2.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/brewery-w1-3.png)
 
 Kyse on oikeastaan klassisesta nullpointer-poikkeuksesta, tai sen Ruby-versiosta nilpointer-poikkeuksesta. Rails vihjaa, että olet yrittänyt kutsua nil:ille (joka on Rubyssä olio!) metodia name, ja että sellaista ei ole. Syynä tälle on todennäköisesti se, että tietokannassasi on oluita joihin ei liity panimoa tai että niihin liittyvä panimo on poistettu.
 
