@@ -37,9 +37,10 @@ Yksi kurssin tärkeimmistä oppimistavoitteista on itsenäiseen tiedonhakuun kan
 
 ## Arvosteluperusteet
 
-Kurssin kokonaispistemäärä on 45 pistettä, laskuharjoitusten maksimi on 30 pistettä ja kokeen 15 pistettä. Kurssin läpäisy edellyttää vähintään 50% sekä kokonaispisteistä että koepisteistä. Laskuharjoitusten maksimipistemäärän saamiseen vaaditaan noin 90% tehtävien tekemistä. Puolet laskaripisteistä saa tekemällä noin 50% tehtävistä.
+Kurssin arvosana perustuu palautettujen tehtävien määrään. Arvosanaan 1 vaaditaan 50% tehtävistä ja arvosanaan 5 noin 90% tehtävistä. Hyväksytty suoritus edellyttää myös kurssikokeen hyväksyttyä suorittamista. Koe ei kuitenkaan vaikuta kurssin arvosanaan.
 
-Kurssikoe ti 7.3. klo 9.00 A111
+
+Kurssikoe Ti 23.10. klo 16.00 A111
 
 ## Opetus
 
