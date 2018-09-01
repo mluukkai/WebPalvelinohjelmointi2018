@@ -391,7 +391,7 @@ Seuraavassa muutamia esimerkkejä, kokeile kaikkia konsolista:
     b.year                         # operaatio ei toimi, sillä where palauttaa taulukon, jossa Koff sijaitsee
 
     t = Brewery.where name:"Koff"
-    t.first.year                   # t.first sama kuin t[0]
+    t.first.year                   # t.first tarkoittaa kuin t[0] eli taulukon 1. alkiota
 
 Lisää Rubyn taulukosta ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/rubyn_perusteita.md#taulukko
 
@@ -416,12 +416,12 @@ irb(main):017 >
 
 > ## Tehtävä 4
 >
-> Lue [http://guides.rubyonrails.org/active_record_basics.html#crud-reading-and-writing-data](http://guides.rubyonrails.org/active_record_basics.html#crud-reading-and-writing-data)
+> Lue http://guides.rubyonrails.org/active_record_basics.html#crud-reading-and-writing-data
 >
 > Tee kaikki seuraavat Rails-konsolista:
 > * Luo panimo nimeltä "Kumpulan panimo", jonka perustamisvuosi on 2012 <br />
 > * Hae panimo kannasta <code>find_by</code>-metodilla nimen perusteella<br />
-> * Muuta panimon perustamisvuodeksi 2017 <br />
+> * Muuta panimon perustamisvuodeksi 2018 <br />
 > * Hae panimo kannasta uudelleen <code>find_by</code>:lla ja varmista että perustamisvuoden muutos tapahtui <br />
 > * Tarkista myös, että panimon kentän <code>updated_at</code> arvo on muuttunut, eli ettei se ole enää sama kuin <code>created at</code> <br />
 > * Tuhoa panimo <br />
@@ -448,7 +448,7 @@ Kun sanomme konsolissa <code>b.created_at</code> suoritetaan siis todellisuudess
 
 Laajennetaan sovellustamme seuraavaksi oluilla. Jokainen olut liittyy yhteen panimoon, ja panimoon luonnollisesti liittyy useita oluita. Laajennuksen jälkeen sovelluksemme domainin (eli bisneslogiikkaa sisältävien tietokantaan talletettavien olioiden) luokkamalli näyttää seuraavalta:
 
-![Panimot ja oluet](http://yuml.me/76d4d115)
+![Panimot ja oluet](http://yuml.me/4f643b44.png)
 
 Luodaan oluita varten malli, kontrolleri ja valmiit näkymät Railsin scaffold-generaattorilla (komento annetaan komentoriviltä):
 
