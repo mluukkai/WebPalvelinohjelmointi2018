@@ -347,9 +347,9 @@ Olemme tässä hyödyntäneet Rubyn vapaamielistä suhtautumista sulkujen käytt
 
     Brewery.new( name: "Stadin Panimo", year: 1997 )
 
-Myös parametri on hieman erikoisessa formaatissa. Kyseessä on symboleilla indeksöity assosiatiivinen taulukko eli _hash_, ks. https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/rubyn_perusteita.md#hash-ja-symbolit
+Myös parametri on hieman erikoisessa formaatissa. Kyseessä on symboleilla indeksöity assosiatiivinen taulukko eli _hash_, ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/rubyn_perusteita.md#hash-ja-symbolit
 
-Kuten yo. linkistä selviää, hashit määritellään aaltosuluissa, tyyliin
+Kuten yo. linkistä selviää, hashit määritellään aaltosuluissa:
 
     { name: "Stadin Panimo", year: 1997 }
 
@@ -369,31 +369,31 @@ Jos haluat luoda tietueita tai muuten harjoitella Railsin käyttöä konsolista 
 
 ## ActiveRecordin hakurajapinta
 
-ActiveRecord tarjoaa monipuoliset mahdollisuudet tietokantahakujen tekemiseen ohjelmallisesti eli SQL:ää kirjoittamatta, ks. [http://guides.rubyonrails.org/active_record_querying.html](http://guides.rubyonrails.org/active_record_querying.html)
+ActiveRecord tarjoaa monipuoliset mahdollisuudet tietokantahakujen tekemiseen ohjelmallisesti eli SQL:ää kirjoittamatta, ks. http://guides.rubyonrails.org/active_record_querying.html
 
 Seuraavassa muutamia esimerkkejä, kokeile kaikkia konsolista:
 
-    Brewery.find 1       # palauttaa olion, jonka id on 1
+    Brewery.find 1                 # palauttaa olion, jonka id on 1
 
-    b = Brewery.find 2   # palauttaa olion, jonka id on 2 ja tallettaa sen muuttujaan b
-    b.year               # muuttujaan b talletetun olion kentän year arvo
-    b.name               # muuttujaan b talletetun olion kentän name arvo
+    b = Brewery.find 2             # palauttaa olion, jonka id on 2 ja sijoittaa sen muuttujaan b
+    b.year                         # muuttujaan b talletetun olion kentän year arvo
+    b.name                         # muuttujaan b talletetun olion kentän name arvo
 
-    Brewery.find_by name:"Koff"   # palauttaa olion, jonka nimi on Koff
+    Brewery.find_by name:"Koff"    # palauttaa olion, jonka nimi on Koff
 
-    Brewery.where name:"Koff" # palauttaa taulukon, johon on sijoitettu kaikki Koff-nimiset panimot
+    Brewery.where name:"Koff"      # palauttaa taulukon, johon on sijoitettu kaikki Koff-nimiset panimot
 
     Brewery.where year:1900..2000  # palauttaa taulukon, jossa vuosina 1900-2000 perustetut panimot
 
     Brewery.where "year<1900"      # palauttaa taulukon, jossa ennen vuotta 1900 perustetut panimot
 
     b = Brewery.where name:"Koff"
-    b.year                # operaatio ei toimi, sillä where palauttaa taulukon, jossa Koff sijaitsee
+    b.year                         # operaatio ei toimi, sillä where palauttaa taulukon, jossa Koff sijaitsee
 
     t = Brewery.where name:"Koff"
-    t.first.year          # t.first sama kuin t[0]
+    t.first.year                   # t.first sama kuin t[0]
 
-Lisää Rubyn taulukosta ks. [https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/rubyn_perusteita.md#taulukko](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/rubyn_perusteita.md#taulukko)
+Lisää Rubyn taulukosta ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/rubyn_perusteita.md#taulukko
 
 Huomaa, että jätimme edellä kaikissa esimerkeissä metodikutsuista sulut pois. <code>Brewery.find 1</code> siis tarkoittaa samaa kuin <code>Brewery.find(1)</code>
 
