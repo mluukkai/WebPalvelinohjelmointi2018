@@ -787,7 +787,7 @@ Mitä tarkoittaa ```"breweries/#{brewery.id}"```? Ks. https://github.com/mluukka
 
 Tehtävän jälkeen sovelluksesi panimot näyttävien sivujen tulisi näyttää seuraavalta
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/brewery-w1-0.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/brewery-w1-0a.png)
 
 ## Oluiden listaaminen panimon sivulla
 
