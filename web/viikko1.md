@@ -456,7 +456,7 @@ Luodaan oluita varten malli, kontrolleri ja valmiit näkymät Railsin scaffold-g
 
 jotta saamme tietokannan päivitettyä, suoritetaan tietokantamigraatio antamalla komentoriviltä komento
 
-    rake db:migrate
+    rails db:migrate
 
 Nyt siis on luotu
 * oluet tallettava tietokantataulu beers
@@ -466,14 +466,14 @@ Nyt siis on luotu
 
 Loimme oluelle string-tyyppiset nimen ja tyylin tallettavat kentät <code>name</code> ja <code>style</code>. Loimme myös integer-tyyppisen kentän <code>brewery_id</code>, jonka tarkoitus on toimia __vierasavaimena__ (engl. foreign key), jonka liittää oluen panimoon.
 
-Tarvittaessa kentät voi tarkistaa kirjoittamalla tietokantataulua vastaavan luokan nimi konsoliin:
+Tarvittaessa kentät voi tarkistaa kirjoittamalla tietokantataulua vastaavan luokan nimi rails-konsoliin:
 
 ```ruby
 irb(main):035:0> Beer
 => Beer(id: integer, name: string, style: string, brewery_id: integer, created_at: datetime, updated_at: datetime)
 ```
 
-Jos et ole vielä hakenut oluita kannasta, edellinen komento ei toimi halutusti. Suorita ensin esim. komento <code>Beer.count</code> ja tämän jälkeen myös pelkkä <code>Beer</code> toimii.
+Jos et ole vielä hakenut oluita kannasta, edellinen komento ei välttämättä toimi halutusti. Suorita ensin esim. komento <code>Beer.count</code> ja tämän jälkeen myös pelkkä <code>Beer</code> toimii.
 
 Oluella on siis luonnollisesti myös kaikille ActiveRecord-olioille automaattisesti lisättävät kentät eli <code>id</code>, <code>created_at</code> ja <code>updated_at</code>.
 
@@ -555,8 +555,7 @@ Eli <code>Beer</code>-luokkaan lisätty rivi <code>belongs_to :brewery</code> li
 
 ## Tietokannan alustus
 
-Ohjelmiston kehitysvaiheessa saattaa joskus olla hyödyksi generoida tietokantaan "kovakoodattua" dataa.
-Oikea paikka tälläiselle datalle on tiedosto db/seeds.rb
+Ohjelmiston kehitysvaiheessa saattaa joskus olla hyödyksi generoida tietokantaan "kovakoodattua" dataa. Oikea paikka tälläiselle datalle on tiedosto db/seeds.rb
 
 Kopioi seuraava sisältö sovelluksesi seeds.rb-tiedostoon:
 
@@ -576,13 +575,11 @@ b3.beers.create name:"Helles", style:"Lager"
 
 Poistetaan kaikki vanha data tietokannasta antamalla komentoriviltä komento:
 
-    rake db:reset
+    rails db:reset
 
 Komento "seedaa" kannan automaattisesti eli vanhan datan poistamisen lisäksi suorittaa myös tiedoston seeds.rb sisällön. 
 
-**Huom:** windowsilla komento ei välttämättä toimi. Voit antaa sen sijaan komennon <code>rake db:reset</code>. Komento suorittaa sedauksen mutta _ei poista_ vanhaa dataa kannasta.
-
-Sovellus kannattaa uudelleenkäynnistää seedauksen jälkeen.
+**Sovellus sekä rails-konsoli kannattaa uudelleenkäynnistää seedauksen jälkeen.**
 
 **HUOM:** et välttämättä tarvitse sovelluksessasi ollenkaan tiedostoon _seeds.rb_ määriteltyä dataa. Seediin määritelty data voi olla tarpeen jos sovellus tarvitsee esim. käynnistyäkseen joitan valmiksi määriteltyjä olioita. Tällöin seedin olemassaolo helpottaa uuden sovelluskehittäjän työtä, hän saa sovelluksen heti toimimaan omalla koneellaan ilman potentiaalisesti vaivalloista välttämättömien olioiden luomista.
 
@@ -591,11 +588,11 @@ Sovellus kannattaa uudelleenkäynnistää seedauksen jälkeen.
 Tutkitaan uutta dataa konsolista käsin:
 
 ```ruby
-irb(main):058 > koff = Brewery.first
+irb(main):058:0> koff = Brewery.first
  => #<Brewery id: 8, name: "Koff", year: 1897, created_at: "2018-01-09 13:51:26", updated_at: "2018-01-09 13:51:26">
-irb(main):059 > koff.beers
+irb(main):059:0> koff.beers
  => #<ActiveRecord::Associations::CollectionProxy [#<Beer id: 1, name: "iso 3", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:09", updated_at: "2018-01-09 13:54:09">, #<Beer id: 2, name: "Karhu", style: "Lager", brewery_id: 8, created_at: "2018-01-09 13:54:20", updated_at: "2018-01-09 13:54:20">]>
-irb(main):060 >
+irb(main):060:0>
 ```
 
 Luodaan uusi olut-olio. Käytetään tällä kertaa new-metodia, jolloin olio ei vielä talletu tietokantaan:
@@ -608,15 +605,15 @@ irb(main):050:0> b = Beer.new name:"Lite", style:"Lager"
 Olut ei ole tietokannassa, eikä myöskään liity vielä mihinkään panimoon:
 
 ```ruby
-irb(main):061 > b.brewery
+irb(main):061:0> b.brewery
  => nil
 ```
 
 Oluen voi liittää panimoon muutamallakin tavalla. Voimme asettaa oluen panimokentän arvon käsin:
 
 ```ruby
-irb(main):062 > b.brewery = koff
-irb(main):063 > b
+irb(main):062:0> b.brewery = koff
+irb(main):063:0> b
  => #<Beer id: nil, name: "Lite", style: "Lager", brewery_id: 8, created_at: nil, updated_at: nil>
 irb(main):064 >
 ```
@@ -624,8 +621,8 @@ irb(main):064 >
 Kuten huomaamme, tulee oluen brewery_id-vierasavaimeksi panimon id. Olut ei ole vielä tietokannassa, eikä panimokaan vielä tästä syystä tiedä, että luotu olut liittyy siihen:
 
 ```ruby
-irb(main):064 > koff.reload
-irb(main):065 > koff.beers.include? b
+irb(main):064:0> koff.reload
+irb(main):065:0> koff.beers.include? b
  => false
 ```
 
@@ -634,19 +631,21 @@ Huom: kutsuimme ensin varalta panimon tietokannasta uudelleenlataavaa metodia <c
 Olut saadaan tallettumaan tuttuun tapaan komennolla <code>save</code>. Tämän jälkeen myös panimon mielestä olut liittyy panimoon (jälleen lataamme olion ensin kannasta uudelleen):
 
 ```ruby
-irb(main):066 > b.save
+irb(main):066:0> b.save
  => true
-irb(main):067 > koff.reload
-irb(main):068 > koff.beers.include? b
+irb(main):067:0> koff.reload
+irb(main):068:0> koff.beers.include? b
  => true
 ```
 
 Hieman kätevämpi tapa on liittää olut panimon oluiden joukkoon <code><<</code> operaattorilla:
 
 ```ruby
-irb(main):069 > b = Beer.new name:"IVB", style:"Lager"
+irb(main):069:0> b = Beer.new name:"IVB", style:"Lager"
  => #<Beer id: nil, name: "IVB", style: "Lager", brewery_id: nil, created_at: nil, updated_at: nil>
-irb(main):070 > koff.beers << b
+irb(main):070:0 > koff.beers << b
+   (0.1ms)  begin transaction
+  Beer Create (0.3ms)  INSERT INTO "beers" ("name", "style", "brewery_id", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)  [["name", "IVB"], ["style", "Lager"], ["brewery_id", 1], ["created_at", "2018-09-01 16:46:01.643854"], ["updated_at", "2018-09-01 16:46:01.643854"]]
 ```
 
 Vaikka luotua olutta ei tässä eksplisiittisesti talletettu <code>save</code>-metodilla, tallentuu olut kantaan operaattorin <code><<</code> käytön ansiosta.
@@ -654,7 +653,7 @@ Vaikka luotua olutta ei tässä eksplisiittisesti talletettu <code>save</code>-m
 Kolmas tapa on tiedostossa <code>seeds.rb</code> käytetty tyyli, jossa metodia <code>create</code> kutsutaan suoraan panimon beers-kokoelmalle:
 
 ```ruby
-irb(main):071 > koff.beers.create name:"Extra Light Triple Brewed", style:"Lager"
+irb(main):071:0> koff.beers.create name:"Extra Light Triple Brewed", style:"Lager"
 ```
 
 > ## Tehtävä 5: Panimoja ja oluita
