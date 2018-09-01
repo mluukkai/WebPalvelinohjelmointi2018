@@ -663,7 +663,7 @@ irb(main):071:0> koff.beers.create name:"Extra Light Triple Brewed", style:"Lage
 > * Päädymme kuitenkin siihen että Hartwall on huonon laatunsa takia poistettava. Ennen poistamista, ota muistiin Hartwall-olion id
 > * Hartwallin poistaminen jättää tietokantaan olut-olioita, jotka liittyvät jo poistettuun panimoon
 > * Hae orvoksi jääneet oluet komennolla <code>Beer.where tähänsopivaparametri</code>
-> * Tuhoa operaation palauttamat oluet. Ohjeita oluiden listan läpikäyntiin esim. seuraavasta https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/rubyn_perusteita.md#taulukko
+> * Tuhoa operaation palauttamat oluet. Ohjeita oluiden listan läpikäyntiin esim. seuraavasta https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/rubyn_perusteita.md#taulukko
 
 ## Kontrollerin ja viewien yhteys
 
@@ -673,9 +673,13 @@ Kontrolleri on siis nimetty Railsin konvention mukaan monikkomuodossa. Kontrolle
 
 ```ruby
 class BreweriesController < ApplicationController
+  // ...
+
   def index
     @breweries = Brewery.all
   end
+
+  // ...
 end
 ```
 
@@ -688,10 +692,10 @@ eli sijoittaa kaikkien panimoiden listan <code>@breweries</code>-nimiseen muuttu
 Renderöintikomento voitaisiin kirjoittaa myös eksplisiittisesti:
 
 ```ruby
-  def index
-    @breweries = Brewery.all
-    render :index   # renderöi hakemistossa view/breweries olevan näkymätemplaten index.html.erb
-  end
+def index
+  @breweries = Brewery.all
+  render :index   # renderöi hakemistossa view/breweries olevan näkymätemplaten index.html.erb
+end
 ```
 
 Näkymätemplatet, eli erb-tiedostot ovat html:ää, joihin on upotettu Ruby-koodia.
@@ -745,18 +749,18 @@ Mene nyt selaimella [panimot listaavalle sivulle](http://localhost:3000/brewerie
 Palataan sitten tarkemmin HTML-taulukon muodostavaan koodiin. Jokainen panimo tulostuu omalle rivilleen taulukkoon Rubyn <code>each</code>-iteraattoria käyttäen:
 
 ```
-    <% @breweries.each do |brewery| %>
-      <tr>
-        <td><%= brewery.name %></td>
-        <td><%= brewery.year %></td>
-        <td><%= link_to 'Show', brewery %></td>
-        <td><%= link_to 'Edit', edit_brewery_path(brewery) %></td>
-        <td><%= link_to 'Destroy', brewery, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
+<% @breweries.each do |brewery| %>
+  <tr>
+    <td><%= brewery.name %></td>
+    <td><%= brewery.year %></td>
+    <td><%= link_to 'Show', brewery %></td>
+    <td><%= link_to 'Edit', edit_brewery_path(brewery) %></td>
+    <td><%= link_to 'Destroy', brewery, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
 ```
 
-Muuttujaan ```@breweries``` talletettu panimoiden lista käydään läpi ```each```-iteraattorin avulla. (lisää eachista ks. https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/rubyn_perusteita.md#each). Jokaista yksittäistä panimoa (joihin viitataan iteraattorin toistettavassa koodilohkossa nimellä <code>brewery</code>) kohti luodaan taulukkoon tr-tagien sisällä oleva rivi, jossa on viisi saraketta. Ensimmäiseen sarakkeeseen tulee panimon nimi ```<%= brewery.name %>``` ja toiseen perustamisvuosi. Kolmanteen sarakkeeseen generoituu linkki panimon tiedot näyttävälle sivulle. Linkin generoiva Ruby-koodi on ```<%= link_to 'Show', brewery %>``` .
+Muuttujaan ```@breweries``` talletettu panimoiden lista käydään läpi ```each```-iteraattorin avulla. (lisää eachista ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/rubyn_perusteita.md#each). Jokaista yksittäistä panimoa (joihin viitataan iteraattorin toistettavassa koodilohkossa nimellä <code>brewery</code>) kohti luodaan taulukkoon tr-tagien sisällä oleva rivi, jossa on viisi saraketta. Ensimmäiseen sarakkeeseen tulee panimon nimi ```<%= brewery.name %>``` ja toiseen perustamisvuosi. Kolmanteen sarakkeeseen generoituu linkki panimon tiedot näyttävälle sivulle. Linkin generoiva Ruby-koodi on ```<%= link_to 'Show', brewery %>``` .
 
 Kyseessä on oikeastaan lyhennysmerkintä seuraavasta:
 
@@ -775,7 +779,7 @@ Itse osoite luodaan tässä pitemmässä muodossa apumetodilla ```brewery_path(b
 
 Linkin generoivan komennon voisi myös "kovakoodata" muodossa ```<%= link_to 'Show', "breweries/#{brewery.id}" %>```, mutta kovakoodaus ei ole yleensä eikä tässäkään tapauksessa kovin järkevää.
 
-Mitä tarkoittaa ```"breweries/#{brewery.id}"```? Ks. https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/rubyn_perusteita.md#merkkijonot
+Mitä tarkoittaa ```"breweries/#{brewery.id}"```? Ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/rubyn_perusteita.md#merkkijonot
 
 > ## Tehtävä 6
 >
@@ -783,7 +787,7 @@ Mitä tarkoittaa ```"breweries/#{brewery.id}"```? Ks. https://github.com/mluukka
 
 Tehtävän jälkeen sovelluksesi panimot näyttävien sivujen tulisi näyttää seuraavalta
 
-![kuva](http://www.cs.helsinki.fi/u/mluukkai/wadror/brewery-w1-0.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/brewery-w1-0.png)
 
 ## Oluiden listaaminen panimon sivulla
 
