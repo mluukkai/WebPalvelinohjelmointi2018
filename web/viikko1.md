@@ -251,7 +251,7 @@ Kuten huomaamme, on railsin scaffoldingilla saatu jo melko paljon valmista toimi
 
 Jos olet suorittanut jo migraation ja huomaat että generaattorin luoma koodi onkin tuhottava, on **erittäin tärkeää** ensin perua migraatio komennolla
 
-    rake db:rollback
+    rails db:rollback
 
 ## Konsoli
 
@@ -962,7 +962,7 @@ Helppereitä käytetään usein yhdessä apumetodin <code>link_to</code> kanssa.
 Linkin panimon <code>brewery</code> sivulle voi generoida seuraavasti:
 
 ```ruby
-    <%= link_to "linkki panimoon #{brewery.name}", brewery_path(brewery.id) %>
+<%= link_to "linkki panimoon #{brewery.name}", brewery_path(brewery.id) %>
 ```
 
 Ensimmäisenä parametrina on siis linkin teksti ja toisena kohteena oleva osoite.
@@ -970,7 +970,7 @@ Ensimmäisenä parametrina on siis linkin teksti ja toisena kohteena oleva osoit
 Usein tehtäessä linkkiä yksittäisen olion sivulle käytetään edellisestä lyhempää muotoa:
 
 ```ruby
-    <%= link_to "linkki panimoon #{brewery.name}", brewery %>
+<%= link_to "linkki panimoon #{brewery.name}", brewery %>
 ```
 
 Nyt toisena parametrina on siis suoraan olio, jonka sivulle linkki johtaa. Kun toinen parametri on olio, korvaa Rails sen automaattisesti todellisen polun generoimalla koodilla <code>brewery_path(brewery.id)</code>
@@ -1029,32 +1029,26 @@ Tällä hetkellä käytännöllisin tapa sovellusten hostaamiseen on PaaS (eli P
 
 Sovelluksen deployaaminen Herokuun onnistuu helpoiten jos sovelluksen hakemisto on oma git-repositorionsa.
 
-Luo Herokuun tunnus.
-
-Luo ssh-avain ja lisää se herokuun sivulla https://dashboard.heroku.com/account
-* ohje ssh-avaimen luomiseen http://www.cs.helsinki.fi/group/kuje/compfac/ssh_avain.html  
-
-Asenna herokun komentoriviliittymä
-* **Omalla koneella:** Asenna komentoriviliittymän sisältävä Heroku Toolbelt sivun https://toolbelt.heroku.com/ ohjeiden mukaan.
-* **Laitoksen koneella:** Heroku Toolbeltin asentaminen vaatii admin-oikeuksia ja näinollen asennus laitoksen koneille ei onnistu em. sivun ohjeiden mukaan. Saat kuitenkin asennettua Herokun komentorivikäyttöliittymän laitoksen koneille komennolla  
-  `gem install heroku`  
-ja vastaamalla `y` kesken asennusprosessin esitettävään kysymykseen.
-* Laitoksen koneella joudut myös toimimaan [tämän ohjeen mukaan](https://github.com/mluukkai/WebPalvelinohjelmointi2017/wiki/heroku-ongelma), jotta saat herokun toimimaan
+Jos et ole käyttänyt aiemmin herokua
+* luo Herokuun tunnus.
+* luo ssh-avain ja lisää se herokuun sivulla https://dashboard.heroku.com/account
+  * ohje ssh-avaimen luomiseen https://github.com/mluukkai/otm-2018/blob/master/tehtavat/viikko1.md#julkinen-avain 
+* Asenna komentoriviliittymän sisältävä Heroku Toolbelt sivun https://toolbelt.heroku.com/ ohjeiden mukaan.
+  * laitoksen koneilta ja päivitysten suhteen ajantasaisista
 
 Asennettuasi komentorivikäyttöliittymän mene sovelluksen juurihakemistoon, ja luo sovellusta varten heroku-instanssi komennolla <code>heroku create</code>:
 
 ```ruby
 $ heroku create
-Creating enigmatic-eyrie-1511... done, stack is cedar-14
-https://enigmatic-eyrie-1511.herokuapp.com/ | https://git.heroku.com/enigmatic-eyrie-1511.git
-Git remote heroku added
+Creating app... done, ⬢ young-escarpment-87255
+https://young-escarpment-87255.herokuapp.com/ | https://git.heroku.com/young-escarpment-87255.git
 ```
 
 Syötä pyydettäessä Heroku-tunnuksesi.
 
-Sovelluksen URL tulee olemaan tässä tapauksessa https://enigmatic-eyrie-1511.herokuapp.com/. Sovelluksen URLin alkuosan saa haluamaansa muotoon antamalla komennon muodossa **heroku create urlin_alkuosa**.
+Sovelluksen URL tulee olemaan tässä tapauksessa https://young-escarpment-87255.herokuapp.com/. Sovelluksen URLin alkuosan saa haluamaansa muotoon antamalla komennon muodossa **heroku create urlin_alkuosa**.
 
-**Huomaa**, että sovelluksen juuressa, eli osoitteessa https://enigmatic-eyrie-1511.herokuapp.com/ ei ole (tällä hetkellä) mitään. Sovelluksemme oluet löytyvät osoitteesta https://enigmatic-eyrie-1511.herokuapp.com/beers ja panimot osoitteesta https://enigmatic-eyrie-1511.herokuapp.com/breweries
+**Huomaa**, että sovelluksen juuressa, eli osoitteessa https://young-escarpment-87255.herokuapp.com/ ei ole (tällä hetkellä) mitään. Sovelluksemme oluet tulevat löytymääm osoitteesta https://young-escarpment-87255.herokuapp.com/beers ja panimot osoitteesta https://young-escarpment-87255.herokuapp.com/breweries
 
 Railsissa sovellukset käyttävät oletusarvoisesti sqlite-tietokantaa, mutta Herokussa käytössä on PostgreSQL-tietokanta. Rails-sovelluksen käyttämät kirjastot eli Rubyn termein gemit on määritelty sovelluksen juuressa olevassa Gemfile-nimisessä tiedostossa. Jotta saamme PostgreSQLn käyttöön, joudumme tekemään muutoksen Gemfileen.
 
@@ -1077,25 +1071,18 @@ group :production do
 end
 ```
 
-sekä (tai se Ruby-versio, mitä käytät):
-
-```ruby
-ruby '2.3.0'
-```
-
 Suoritetaan komentoriviltä komento <code>bundle install</code>, jotta muutokset tulevat käyttöön:
 
 ```ruby
-$ bundle install
-Fetching gem metadata from https://rubygems.org/..........
-Fetching additional metadata from https://rubygems.org/..
-Resolving dependencies...
-Using rake (10.1.1)
-Using i18n (0.6.9)
+$ ratebeer git:(master) ✗ bundle install
+Using rake 12.3.1
+Using concurrent-ruby 1.0.5
+Using i18n 1.1.0
+Using minitest 5.11.3
+Using thread_safe 0.3.6
 ...
-Using uglifier (2.4.0)
-Your bundle is complete!
-Use `bundle show [gemname]` to see where a bundled gem is installed.
+Bundle complete! 19 Gemfile dependencies, 94 gems now installed.
+Use `bundle info [gemname]` to see where a bundled gem is installed.
 ```
 
 Jos <code>bundle install</code> aiheuttaa virheen (näin voi käydä todennäköisesti vain OS X:llä), voit joko
@@ -1106,67 +1093,63 @@ Jos <code>bundle install</code> aiheuttaa virheen (näin voi käydä todennäkö
 Committoidaan kaikki muutokset versionhallintaan antamalla komennot:
 
 ```ruby
-  git add -A
-  git commit -m"updated Gemfile for Heroku"
+git add -A
+git commit -m"updated Gemfile for Heroku"
 ```
 
 Nyt olemme valmiina käynnistämään sovelluksen herokussa. Sovellus käynnistetään suorittamalla komentoriviltä operaatio <code>git push heroku master</code>
 
 ```ruby
 $ git push heroku master
-Counting objects: 105, done.
+Counting objects: 136, done.
 Delta compression using up to 4 threads.
-Compressing objects: 100% (97/97), done.
-Writing objects: 100% (105/105), 22.58 KiB | 0 bytes/s, done.
-Total 105 (delta 10), reused 0 (delta 0)
+Compressing objects: 100% (122/122), done.
+Writing objects: 100% (136/136), 30.06 KiB | 615.00 KiB/s, done.
+Total 136 (delta 14), reused 0 (delta 0)
 remote: Compressing source files... done.
 remote: Building source:
-remote:
 ...
 remote: -----> Discovering process types
-remote:        Procfile declares types -> (none)
-remote:        Default types for Ruby  -> console, rake, web, worker
+remote:        Procfile declares types     -> (none)
+remote:        Default types for buildpack -> console, rake, web, worker
 remote:
-remote: -----> Compressing... done, 26.0MB
-remote: -----> Launching... done, v6
-remote:        https://enigmatic-eyrie-1511.herokuapp.com/ deployed to Heroku
+remote: -----> Compressing...
+remote:        Done: 47.7M
+remote: -----> Launching...
+remote:        Released v5
+remote:        https://young-escarpment-87255.herokuapp.com/ deployed to Heroku
 remote:
 remote: Verifying deploy... done.
-To https://git.heroku.com/enigmatic-eyrie-1511.git
+To https://git.heroku.com/young-escarpment-87255.git
  * [new branch]      master -> master
 ```
 
 Sovelluksen käynnistys näytti onnistuneen ongelmitta.
 
-Avataan nyt selaimella panimoiden listan näyttävä sivu http://enigmatic-eyrie-1511.herokuapp.com/breweries
+Avataan nyt selaimella panimoiden listan näyttävä sivu https://young-escarpment-87255.herokuapp.com/breweries
 
 Seurauksena on kuitenkin ikävä virheilmoitus "We're sorry, but something went wrong.".
 
 Voimme koittaa selvittää vikaa katsomalla herokun lokeja komennolla <code>heroku logs</code>. Tulostusta tulee aika paljon, mutta pienen etsinnän jälkeen syy selviää:
 
 <pre>
-2018-01-09T14:55:55.010390+00:00 app[web.1]: Started GET "/breweries" for 87.92.42.254 at 2018-01-09 14:55:55 +0000
-2018-01-09T14:55:55.108506+00:00 heroku[router]: at=info method=GET path="/breweries" host=enigmatic-eyrie-1511.herokuapp.com request_id=35dfd5f8-bafb-40e5-96f5-c0351e8f6e91 fwd="87.92.42.254" dyno=web.1 connect=1ms service=106ms status=500 bytes=1754
-2018-01-09T14:55:55.102697+00:00 app[web.1]: PG::UndefinedTable: ERROR:  relation "breweries" does not exist
-2018-01-09T14:55:55.102703+00:00 app[web.1]: LINE 5:                WHERE a.attrelid = '"breweries"'::regclass
-2018-01-09T14:55:55.102705+00:00 app[web.1]:                                           ^
-2018-01-09T14:55:55.102706+00:00 app[web.1]: :               SELECT a.attname, format_type(a.atttypid, a.atttypmod),
-2018-01-09T14:55:55.102707+00:00 app[web.1]:                      pg_get_expr(d.adbin, d.adrelid), a.attnotnull, a.atttypid, a.atttypmod
-2018-01-09T14:55:55.102709+00:00 app[web.1]:                 FROM pg_attribute a LEFT JOIN pg_attrdef d
-2018-01-09T14:55:55.102710+00:00 app[web.1]:                   ON a.attrelid = d.adrelid AND a.attnum = d.adnum
-2018-01-09T14:55:55.102711+00:00 app[web.1]:                WHERE a.attrelid = '"breweries"'::regclass
-2018-01-09T14:55:55.102712+00:00 app[web.1]:                  AND a.attnum > 0 AND NOT a.attisdropped
-2018-01-09T14:55:55.102714+00:00 app[web.1]:                ORDER BY a.attnum
-2018-01-09T14:55:55.102715+00:00 app[web.1]:                                          ^
+2018-09-01T18:20:29.445705+00:00 app[web.1]: [ac5c97e8-2c40-4e97-9bf4-6d763bfd189f]
+2018-09-01T18:20:29.453053+00:00 app[web.1]: [ac5c97e8-2c40-4e97-9bf4-6d763bfd189f] ActionView::Template::Error (PG::UndefinedTable: ERROR:  relation "breweries" does not exist
+2018-09-01T18:20:29.453056+00:00 app[web.1]: LINE 8:                WHERE a.attrelid = '"breweries"'::regclass
+2018-09-01T18:20:29.453058+00:00 app[web.1]: ^
+2018-09-01T18:20:29.453060+00:00 app[web.1]: :               SELECT a.attname, format_type(a.atttypid, a.atttypmod),
+2018-09-01T18:20:29.453064+00:00 app[web.1]: c.collname, col_description(a.attrelid, a.attnum) AS comment
+2018-09-01T18:20:29.453065+00:00 app[web.1]: FROM pg_attribute a
+2018-09-01T18:20:29.453062+00:00 app[web.1]: pg_get_expr(d.adbin, d.adrelid), a.attnotnull, a.atttypid, a.atttypmod,
 </pre>
 
-Syynä on siis se, että tietokantaa ei ole luotu _PG::UndefinedTable: ERROR:  relation "breweries" does not exist_ Meidän on siis suoritettava migraatiot Herokussa olevalle sovellukselle. Tämä onnistuu komennolla <code>heroku run rake db:migrate</code>
+Syynä on siis se, että tietokantaa ei ole luotu _PG::UndefinedTable: ERROR:  relation "breweries" does not exist_ Meidän on siis suoritettava migraatiot Herokussa olevalle sovellukselle. Tämä onnistuu komennolla <code>heroku run rails db:migrate</code>
 
 Ja nyt sovellus toimii!
 
 Kuten huomaat, tietokannassa olevat oluet ja panimot eivät siirry Herokuun. Jos haluat <code>seed.rb</code> tiedostossa määritellyt oliot tietokantaan, voit antaa komennon
 
-    heroku run rake db:seed
+    heroku run rails db:seed
 
 Jatkossakin on siis aina muistettava suorittaa migraatiot deployatessamme sovellusta Herokuun.
 
@@ -1184,26 +1167,29 @@ Kyseessä on normaali Rails-konsolisessio, eli voit esim. tutkia Herokuun deploy
 
 Kuten edellisessä luvussa mainittiin Rails-sovelluksen käyttämät kirjastot eli _gemit_ on määritelty sovelluksen juuressa olevassa Gemfile-nimisessä tiedostossa.
 
-Ennen edellisessä luvussa tekemiämme muutoksia Gemfile näyttää seuraavalta (poiskommentoidut osat on jätetty allaolevasta pois):
+Ennen edellisessä luvussa tekemiämme muutoksia Gemfilen alku näyttää seuraavalta (poiskommentoidut osat on jätetty allaolevasta pois):
 
 ```ruby
 source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'rails', '4.2.4'
+ruby '2.5.1'
+gem 'rails', '~> 5.2.1'
 gem 'sqlite3'
-gem 'sass-rails', '~> 4.0.0'
+gem 'puma', '~> 3.11'
+gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
-gem 'coffee-rails', '~> 4.0.0'
-gem 'jquery-rails'
-gem 'turbolinks'
-gem 'jbuilder', '~> 1.2'
+gem 'coffee-rails', '~> 4.2'
+gem 'turbolinks', '~> 5'
+gem 'jbuilder', '~> 2.5'
+gem 'bootsnap', '>= 1.1.0', require: false
 ```
 
 Gemfile siis listaa joukon gemejä, joita sovellus käyttää. Kuten huomaamme, on Rails itsekin gem. Joissain tapauksissa gemin yhteydessä määritellään käytettävä versio tai minimissään käyvä versionumero.
 
 Riippuvuudet ladataan osoitteesta https://rubygems.org Bundler-ohjelmaa, ks. http://bundler.io/ käyttäen antamalla komentoriviltä komento <code>bundle install</code>. Bundler lataa gemit ja niiden riippuvuudet rubygems.org:ista ja tämän jälkeen sovellus on valmiina käytettäväksi.
 
-Kun <code>bundle install</code> on suoritettu ensimmäisen kerran, syntyy tiedosto <code>Gemfile.lock</code> joka määrittelee tarkasti mitkä versiot gemeistä on asennettu. Gemfilehän ei määrittele välttämättä tarkkoja versioita. Tämän jälkeen kutsuttaessa <code>bundle install</code> asennetaan Gemfile.lock tiedostossa määritellyt versiot. Suorittamalla <code>bundle update</code> saadaan tarvittaessa ladattua uusimmat gemit ja luodaan uusi Gemfile.lock-tiedosto. Katso tarkemmin Bundlerin toiminnasta ositteesta http://bundler.io/v1.5/rationale.html
+Kun <code>bundle install</code> on suoritettu ensimmäisen kerran, syntyy tiedosto <code>Gemfile.lock</code> joka määrittelee tarkasti mitkä versiot gemeistä on asennettu. Gemfilehän ei määrittele välttämättä tarkkoja versioita. Tämän jälkeen kutsuttaessa <code>bundle install</code> asennetaan Gemfile.lock tiedostossa määritellyt versiot. Suorittamalla <code>bundle update</code> saadaan tarvittaessa ladattua uusimmat gemit ja luodaan uusi Gemfile.lock-tiedosto. Katso tarkemmin Bundlerin toiminnasta ositteesta http://bundler.io/v1.6/rationale.html
 
 ## Suoritusympäristöt
 
@@ -1226,8 +1212,10 @@ Eri ympäristöjen käyttämät gemit voidaan määritellä Gemfilessä group-lo
 
 ```ruby
 source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'rails', '4.2.4'
+ruby '2.5.1'
+gem 'rails', '~> 5.2.1'
 
 group :development, :test do
   gem 'sqlite3'
@@ -1238,12 +1226,13 @@ group :production do
    gem 'rails_12factor'
 end
 
-gem 'sass-rails', '~> 4.0.0'
+gem 'puma', '~> 3.11'
+gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
-gem 'coffee-rails', '~> 4.0.0'
-gem 'jquery-rails'
-gem 'turbolinks'
-gem 'jbuilder', '~> 1.2'
+gem 'coffee-rails', '~> 4.2'
+gem 'turbolinks', '~> 5'
+gem 'jbuilder', '~> 2.5'
+gem 'bootsnap', '>= 1.1.0', require: false
 ```
 
 sqlite3 gem on siis käytössä ainoastaan development- ja test-ympäristöissä. Ainoastaan tuotantoympäristössä taas käytössä ovat gemit pg ja rails_12factor.
@@ -1252,4 +1241,4 @@ sqlite3 gem on siis käytössä ainoastaan development- ja test-ympäristöissä
 
 Commitoi kaikki tekemäsi muutokset ja pushaa koodi Githubiin. Lisää Githubin readme-tiedostoon linkki sovelluksen Heroku-instanssiin. Oletusarvoisesti Rails-sovelluksen readme-tiedostoon generoituvan sisältö kannattanee poistaa.
 
-Tehtävät kirjataan palautetuksi osoitteeseen http://wadrorstats2017.herokuapp.com/courses/1
+Tehtävät kirjataan palautetuksi osoitteeseen https://studies.cs.helsinki.fi/courses/#/rails2018
