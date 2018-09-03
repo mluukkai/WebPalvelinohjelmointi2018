@@ -18,6 +18,13 @@ Ruby on Railsin asentaminen Windowsiin onnistuu (ehkä) sivun [http://railsinsta
 
 Jos haluat välttämättä käyttää Windowsia ja et suostu käyttämään laitoksen konetta, tapahtuu kurssille osallistuminen omalla vastuulla.
 
+## Yliopiston etätyöpöytä
+
+Yliopiston Linuxeille on nykyään mahdollista ottaa graafinen etätyöpöytäyhteys, ks  
+https://helpdesk.it.helsinki.fi/ohjeet/tietokone-ja-tulostaminen/tyoasemapalvelu/etakaytettavat-tyopoydat-vdi-ja-vmware eli jos et saa asennettua Railsia omalle koneellesi, etätyöpöytä voi pelastaa päiväsi. 
+
+Myös etätyöpöytää käyttäessäsi joudut asentamaan Rubyn ja Railsin allaolevan ohjeen mukaan.
+
 ## rbenv Linuxille
 
 Allaolevat on testattu laitoksen koneissa ja Ubuntun uusimman LTS version kanssa. Seuraavassa luvussa ohjeet OSX:lle. Windowsiin asentaminen ainoastaan omalla vastuulla! 
