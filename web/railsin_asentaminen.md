@@ -35,6 +35,8 @@ Toimitaan sivun [https://github.com/rbenv/rbenv#installation](https://github.com
 * _git clone https://github.com/rbenv/rbenv.git ~/.rbenv_
 * _echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile_
 * _echo 'eval "$(rbenv init -)"' >> ~/.bash_profile_
+* _echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc_
+* _echo 'eval "$(rbenv init -)"' >> ~/.bashrc_
 * _mkdir -p "$(rbenv root)"/plugins_
 * _git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build_
 
