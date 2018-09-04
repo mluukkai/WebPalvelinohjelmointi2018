@@ -2,6 +2,7 @@
 
 ## Ajankohtaista
 
+* [pajadoodle](https://doodle.com/poll/k9d5qqnm8fdfca8f) 
 * materiaali ja tehtävät 
   * [viikko 1](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md) 
 * [tehtäväkirjanpito](https://studies.cs.helsinki.fi/courses/#/rails2018) 
