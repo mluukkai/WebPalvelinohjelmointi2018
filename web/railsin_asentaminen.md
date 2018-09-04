@@ -51,7 +51,7 @@ Checking RubyGems settings: OK
 Auditing installed plugins: OK
 ```
 
-Siirry kohtaan [Rubyn ja railsin asennus](https://github.com/mluukkai/WebPalvelinohjelmointi2017/wiki/railsin-asennus#rubyn-ja-railsin-asennus)
+Siirry kohtaan [Rubyn ja railsin asennus](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/railsin_asentaminen.md#rubyn-ja-railsin-asennus)
 
 ## rbenv OSXlle
 
