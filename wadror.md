@@ -2,12 +2,11 @@
 
 ## Ajankohtaista
 
-* [pajadoodle](https://doodle.com/poll/k9d5qqnm8fdfca8f) 
 * materiaali ja tehtävät 
-  * [viikko 1](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md) 
+  * [viikko 1](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md) deadline su 9.9 klo 23:59
 * [tehtäväkirjanpito](https://studies.cs.helsinki.fi/courses/#/rails2018) 
 * paja
-  * ajat sovitaan tiistaina 
+  * tiistaina 12-14 ja torstaina 12-16 B221 
 * kurssin [telegram](https://telegram.org)-kanava <https://t.me/rorwepa>
   *  **Huom:** kaikki epäasialliset, halventavat ja jotain ihmisryhmää syrjivät kommentit kanavalla ovat kiellettyjä ja tälläisten kommenttien esittäjät poistetaan kanavalta
 * Rubyn harjoitteluun tarkoitetun materiaalin [ensimmäinen osa](https://github.com/HY-TKTL/ruby-materiaali/blob/master/Perusteet.md) ja [toinen osa](https://github.com/HY-TKTL/ruby-materiaali/blob/master/LuokkiaJaOlioita.md)
