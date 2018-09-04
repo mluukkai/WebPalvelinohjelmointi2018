@@ -31,6 +31,9 @@ Toimitaan sivun [https://github.com/rbenv/rbenv#installation](https://github.com
 * _echo 'eval "$(rbenv init -)"' >> ~/.bash_profile_
 * _echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc_
 * _echo 'eval "$(rbenv init -)"' >> ~/.bashrc_
+
+Uudelleenkäynnistä terminaali
+
 * _mkdir -p "$(rbenv root)"/plugins_
 * _git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build_
 
@@ -103,4 +106,3 @@ Asennetaan sitten Rails antamalla komentoriviltä seuraavat komennot (vastaa mah
     rbenv rehash
     gem install rails -v 5.2.1
     rbenv rehash
-
