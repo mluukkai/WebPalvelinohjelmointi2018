@@ -22,7 +22,7 @@ Jos haluat välttämättä käyttää Windowsia ja et suostu käyttämään lait
 
 Allaolevat on testattu laitoksen koneissa ja Ubuntun uusimman LTS version kanssa. Seuraavassa luvussa ohjeet OSX:lle. Windowsiin asentaminen ainoastaan omalla vastuulla! 
 
-**Huom:** koneella tulee olla muutamia kirjastoja, joiden asennus onnistuu Ubuntussa komennolla <code>sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev nodejs yarn</code>. Laitoksen koneilla ja ajantasalla olevilla fuksikannettavilla kirjastot ovat valmiina.
+**Huom:** koneella tulee olla muutamia kirjastoja, joiden asennus onnistuu Ubuntussa komennolla <code>sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev nodejs yarn</code>. **Laitoksen koneilla ja ajantasalla olevilla fuksikannettavilla kirjastot ovat valmiina.**
 
 Toimitaan sivun [https://github.com/rbenv/rbenv#installation](https://github.com/rbenv/rbenv#installation) kohdan _Installation, Basic GitHub Checkout_ mukaan, eli annetaan terminaalissa seuraavat komennot:
 
