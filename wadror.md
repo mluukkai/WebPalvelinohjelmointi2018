@@ -10,6 +10,8 @@
 * kurssin [telegram](https://telegram.org)-kanava <https://t.me/rorwepa>
   *  **Huom:** kaikki epäasialliset, halventavat ja jotain ihmisryhmää syrjivät kommentit kanavalla ovat kiellettyjä ja tälläisten kommenttien esittäjät poistetaan kanavalta
 * Rubyn harjoitteluun tarkoitetun materiaalin [ensimmäinen osa](https://github.com/HY-TKTL/ruby-materiaali/blob/master/Perusteet.md) ja [toinen osa](https://github.com/HY-TKTL/ruby-materiaali/blob/master/LuokkiaJaOlioita.md)
+* Kurssikoe Ti 23.10. klo 16.00 A111
+  * Kurssikokeeseen on *pakko* ilmoittautua viimeistään 13.10 osoitteessa https://weboodi.helsinki.fi/hy/opettaptied.jsp?MD5avain=4c9ff576-f054-4672-91f1-2bbe39fadb2d&Kieli=1&OpetTap=126156500&takaisin=vl_kehys.jsp&vl_tila=3&Opas=6191&haettuOpas=6191&ooo_SortJarj=3&Org=116716376
 
 ## Yleistä
 
@@ -41,6 +43,8 @@ Kurssin arvosana perustuu palautettujen tehtävien määrään. Arvosanaan 1 vaa
 
 
 Kurssikoe Ti 23.10. klo 16.00 A111
+
+Kokeeseen on *pakko* ilmoittautua viimeistään 13.10 osoitteessa https://weboodi.helsinki.fi/hy/opettaptied.jsp?MD5avain=4c9ff576-f054-4672-91f1-2bbe39fadb2d&Kieli=1&OpetTap=126156500&takaisin=vl_kehys.jsp&vl_tila=3&Opas=6191&haettuOpas=6191&ooo_SortJarj=3&Org=116716376
 
 ## Opetus
 
