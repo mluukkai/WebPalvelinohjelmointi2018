@@ -4,7 +4,7 @@ Varaa asennukseen kunnolla aikaa ja tee se mieluusti joskus kun levypalvelinten 
  
 --
 
-Asennamme tässä Rubyn version 2.5.1 ja Railsin version 5.2.1 viimeaikoina suosioon nousseella [rbenv-versiomanagerilla] (https://github.com/sstephenson/rbenv)
+Asennamme tässä Rubyn version 2.5.1 ja Railsin version 5.2.1 viimeaikoina suosioon nousseella [rbenv-versiomanagerilla](https://github.com/sstephenson/rbenv)
 
 Voit halutessasi käyttää myös [RVM:ää](https://rvm.io/rvm/install)  eli rbenvin hieman vanhempaa lähisukulaista.
 
@@ -29,19 +29,18 @@ Myös etätyöpöytää käyttäessäsi joudut asentamaan Rubyn ja Railsin allao
 
 Allaolevat on testattu laitoksen koneissa ja Ubuntun uusimman LTS version kanssa. Seuraavassa luvussa ohjeet OSX:lle. Windowsiin asentaminen ainoastaan omalla vastuulla! 
 
-**Huom:** koneella tulee olla muutamia kirjastoja, joiden asennus onnistuu Ubuntussa komennolla <code>sudo apt-get install build-essential zlib1g-dev libpq-dev git sqlite3 libsqlite3-dev</code>. Laitoksen koneilla kirjastot ovat valmiina.
-
-**Huom2:** __fuksiläppärille__ ja ehkä muillekin koneille on [asennettava kirjasto libffi-dev](https://github.com/sstephenson/ruby-build/wiki#build-failure-of-fiddle-with-ruby-220) seuraavasti:
-
-```shell
-sudo apt-get install libffi-dev
-```
+**Huom:** koneella tulee olla muutamia kirjastoja, joiden asennus onnistuu Ubuntussa komennolla <code>sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev software-properties-common libffi-dev nodejs yarn</code>. **Laitoksen koneilla ja ajantasalla olevilla fuksikannettavilla kirjastot ovat valmiina.**
 
 Toimitaan sivun [https://github.com/rbenv/rbenv#installation](https://github.com/rbenv/rbenv#installation) kohdan _Installation, Basic GitHub Checkout_ mukaan, eli annetaan terminaalissa seuraavat komennot:
 
 * _git clone https://github.com/rbenv/rbenv.git ~/.rbenv_
 * _echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile_
 * _echo 'eval "$(rbenv init -)"' >> ~/.bash_profile_
+* _echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc_
+* _echo 'eval "$(rbenv init -)"' >> ~/.bashrc_
+
+Uudelleenkäynnistä terminaali
+
 * _mkdir -p "$(rbenv root)"/plugins_
 * _git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build_
 
@@ -62,7 +61,7 @@ Checking RubyGems settings: OK
 Auditing installed plugins: OK
 ```
 
-Siirry kohtaan [Rubyn ja railsin asennus](https://github.com/mluukkai/WebPalvelinohjelmointi2017/wiki/railsin-asennus#rubyn-ja-railsin-asennus)
+Siirry kohtaan [Rubyn ja railsin asennus](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/railsin_asentaminen.md#rubyn-ja-railsin-asennus)
 
 ## rbenv OSXlle
 
@@ -114,4 +113,3 @@ Asennetaan sitten Rails antamalla komentoriviltä seuraavat komennot (vastaa mah
     rbenv rehash
     gem install rails -v 5.2.1
     rbenv rehash
-

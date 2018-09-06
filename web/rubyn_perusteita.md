@@ -8,7 +8,7 @@ Koodi kirjoitetaan rb-päätteisiin tiedostoihin ja suoritetaan (normaalin Ruby-
 
 Ruby-ohjelmoijan paras ystävä on interaktiivinen tulkki IRB joka käynnistyy komennolla irb. Railsin konsoli vastaa irb:tä, mutta sitä suoritetaan Rails-sovelluksen kontekstissa.
 
-Olemme tekemässä Rubyn harjoitteluun tarkoitettua materiaalia, jonka [ensimmäinen osa](https://github.com/HY-TKTL/ruby-materiaali/blob/master/Perusteet.md) on ilmestynyt.
+Rubyn harjoitteluun tarkoitettua materiaali [ensimmäinen osa](https://github.com/HY-TKTL/ruby-materiaali/blob/master/Perusteet.md) ja [toinen osa](https://github.com/HY-TKTL/ruby-materiaali/blob/master/LuokkiaJaOlioita.md)
 
 Verkosta löytyy runsaasti Ruby-tutoriaaleja, ks. http://www.ruby-lang.org/en/
 
