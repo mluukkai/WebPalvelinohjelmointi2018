@@ -430,7 +430,7 @@ irb(main):017 >
 Vilkaistaan vielä panimon koodia:
 
 ```ruby
-class Brewery < ActiveRecord::Base
+class Brewery < ApplicationRecord
 end
 ```
 
@@ -493,11 +493,11 @@ Luodut oluet __iso 3__ ja __Karhu__ siis liitetään panimoon Koff. Tietokannan 
 Jotta saamme liitokset toimimaan myös koodin tasolla, muokataan modeleja seuraavasti:
 
 ```ruby
-class Beer < ActiveRecord::Base
+class Beer < ApplicationRecord
   belongs_to :brewery
 end
 
-class Brewery < ActiveRecord::Base
+class Brewery < ApplicationRecord
   has_many :beers
 end
 ```
