@@ -329,12 +329,12 @@ Jos olet suorittanut jo migraation ja huomaat että generaattorin luoma koodi on
 Jotta yhteydet saadaan myös oliotasolle (muistutuksena [viime viikon materiaali](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md#oluet-ja-yhden-suhde-moneen--yhteys)), tulee luokkia päivittää seuraavasti
 
 ```ruby
-class Beer < ActiveRecord::Base
+class Beer < ApplicationRecord
   belongs_to :brewery
   has_many :ratings
 end
 
-class Rating < ActiveRecord::Base
+class Rating < ApplicationRecord
   belongs_to :beer
 end
 ```
@@ -400,7 +400,7 @@ Määrittelemme hetken kuluttua reittauksille metodin <code>to_s</code>, tutkita
 Tutkitaan hetki luokkaa <code>Brewery</code>:
 
 ```ruby
-class Brewery < ActiveRecord::Base
+class Brewery < ApplicationRecord
   has_many :beers
 end
 ```
@@ -419,7 +419,7 @@ Panimoilla on nimi <code>name</code> ja perustamisvuosi <code>year</code>. Konso
 Teknisesti ottaen esim. <code>b.year</code> on metodikutsu. Rails luo model-olioon jokaiselle vastaavan tietokantataulun skeeman määrittelemälle sarakkeelle kentän eli attribuutin ja metodit attribuutin arvon lukemista ja arvon muuttamista varten. Nämä automaattisesti generoidut metodit ovat sisällöltään suunilleen seuraavat:
 
 ```ruby
-class Brewery < ActiveRecord::Base
+class Brewery < ApplicationRecord
   # ..
 
   def year
@@ -441,7 +441,7 @@ Olion ulkopuolelta olion attribuutteihin päästään käsiksi 'pistenotaatiolla
 entä olion sisältä? Tehdään panimolle metodi, joka demonstroi panimon attribuuttien käsittelyä panimon sisältä:
 
 ```ruby
-class Brewery < ActiveRecord::Base
+class Brewery < ApplicationRecord
   has_many :beers
 
   def print_report
@@ -473,13 +473,13 @@ Metodeja olisi voitu kutsua olion sisältä myös käyttäen Rubyn 'thissiä' el
   end
 ```
 
-Tehdään sitten panimolle metodi, jonka avulla panimon voi 'uudelleenkäynnistää', tällöin panimon perustamisvuosi muuttuu vuodeksi 2017:
+Tehdään sitten panimolle metodi, jonka avulla panimon voi 'uudelleenkäynnistää', tällöin panimon perustamisvuosi muuttuu vuodeksi 2018:
 
 ```ruby
-  def restart
-    year = 2017
-    puts "changed year to #{year}"
-  end
+def restart
+  year = 2018
+  puts "changed year to #{year}"
+end
 ```
 
 kokeillaan
@@ -489,25 +489,25 @@ kokeillaan
 > b.year
 => 1897
 > b.restart
-changed year to 2017
+changed year to 2018
 > b.year
 => 1897
 >
 ```
 
-eli huomaamme, että vuoden muuttaminen ei toimikaan odotetulla tavalla! Syynä tähän on se, että <code>year = 2017</code> metodin <code>restart</code> sisällä ei kutsukaan metodia
+eli huomaamme, että vuoden muuttaminen ei toimikaan odotetulla tavalla! Syynä tähän on se, että <code>year = 2018</code> metodin <code>restart</code> sisällä ei kutsukaan metodia
 
     def year=(value)
 
-joka sijoittaisi attribuutille uuden arvon, vaan luo metodille paikallisen muuttujan nimeltään <code>year</code> johon arvo 2017 sijoitetaan.
+joka sijoittaisi attribuutille uuden arvon, vaan luo metodille paikallisen muuttujan nimeltään <code>year</code> johon arvo 2018 sijoitetaan.
 
 Jotta sijoitus onnistuu, on metodia kutsuttava <code>self</code>-viitteen kautta:
 
 ```ruby
-  def restart
-    self.year = 2017
-    puts "changed year to #{year}"
-  end
+def restart
+  self.year = 2018
+  puts "changed year to #{year}"
+end
 ```
 ja nyt toiminnallisuus on odotetun kaltainen:
 
@@ -516,19 +516,19 @@ ja nyt toiminnallisuus on odotetun kaltainen:
 > b.year
 => 1897
 > b.restart
-changed year to 2017
+changed year to 2018
 > b.year
-=> 2017
+=> 2018
 >
 ```
 
 **HUOM:** Rubyssä olioiden instanssimuuttujat määritellään <code>@</code>-alkuisina. Instanssimuuttujat _eivät_ kuitenkaan ole sama asia kuin ActiveRecordin avulla tietokantaan talletettavat olioiden  attribuutit. Eli seuraavakaan metodi ei toimisi odotetulla tavalla:
 
 ```ruby
-  def restart
-    @year = 2017
-    puts "changed year to #{@year}"
-  end
+def restart
+  @year = 2018
+  puts "changed year to #{@year}"
+end
 ```
 
 Panimon sisällä <code>year</code> siis on ActiveRecordin tietokantaan tallentama attribuutti, kun taas <code>@year</code> on olion instanssimuuttuja. Railsin modeleissa instanssimuutuujia ei juurikaan käytetä. Instanssimuuttujia käytetään Railsissa lähinnä tiedonvälitykseen kontrollereilta näkymille.
@@ -537,12 +537,12 @@ Panimon sisällä <code>year</code> siis on ActiveRecordin tietokantaan tallenta
 >
 > Tee sitten luokalle Rating metodi <code>to_s</code>, joka palauttaa oliosta paremman merkkijonoesityksen, esim. muodossa "karhu 35", eli ensin reitatun oluen nimi ja sen jälkeen reittauksen pistemäärä.
 >
-> Merkkijonon muodostamisessa myös seuraavasta voi olla apua https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/rubyn_perusteita.md#merkkijonot
+> Merkkijonon muodostamisessa myös seuraavasta voi olla apua https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/rubyn_perusteita.md#merkkijonot
 
 
 Tehtävän jälkeen reittausten sivujen tulisi näyttää suunnilleen seuraavalta:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w2-2.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w2-2.png)
 
 Huom: kun kirjoitat sovelluksellesi uutta koodia, useimmiten on järkevämpää tehdä kokeiluja konsolista käsin. Seuraavassa kokeillaan reittauksen oletusarvoista <code>to_s</code>-metodin palauttamaa arvoa:
 
@@ -556,7 +556,7 @@ Huom: kun kirjoitat sovelluksellesi uutta koodia, useimmiten on järkevämpää 
 Määritellään reittaukselle <code>to_s</code>-metodi:
 
 ```ruby
-class Rating < ActiveRecord::Base
+class Rating < ApplicationRecord
   belongs_to :beer
 
   def to_s
@@ -606,7 +606,7 @@ Eli kuten yllä näemme, ei pelkkä koodin uudelleenlataaminen vielä riitä, si
 
 Tehtävän jälkeen oluen sivun tulisi näyttää suunnilleen seuraavalta (huom: edellisen viikon jäljiltä sivullasi saattaa näkyä panimon nimen sijaan panimon id. Jos näin on, muuta näkymäsi vastaamaan kuvaa):
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w2-3.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w2-3.png)
 
 > ## Tehtävä 5
 >
@@ -620,7 +620,7 @@ Tehtävän jälkeen oluen sivun tulisi näyttää suunnilleen seuraavalta (huom:
 
 Lisätään konsolista jollekin vielä reittaamattomalle oluelle yksi reittaus. Oluen sivu näyttää nyt seuraavalta:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w2-4.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w2-4.png)
 
 Sivulla on pieni, mutta ikävä kielioppivirhe:
 
@@ -1271,7 +1271,7 @@ Jos sovelluksesta poistetaan olut, jolla on reittauksia, käy niin että poistet
 Olueeseen liittyvät reittaukset saadaan helposti poistettua automaattisesti. Merkitään oluen modelin koodiin <code>has_many :ratings</code> yhteyteen että reittaukset ovat oluesta riippuvaisia, ja että ne tuhotaan oluen tuhoutuessa:
 
 ```ruby
-class Beer < ActiveRecord::Base
+class Beer < ApplicationRecord
   belongs_to :brewery
   has_many :ratings, dependent: :destroy
 
@@ -1293,7 +1293,7 @@ Nyt orpojen ongelma poistuu.
 Sovelluksessamme panimoon liittyy oluita ja oluisiin liittyy reittauksia. Kuhunkin panimoon siis liittyy epäsuorasti joukko reittauksia. Rails tarjoaa helpon keinon päästä panimoista suoraan käsiksi reittauksiin:
 
 ```ruby
-class Brewery < ActiveRecord::Base
+class Brewery < ApplicationRecord
   has_many :beers
   has_many :ratings, through: :beers
 end
@@ -1339,7 +1339,7 @@ Huomaamme, että oluella ja panimolla on täsmälleen samalla tavalla toimiva ja
 Tehtävän jälkeen esim. luokan Brewery tulisi siis näyttää suunnilleen seuraavalta (olettaen että tekemäsi moduulin nimi on RatingAverage):
 
 ```ruby
-class Brewery < ActiveRecord::Base
+class Brewery < ApplicationRecord
   include RatingAverage
 
   has_many :beers
