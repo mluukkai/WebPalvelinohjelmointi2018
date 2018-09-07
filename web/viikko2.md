@@ -610,11 +610,11 @@ Tehtävän jälkeen oluen sivun tulisi näyttää suunnilleen seuraavalta (huom:
 
 > ## Tehtävä 5
 >
-> Moduuli enumerable (ks. http://ruby-doc.org/core-2.1.0/Enumerable.html) sisältää runsaasti oliokokoelmien läpikäyntiin tarkoitettuja apumetodeja.
+> Moduuli enumerable (ks. https://ruby-doc.org/core-2.5.1/Enumerable.html) sisältää runsaasti oliokokoelmien läpikäyntiin tarkoitettuja apumetodeja.
 >
 > Oliokokoelmamaiset luokat voivat sisällyttää moduulin enumerable toiminnallisuuden itselleen, ja tällöin ne perivät moduulin tarjoaman toiminnallisuuden.
 >
-> Tutustu nyt <code>map</code>- ja <code>inject</code>-metodeihin (ks. esim. http://ruby-doc.org/core-2.1.0/Enumerable.html#inject  http://ruby-doc.org/core-2.1.0/Enumerable.html#map ja etsi googlella lisää ohjeita) ja muuta (tarvittaessa) oluen reittausten keskiarvon laskeva metodi käyttämään map:ia tai injectiä
+> Tutustu nyt <code>map</code>- ja <code>inject</code>-metodeihin (ks. esim. [reduce](https://ruby-doc.org/core-2.5.1/Enumerable.html#reduce) [map](https://ruby-doc.org/core-2.5.1/Enumerable.html#map) ja etsi googlella lisää ohjeita) ja muuta (tarvittaessa) oluen reittausten keskiarvon laskeva metodi käyttämään reducea tai mapia ja sumia.
 >
 > Keskiarvon laskeminen onnistuu tässä tapauksessa myös helpommin hyödyntämällä ActiveRecordin metodeja, ks. http://api.rubyonrails.org/classes/ActiveRecord/Calculations.html
 
@@ -638,14 +638,14 @@ Railsin konventioiden mukaan Rating-olion luontiin tarkoitetun lomakkeen tulee l
 
 Luodaan vastaava reitti routes.rb:hen
 
-    get 'ratings/new', to:'ratings#new'
+  get 'ratings/new', to:'ratings#new'
 
 Lisäämme siis ratings-kontrolleriin (joka siis täydelliseltä nimeltään on RatingsController) metodin <code>new</code>, joka huolehtii lomakkeen renderöinnistä. Metodi on yksinkertainen:
 
 ```ruby
-  def new
-    @rating = Rating.new
-  end
+def new
+  @rating = Rating.new
+end
 ```
 
 Metodi ainoastaan luo uuden Rating-olion ja välittää sen <code>@rating</code>-muuttujan avulla oletusarvoisesti renderöitävälle näkymätemplatelle new.html.erb. Olio luodaan <code>new</code>-komennolla eli sitä ei talleteta tietokantaan.
@@ -676,9 +676,9 @@ Näkymän avulla muodostuva HTML-koodi näyttää (suunnilleen) seuraavalta (nä
 
 eli generoituu normaali HTML-lomake (ks. tarkemmin http://www.w3.org/community/webed/wiki/HTML/Training#Forms).
 
-Lomakkeen lähetystapahtuman kohdeosoite on /ratings ja käytettävä HTTP-metodi GET:in sijasta POST. Lomakkeessa on kaksi numeromuotoista kenttää ja niiden arvot lähetetään vastaanottajalle POST-kutsun mukana muuttujien <code>rating[beer_id]</code> ja <code>rating[score]</code> arvoina.
+Lomakkeen lähetystapahtuman kohdeosoite on /ratings ja käytettävä HTTP-metodi GET:in sijasta POST. Lomakkeessa on kaksi numeromuotoista kenttää ja niiden arvot lähetetään vastaanottajalle POST-kutsun mukana "muuttujien" <code>rating[beer_id]</code> ja <code>rating[score]</code> arvoina.
 
-Railsin metodi <code>form_for</code> siis muodostaa automaattisesti oikeaan osoitteeseen lähetettävän, oikeanlaisen formin, jossa on syöttökentät kaikille parametrina olevan tyyppisen olion attribuuteille.
+Railsin metodi <code>form_for</code> siis muodostaa automaattisesti oikeaan osoitteeseen lähetettävän, oikeanlaisen lomakkeem, jossa on syöttökentät kaikille parametrina olevan tyyppisen olion attribuuteille.
 
 Lisää lomakkeiden muodostamisesta <code>form_for</code>-metodilla osoitteessa
  http://guides.rubyonrails.org/form_helpers.html#dealing-with-model-objects
@@ -716,37 +716,26 @@ Uuden ratingin tiedot ovat hashissa avaimen <code>:rating</code> arvona, eli pä
 
 Tutkitaan hieman asiaa kontrollerista käsin Railsin debuggeria hyödyntäen
 
-Jos olet luonut sovelluksesi railsin versiolla 4.2 on sovelluksesi käyttöön jo konfiguroitu debuggeri [byebug](https://github.com/deivid-rodriguez/byebug) (ja railsin web-konsoli jota tarkastelemme hieman myöhemmin).
-
-Jos olet luonut sovelluksesi vanhemmalla Railsin versiolla, lisää
- tiedostoon Gemfile seuraavat:
-
-```ruby
-group :development, :test do
-  gem 'byebug'
-  gem 'web-console', '~> 2.0'
-end
-```
-
-ja suorita komentoriviltä komento <code>bundle install</code>. Käynnistä nyt Rails-sovellus uudelleen, eli paina ctrl+c Railsia suorittavassa terminaalissa ja anna komento <code>rails s</code> uudelleen. **Uudelleenkäynnistys on syytä suorittaa aina uusia gemejä asennettaessa.**
+Rails on jo konfiguroinut sovelluksesi käyttöön [byebug](https://github.com/deivid-rodriguez/byebug)-debuggerin (ja railsin web-konsolin, jota tarkastelemme hieman myöhemmin).
 
 Lisätään kontrollerin alkuun, eli sille kohtaan koodia jota haluamme tarkkailla, komento <code>byebug</code>
 
 ```ruby
-  def create
-    byebug
-    raise
-  end
+def create
+  byebug
+end
 ```
 
 Kun luot lomakkeella uuden reittauksen, sovellus pysähtyy komennon <code>byebug</code> kohdalle. Terminaaliin josta Rails on käynnistetty, avautuu nyt interaktiivinen konsolinäkymä:
 
 ```ruby
-Started POST "/ratings" for 127.0.0.1 at 2017-01-17 17:43:18 +0200
+Started POST "/ratings" for 127.0.0.1 at 2018-09-07 18:45:05 +0300
 Processing by RatingsController#create as HTML
-  Parameters: {"utf8"=>"✓", "authenticity_token"=>"ZsDeRgbMt4qOW3bB49hqHO7f0SHFfoAqADJMmjowwAs=", "rating"=>{"beer_id"=>"1", "score"=>"20"}, "commit"=>"Create Rating"}
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"ILMJj9dNNuAV6ivJaqN2LMyazdVCg3CYscTzHiU9n3MfP07ry27rZq6r/Lq+m/9d/r2cr47r95XWO1ZN/8/ZUw==", "rating"=>{"beer_id"=>"1", "score"=>"20"}, "commit"=>"Create Rating"}
+Return value is: nil
 
-[5, 14] in /Users/mluukkai/kurssirepot/ratebeer/app/controllers/ratings_controller.rb
+[4, 13] in /Users/mluukkai/opetus/ratebeer/app/controllers/ratings_controller.rb
+    4:   end
     5:
     6:   def new
     7:     @rating = Rating.new
@@ -754,9 +743,8 @@ Processing by RatingsController#create as HTML
     9:
    10:   def create
    11:     byebug
-=> 12:     raise
-   13:   end
-   14: end
+=> 12:   end
+   13: end
 (byebug)
 ```
 
@@ -764,9 +752,9 @@ Nuoli kertoo seuraavana vuorossa olevan komennon. Tutkitaan nyt <code>params</co
 
 ```ruby
 (byebug) params
-{"utf8"=>"✓", "authenticity_token"=>"ZsDeRgbMt4qOW3bB49hqHO7f0SHFfoAqADJMmjowwAs=", "rating"=>{"beer_id"=>"1", "score"=>"20"}, "commit"=>"Create Rating", "action"=>"create", "controller"=>"ratings"}
-(byebug) params[:rating]
-{"beer_id"=>"1", "score"=>"20"}
+<ActionController::Parameters {"utf8"=>"✓", "authenticity_token"=>"ILMJj9dNNuAV6ivJaqN2LMyazdVCg3CYscTzHiU9n3MfP07ry27rZq6r/Lq+m/9d/r2cr47r95XWO1ZN/8/ZUw==", "rating"=>{"beer_id"=>"1", "score"=>"20"}, "commit"=>"Create Rating", "controller"=>"ratings", "action"=>"create"} permitted: false>
+(byebug) params[:rating][:beer_id]
+"1"
 (byebug) params[:rating][:score]
 "20"
 ```
@@ -783,9 +771,9 @@ Lisätietoa byebugista seuraavassa http://guides.rubyonrails.org/debugging_rails
 Jos lisäät koodiin komennon <code>binding.pry</code> voit käyttää Pry:tä debuggerina:
 
 ```ruby
-  def create
-    binding.pry
-  end
+def create
+  binding.pry
+end
 ```
 
 kun koodirivi suoritetaan, suoritus pysähtyy ja Pry-sessio aukeaa koodirivin kohdalle. Voit jatkaa suoritusta komennolla <code>exit</code>. On makuasia kumpaa käytät debuggaukseen _byebugia_ vai _Prytä_.
@@ -799,21 +787,20 @@ Kontrollerin sisällä <code>params[:rating]</code> siis sisältää kaiken tied
 Muuta siis kontrollerisi koodi seuraavanlaiseksi:
 
 ```ruby
-  def create
-    Rating.create params[:rating]
-  end
+def create
+  Rating.create params[:rating]
+end
 ```
 
 Kokeile nyt luoda reittaus. Vastoin kaikkia odotuksia, luomisoperaatio epäonnistuu ja seurauksena on virheilmoitus
 
-        ActiveModel::ForbiddenAttributesError
+  ActiveModel::ForbiddenAttributesError
 
 Mistä on kyse?
 
-
 Jos olisimme tehneet reittauksen luovan komennon muodossa
 
-        Rating.create beer_id: params[:rating][:beer_id], score: params[:rating][:score]
+  Rating.create beer_id: params[:rating][:beer_id], score: params[:rating][:score]
 
 joka siis periaatteessa tarkoittaa täysin samaa kuin ylläoleva muoto (sillä <code>params[:rating]</code> on sisällöltään __täysin sama__ hash kuin <code>beer_id:params[:rating][:beer_id], score:params[:rating][:score]</code>), ei virheilmoitusta olisi tullut. [Tietoturvasyistä](http://en.wikipedia.org/wiki/Mass_assignment_vulnerability) Rails ei kuitenkaan salli mielivaltaista <code>params</code>-muuttujasta tapahtuvaa "massasijoitusta" (engl. mass assignment eli kaikkien parametrien antamista hashina) olion luomisen yhteydessä.
 
@@ -821,50 +808,58 @@ Rails 4:stä lähtien kontrollerin on lueteltava eksplisiittisesti mitä hashin 
 
 Periaatteena on, että ensin requirella otetaan paramsin sisältä luotavan olion tiedot sisältävä hash:
 
-        params.require(:rating)
+  params.require(:rating)
 
 tämän jälkeen luetellaan permitillä ne kentät, joiden arvon massasijoitus sallitaan:
 
-        params.require(:rating).permit(:score, :beer_id)
+  params.require(:rating).permit(:score, :beer_id)
 
 Kontrollerimme on siis seuraava:
 
 ```ruby
-  def create
-    Rating.create params.require(:rating).permit(:score, :beer_id)
-  end
+def create
+  Rating.create params.require(:rating).permit(:score, :beer_id)
+end
 ```
 
-Lisää tietoa lomakkeiden parametrien käsittelystä http://edgeguides.rubyonrails.org/action_controller_overview.html luvusta 4.5 Strong parameters
+Lisää tietoa lomakkeiden parametrien käsittelystä seuraavassa https://edgeguides.rubyonrails.org/action_controller_overview.html#strong-parameters
 
 Kokeile nyt reittauksen luomista. HUOM: kun luot lomakkeella reittausta, tarkista, että lomakkeelle syöttämä oluen id vastaa jonkun tietokannassa olevan oluen id:tä!
 
-Reittausten luominen onnistuu jo (tarkista tilanne konsolista tai kaikkien reittausten sivulta), mutta aiheuttaa virheilmoituksen, sillä metodi yrittää renderöidä oletusarvoisesti näkymätemplaten /views/ratings/create.html.erb jota ei ole.
+Reittausten luominen onnistuu jo, voit tarkastaa tilanne konsolista tai kaikkien reittausten sivulta. Ainakin chromella reittauksen luominen sellaisen tilanteen että selain näyttää pysyvän samalla sivulla, mutta sivu "jäätyy". Syy tälle paljastuu sovelluksen konsoliin kirjoittamasta lokiviestistä:
+
+```
+app/controllers/ratings_controller.rb:11
+No template found for RatingsController#create, rendering head :no_content
+Completed 204 No Content in 137ms (ActiveRecord: 1.7ms)
+```
+
+eli koska sovellukseen ei ole määritelty näkymätemplatea create-operaatiolle, lähettää selain tyhjän vastauksen, eli vastauksen, mikä ei sisällä ollenkaan HTML-koodia. Chrome näyttää kuitenkin jättävän edellisen sivun näkyviin saadessaan tyhjän vastauksen.
 
 ## Uudelleenohjaus
 
-Voisimme luoda templaten, mutta päätämmekin, että uuden reittauksen luomisen jälkeen käyttäjän selain __uudelleenohjataan__ kaikki reittaukset sisältävälle sivulle, eli muutetaan kontrollerin koodi muodoon:
+Voisimme luoda näkymätemplaten _create_:lle, mutta päätämmekin, että uuden reittauksen luomisen jälkeen käyttäjän selain __uudelleenohjataan__ kaikki reittaukset sisältävälle sivulle, eli muutetaan kontrollerin koodi muodoon:
 
 ```ruby
-  def create
-    Rating.create params.require(:rating).permit(:score, :beer_id)
-    redirect_to ratings_path
-  end
+def create
+  Rating.create params.require(:rating).permit(:score, :beer_id)
+  redirect_to ratings_path
+end
 ```
 
 <code>ratings_path</code> on Railsin tarjoama polkuapumetodi, joka tarkoittaa samaa kuin "/ratings"
 
-Jos olet luonut reittauksia joihin liittyvä <code>beer_id</code> ei vastaa olemassa olevan oluen id:tä, saat nyt todennäköisesti virheilmoituksen. Voit tuhota konsolista (<code>rails console</code>) käsin nämä ratingit seuraavasti
+Jos olet luonut reittauksia joihin liittyvä <code>beer_id</code> ei vastaa olemassa olevan oluen id:tä, saat nyt todennäköisesti virheilmoituksen. Voit tuhota railsin konsolista (käsin nämä ratingit seuraavasti
 
 ```ruby
-    Rating.last        # näyttää viimeksi luodun ratingin, tarkasta onko siinä oleva beer_id virheellinen
-    Rating.last.delete # poistaa viimeksi luodun ratingin
+Rating.last        # näyttää viimeksi luodun ratingin, tarkasta onko siinä oleva beer_id virheellinen
+Rating.last.delete # poistaa viimeksi luodun ratingin
 ```
 
 Saat tuhottua oluettomat ratingit myös seuraavalla "onelinerilla":
 
 ```ruby
-    Rating.all.select{ |r| r.beer.nil? }.each{ |r| r.delete }
+Rating.all.select{ |r| r.beer.nil? }.each{ |r| r.delete }
 ```
 
 Select luo taulukon, johon sisältyy ne läpikäydyn kokoelman alkiot, joille koodilohkossa oleva ehto on tosi. <code>r.beer.nil?</code> palauttaa <code>true</code> jos olio <code>r.beer</code> on <code>nil</code>.
@@ -872,7 +867,7 @@ Select luo taulukon, johon sisältyy ne läpikäydyn kokoelman alkiot, joille ko
 Edellisen komennon voi kirjottaa myös hieman lyhemmässä muodossa
 
 ```ruby
-    Rating.all.select{ |r| r.beer.nil? }.each(&:delete)
+Rating.all.select{ |r| r.beer.nil? }.each(&:delete)
 ```
 
 Mitä kontrollerissa käytetty komento <code>redirect_to ratings_path</code> oikeastaan tekee? Normaalistihan kontrolleri renderöi sopivan näkymätemplaten ja näin aikaansaatu HTML-koodi palautetaan selaimelle, joka renderöi sivun näytölle.
@@ -883,23 +878,20 @@ Kokeile mitä tapahtuu kun laitat uuden reittauksen luomisen jälkeiseksi uudell
 
 ## redirect_to vs render
 
-http://en.wikipedia.org/wiki/Post/Redirect/Get
-
 Olisi ollut teknisesti mahdollista olla käyttämättä uudelleenohjausta ja renderöidä kaikkien reittausten sivu suoraan uuden reittauksen luovasta kontrollerista:
 
 ```ruby
-  def create
-    Rating.create params.require(:rating).permit(:score, :beer_id)
-    @ratings = Rating.all
-    render :index
-  end
+def create
+  Rating.create params.require(:rating).permit(:score, :beer_id)
+  @ratings = Rating.all
+  render :index
+end
 ```
 
-Vaikka aikaansaannos näyttää sivuston käyttäjälle täsmälleen samalta, tämä ei ole kuitenkaan järkevää muutamastakaan syystä. Ensinnäkin kaikki metodissa <code>index</code> oleva koodi, joka tarvitaan näkymän muodostamiseen on kopioitava <code>create</code>-metodiin (nyt kopioitavaa koodia ei ole paljon, mutta tilanne ei ole aina yhtä yksinkertainen). Toinen syy liittyy selaimen käyttäytymiseen. Jos kontrollerimme käyttäisi sivun renderöintiä ja selaimen käyttäjä refreshaisi sivun uuden oluen luomisen jälkeen, kävisi seuraavasti:
+Vaikka aikaansaannos näyttää sivuston käyttäjälle täsmälleen samalta, tämä ei ole kuitenkaan järkevää muutamastakaan syystä. Ensinnäkin kaikki metodissa <code>index</code> oleva koodi, joka tarvitaan näkymän muodostamiseen on kopioitava <code>create</code>-metodiin (nyt kopioitavaa koodia ei ole paljon, mutta tilanne ei ole aina yhtä yksinkertainen). 
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w2-5.png)
-
-eli selain kysyy käyttäjältä lähetetäänkö lomakkeen tiedot uudelleen, sillä edellinen selaimen toiminto jonka refreshaus suorittaa on nimenomaan lomakkeen tietojen lähetyksen hoitanut HTTP POST.
+Toinen syy liittyy selaimen käyttäytymiseen. Jos kontrollerimme käyttäisi sivun renderöintiä ja selaimen käyttäjä refreshaisi sivun uuden oluen luomisen jälkeen, jotkut vanhat selaimet
+lähettäisivät lomakkeen tiedot uudelleen, sillä edellinen selaimen toiminto jonka refreshaus suorittaa on nimenomaan lomakkeen tietojen lähetyksen hoitanut HTTP POST.
 Redirectauksen yhteydessä vastaavaa ongelmaa ei ole, sillä POST-komennon jälkeen seuraava käyttäjälle näkyvä sivu saadaan aikaan redirectauksen aikaansaamalla HTTP GET:illä.
 
 Nyrkkisääntönä (ei vaan Railsissa vaan Web-ohjelmoinnissa yleensäkin, ks. http://en.wikipedia.org/wiki/Post/Redirect/Get) onkin käyttää lomakkeista huolehtivien HTTP POST -metodien käsittelevässä kontrollerissa *aina* uudelleenohjausta (ellei kontrollerin suorittama operaatio epäonnistu esim. lomakkeella lähetetyn tiedon virheellisyyden vuoksi).
@@ -914,7 +906,9 @@ Nostetaan vielä esiin tämä tärkeä ero:
 
 Rails on sisältänyt versiosta 4.2 alkaen oletusarvoisesti debuggerin tapaan toimivan _web-konsolin_. Konsolinäkymä avautuu automaattisesti jos ohjelmassa syntyy poikkeus.
 
-Poikkeuksen voi "aiheuttaa" esim. kirjoittamalla mihin tahansa kohtaan koodia <code>raise</code> kuten teimme jo hieman aiemmin. Palautetaan raise reittauskontrollerin metodiin create:
+Poikkeuksen voi "aiheuttaa" esim. kirjoittamalla mihin tahansa kohtaan koodia <code>raise</code> kuten teimme jo hieman aiemmin.
+
+ Palautetaan raise reittauskontrollerin metodiin create:
 
 ```ruby
 class RatingsController < ApplicationController
@@ -928,115 +922,9 @@ end
 
 Kun nyt luot reittauksen, renderöityy tuttu virhesivu. Virhesivun alalaidassa olevassa konsolinäkymässä voi nyt suorittaa ruby-komentoja täsmälleen samalla tavalla kuin debuggeria käytettäessä:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w2-9.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w2-9.png)
 
 Aivan kuten debuggeria käytettäessä, web-konsolin näkymä avautuu siihen kontekstiin, jossa virhe tapahtuu, eli esim. muuttuja <code>params</code> on viitattavissa, samoin voidaan suorittaa kaikkia komentoja, joita konrollerimetodista käsin voitaisiin suorittaa, esim. hakea reittauksia tietokannasta modelin <code>Rating</code> avulla.
-
-Web-konsoli on varsin kätevä työkalu. Valitettavasti web-konsoli ei kuitenkaan toimi optimaalisesti näkymätemplateihin liittyvissä virhetilanteissa.
-
-Luodaan sovellukseen olut, johon ei liity panimoa:
-
-```ruby
-> Beer.create name:"crap beer", style:"lowalcohol"
- => #<Beer id: 13, name: "crap beer", style: "lowalcohol", brewery_id: nil, created_at: "2017-01-17 16:11:49", updated_at: "2017-01-17 16:11:49">
-```
-luodun olion vierasavaimen <code>brewery_id</code> arvoksi siis tulee <code>nil</code>.
-
-Kaikkien oluiden sivulle meneminen aiheuttaa nyt virheen:
-
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w2-10.png)
-
-Näemme virheilmoituksesta rivin, joka aiheuttaa ongelman ja ongelman syyn:
-
-    undefined method `name' for nil:NilClass
-
-eli näkymätemplate yrittää kutsua metodia <code>name</code> olemattomalle oliolle. Virhellinen rivi sisältää komennon
-
-    beer.brewery.name
-
-eli näkymätemplaten paikallisen muuttujan <code>beer</code> kentässä <code>brewery</code> olevalle oliolle yritetään kutsua metodia, mutta olioa ei ole olemassa.
-
-Toisin kuin kontrollereissa tai modeleissa tapahtuvissa virheissä, emme valitettavasti pääse web-konsolissa käsiksi näkymien muuttujiin.
-
-Debuggerin avulla tämä kuitenkin onnistuu. Tiedämme, että ongelmallinen tilanne syntyy jos vastaan tulee olut johon liittyvä panimo on nil. Lisätään näkymätemplateen debuggerin käynnistyskomento <code>byebug</code> tälläistä tilannetta varten:
-
-```erb
-  <tbody>
-    <% @beers.each do |beer| %>
-      <% byebug if beer.brewery.nil? %>
-      <tr>
-        ...
-      </tr>
-    <% end %>
-  </tbody>
-```
-
-Lisäsimme siis templaten renderöinnin sekaan komennon <code><% byebug if beer.brewery.nil? %></code>, joka käynnistää debuggerin jos annettu ehto on tosi. Käyttämämme komento on rybymainen tapa kirjoittaa
-
-```erb
-    if beer.brewery == nil
-      byebug
-    end
-```
-
-Kun nyt menemme kaikkien oluiden sivulle, debuggeri käynnistyy ja pääsemme tarkastelemaan näkymätemplaten paikallisen muuttujan arvoa eli ongelman aiheuttanutta olutta:
-
-```ruby
-[13, 22] in /Users/mluukkai/opetus/ratebeer/app/views/beers/index.html.erb
-   13:   </thead>
-   14:
-   15:   <tbody>
-   16:     <% @beers.each do |beer| %>
-   17:     <% byebug if beer.brewery.nil? %>
-=> 18:       <tr>
-   19:         <td><%= link_to beer.name, beer %></td>
-   20:         <td><%= beer.style %></td>
-   21:         <td><%= link_to beer.brewery.name, beer.brewery %></td>
-   22:         <td><%= link_to 'Edit', edit_beer_path(beer) %></td>
-(byebug) beer
-#<Beer id: 13, name: "crap beer", style: "lowalcohol", brewery_id: nil, created_at: "2017-01-21 18:01:32", updated_at: "2017-01-21 18:01:32">
-(byebug) beer.brewery
-nil
-(byebug) beer.brewery.name
-*** NoMethodError Exception: undefined method `name' for nil:NilClass
-```
-
-Voimme poistaa tai korjata ongelman aiheuttaneen olion suoraan debuggerista:
-
-```ruby
-(byebug) beer.delete
-  SQL (1.3ms)  DELETE FROM "beers" WHERE "beers"."id" = 13
-#<Beer id: 13, name: "crap beer", style: "lowalcohol", brewery_id: nil, created_at: "2017-01-17 16:11:49", updated_at: "2017-01-17 16:11:49">
-(byebug) c
-```
-
-Eli poistimme oluen ja jatkoimme ohjelman suorittamista komennolla <code>c</code>.
-
-Ongelman korjauduttua poistetaan debuggerin käynnistyskomento näkymätemplatesta.
-
-Debuggerin käytöstä on niin paljon iloa, että siihen (sekä luonnollisesti myös Rails-konsolin käyttöön) kannattaa totutella välittömästi. Debuggerin etu tietyissä tilanteissa pelkkään Rails-konsoliin verrattuna on se, että debuggerisession saa avattua haluttuun kontekstiin, esim. kontrolleriin tai renderöitävissä olevaan näkymään ja näin pääsee tarkastelemaan esim. mitä muuttujien arvoja ohjelmalla on suorituksen aikana.
-
-Railsiin on tarjolla myös oletusarvoista web-konsolia paremmin näyttöjen renderöinnissä olevissa virhetilanteissa toimivan web-konsolin tarjoava [better_errors](https://github.com/charliesome/better_errors) gem. Lisätään tiedostoon Gemfile seuraava
-
-```ruby
-group :development, :test do
-  gem "better_errors"
-
-  #...
-end
-```
-
-Suoritetaan komentoriviltä <code>bundle install</code> ja käynnistetään sovellus uudelleen. Luodaan jälleen olut, johon ei liity panimoa ja mennään kaikkien oluiden sivulle.
-
-Better_errors on muokannut virhetilanteesta kertovan sivun täysin erilaiseksi:
-
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w2-11.png)
-
-Better_errorsin konsolista pääsee käsiksi suoraan näkymän muuttujiin ja ongelma aiheuttava olut löytyy välittömästi.
-
-Voit käyttää better_errorsia jos haluat. Jos et, poista gem ja suorita uudelleen <code>bundle install</code>
-
-Muista myös, että voit debugata _byebugin_ sijaan _Pryllä_ kirjotamalla koodiin komennon <code>binding.pry</code>
 
 ## Polkuapumetodit
 
