@@ -12,7 +12,7 @@ Tämä asetus muistetaan jatkossa, joten pelkkä `bundle install` riittää kun 
 
 Käytäthän jo järkevää editoria, eli jotain muuta kun nanoa, geditiä tai notepadia? Suositeltavia editoreja ovat esim. RubyMine, Visual Studio Code ks lisää [täältä](https://github.com/mluukkai/WebPalvelinohjelmointi2017/wiki#editoriide)
 
-Itse käytän nykyään [Visual Studio Codea](https://code.visualstudio.com). Suosittelen! Jos käytät VSC:tä, kannattaa ehdottamasti asentaa [Ruby-plugin](https://code.visualstudio.com/docs/languages/overview)
+Itse käytän nykyään [Visual Studio Codea](https://code.visualstudio.com). Suosittelen! Jos käytät VSC:tä, kannattaa ehdottamasti asentaa [Ruby-plugin](https://code.visualstudio.com/docs/languages/overview) ja ruby formatteri ja solargraph
 
 ## Parempi konsoli 
 
