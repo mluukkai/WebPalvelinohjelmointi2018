@@ -14,6 +14,12 @@ Käytäthän jo järkevää editoria, eli jotain muuta kun nanoa, geditiä tai n
 
 Itse käytän nykyään [Visual Studio Codea](https://code.visualstudio.com). Suosittelen! Jos käytät VSC:tä, kannattaa ehdottamasti asentaa [Ruby-plugin](https://code.visualstudio.com/docs/languages/overview)
 
+## Rubocop
+
+Ei ole tolkun hiventä olla käyttämättä rubocoppia kts. https://github.com/superbothq/superbot/blob/master/.rubocop.relaxed.yml
+ja https://github.com/superbothq/superbot/blob/master/.rubocop.yml ja kirjoita tämä kappale puhtaaksi
+
+
 ## Parempi konsoli 
 
 Käytimme viime viikolla rubyn oletusarvoista konsolia _irbiä_. On myös olemassa hieman kehittyneempi konsoli [Pry](https://github.com/pry/pry), otetaan se käyttöön. 
