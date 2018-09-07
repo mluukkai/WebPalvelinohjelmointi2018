@@ -6,7 +6,7 @@ Varaa asennukseen kunnolla aikaa ja tee se mieluusti joskus kun levypalvelinten 
 
 Asennamme tässä Rubyn version 2.5.1 ja Railsin version 5.2.1 viimeaikoina suosioon nousseella [rbenv-versiomanagerilla](https://github.com/sstephenson/rbenv)
 
-Voit halutessasi käyttää myös [RVM:ää](https://rvm.io/rvm/install)  eli rbenvin hieman vanhempaa lähisukulaista.
+Voit halutessasi käyttää myös [RVM:ää](https://rvm.io/rvm/install)  eli rbenvin lähisukulaista.
 
 **Älä kuitenkaan missään tapauksessa asenna Rubyä/Railsia Linuxin paketinhallintajärjestelmän kautta!**
 
