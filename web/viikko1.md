@@ -1086,9 +1086,11 @@ Use `bundle info [gemname]` to see where a bundled gem is installed.
 ```
 
 Jos <code>bundle install</code> aiheuttaa virheen (näin voi käydä todennäköisesti vain OS X:llä), voit joko
-* asentaa ensin _postgresql_ tietokannan omalle koneellesi ja suorittaa komennon uudeleen tai
 * suorittaa komennon lisäparametrilla <code>bundle install --without production</code>
-  * jos päädyt tähän vaihtoehtoon, joudut jatkossa suorittamaan komennon aina näin
+  * tämä tapa on suositeltava ellet välttämättä halua asentaa _postgresql_ tietokantaa koneellesi (tällä kurssilla sille ei ole tarvetta, koska _postgresql_ ei ole käytössä lokaalisti)
+  * huomaa, että jos päädyt tähän vaihtoehtoon, joudut jatkossa suorittamaan komennon aina näin
+* tai vaihtoehtoisesti asentaa ensin _postgresql_ tietokannan omalle koneellesi ja suorittaa komennon uudelleen
+
 
 Committoidaan kaikki muutokset versionhallintaan antamalla komennot:
 
