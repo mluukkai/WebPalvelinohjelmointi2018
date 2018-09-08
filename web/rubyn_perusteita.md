@@ -159,5 +159,5 @@ ks.
 ks.
 
 * http://juixe.com/techknow/index.php/2006/06/15/mixins-in-ruby/
-* https://thenewcircle.com/bookshelf/ruby_tutorial/modules.html
+
 
