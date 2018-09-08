@@ -18,8 +18,6 @@ Heti alkuun kannattaa lukea
 Hieman aikaavievämpi ja kattavampi, mutta kovin hyödyllinen Rubykoans löytyy seuraavasta
 * http://rubykoans.com/
 
-Loistava puoli-interaktiivinen RubyMonk-tutoriaali löytyy osoitteesta
-* http://rubymonk.com/
 
 Hyväksi tai vähintään siedettäväksi havaittuja tutoriaaleja ovat mm:
 * https://www.railstutorial.org/book/rails_flavored_ruby#sec-strings_and_methods
@@ -160,7 +158,6 @@ ks.
 
 ks.
 
-* http://rubymonk.com/learning/books/1-ruby-primer/chapters/35-modules/lessons/79-getting-modular
 * http://juixe.com/techknow/index.php/2006/06/15/mixins-in-ruby/
 * https://thenewcircle.com/bookshelf/ruby_tutorial/modules.html
 
