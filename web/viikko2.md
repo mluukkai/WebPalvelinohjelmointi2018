@@ -8,7 +8,7 @@ Tämä asetus muistetaan jatkossa, joten pelkkä `bundle install` riittää kun 
 
 ## Järkevä editori
 
-Käytäthän jo järkevää editoria, eli jotain muuta kun nanoa, geditiä tai notepadia? Suositeltavia editoreja ovat esim. RubyMine, Visual Studio Code ks lisää [täältä](https://github.com/mluukkai/WebPalvelinohjelmointi2017/wiki#editoriide)
+Käytäthän jo järkevää editoria, eli jotain muuta kun nanoa, geditiä tai notepadia? Suositeltavia editoreja ovat esim. RubyMine, Visual Studio Code ks lisää [täältä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/wadror.md#editoriide)
 
 Itse käytän nykyään [Visual Studio Codea](https://code.visualstudio.com). Suosittelen! Jos käytät VSC:tä, kannattaa ehdottamasti asentaa [Ruby-plugin](https://code.visualstudio.com/docs/languages/overview)
 
@@ -301,7 +301,7 @@ ja nyt sivu toimii!
 
 Huomaa taas Railsin konventiot, tiedoston sijainti on tarkasti määritelty, eli koska kyseessä on näkymätemplate jota kutsutaan ratings-kontrollerista (joka siis on täydelliseltä nimeltään RatingsController), sijoitetaan se hakemistoon /views/ratings.
 
-Muistutuksena vielä [viime viikosta](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko1.md#kontrollerin-ja-viewien-yhteys): kontrollerimetodi <code>index</code> renderöi oletusarvoisesti suorituksensa lopuksi (oikeassa hakemistossa olevan) index-nimisen näkymän. Eli koodi
+Muistutuksena vielä [viime viikosta](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md#kontrollerin-ja-viewien-yhteys): kontrollerimetodi <code>index</code> renderöi oletusarvoisesti suorituksensa lopuksi (oikeassa hakemistossa olevan) index-nimisen näkymän. Eli koodi
 
 ```ruby
 class RatingsController < ApplicationController
