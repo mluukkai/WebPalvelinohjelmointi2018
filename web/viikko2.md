@@ -1,5 +1,3 @@
-# KESKEN, lukeminen omalla vastuulla
-
 Jatkamme sovelluksen rakentamista siitä, mihin jäimme viikon 1 lopussa. Allaoleva materiaali olettaa, että olet tehnyt kaikki edellisen viikon tehtävät. Jos et tehnyt kaikkia tehtäviä, voit täydentää ratkaisusi tehtävien palautusjärjestelmän kautta näkyvän esimerkivastauksen avulla.
 
 **Huom:** muutamilla Macin käyttäjillä oli ongelmia Herokun tarvitseman pg-gemin kanssa. Paikallisesti gemiä ei tarvita ja se määriteltiinkin asennettavaksi ainoastaan tuotantoympäristöön. Jos ongelmia ilmenee, voit asentaa gemit antamalla <code>bundle install</code>-komentoon seuraavan lisämääreen:
@@ -33,7 +31,7 @@ Suorita komentoriviltä komento <code>bundle install</code>
 Kun nyt avaat rails konsolin, eli suoritat komentoriviltä komennon <code>rails c</code> avautuu viime viikolla käyttämme irbin sijaan Pry. Perustoiminnoiltaan Pry on täsmälleen samanlainen kuin irb. Tulostusasu on hieman ihmisystävällisempi:
 
 ```
-> Beer.first
+[59] pry(main)> Beer.first
   Beer Load (0.4ms)  SELECT  "beers".* FROM "beers"  ORDER BY "beers"."id" ASC LIMIT 1
 => #<Beer:0x00007fc430b910f8
  id: 1,
@@ -42,7 +40,35 @@ Kun nyt avaat rails konsolin, eli suoritat komentoriviltä komennon <code>rails 
  brewery_id: 1,
  created_at: Sat, 01 Sep 2018 16:41:53 UTC +00:00,
  updated_at: Sat, 01 Sep 2018 16:41:53 UTC +00:00>
+[60] pry(main)>
 ```
+
+Jos operaation tulos on pidempi kuin ruudulle mahtuu, kontrolli ei palaa konsoliin, vaan alimpana rivinä on kaksoispiste
+
+```
+[61] pry(main)> Beer.all
+  Beer Load (0.3ms)  SELECT "beers".* FROM "beers"
+=> [#<Beer:0x00007fc4318bee10
+  id: 1,
+  name: "Iso 3",
+  style: "Lager",
+  brewery_id: 1,
+  created_at: Sat, 01 Sep 2018 16:41:53 UTC +00:00,
+  updated_at: Sat, 01 Sep 2018 16:41:53 UTC +00:00>,
+ #<Beer:0x00007fc4318beaa0
+  id: 2,
+  name: "Tuplahumala",
+  style: "Lager",
+  brewery_id: 1,
+  created_at: Sat, 01 Sep 2018 16:41:53 UTC +00:00,
+  updated_at: Sat, 01 Sep 2018 16:41:53 UTC +00:00>,
+ #<Beer:0x00007fc4318be910
+  id: 4,
+  name: "Huvila Pale Ale",
+:
+```
+
+Voit selata tulosta nuolinäppäimillä ja pääset takaisin konsoliin painamalla q:ta.
 
 Jos haluat oppia käyttämään Pryn edistyneempiä ominaisuuksia kannattaa katsoa aiheesta kertova [Rails cast](https://www.youtube.com/watch?v=A494WFSi6HU)
 
@@ -933,10 +959,10 @@ Rails luo automaattisesti kaikille tiedostoon _routes.rb_ määritellyille reite
 Esim. uuden reittauksen jälkeisen uudelleenohjauksen osoite olisi voitu <code>ratings_path</code>-apufunktion sijaan kovakoodata:
 
 ```ruby
-  def create
-    Rating.create params.require(:rating).permit(:score, :beer_id)
-    redirect_to 'ratings'
-  end
+def create
+  Rating.create params.require(:rating).permit(:score, :beer_id)
+  redirect_to 'ratings'
+end
 ```
 
 Kuten yleensäkin, kovakoodaus ei ole järkevää osoitteidenkaan suhteen.
@@ -974,9 +1000,9 @@ Esim alimmat 3 reittiä kertovat seuraavaa:
   * huom. kuten ylempänä olevia reittejä vertailemalla huomaamme, ei <code>ratings_new_path</code> ole samanlainen kuin esim uusien oluiden luontipolku, asia korjataan myöhemmin
 * POST-kutsu osoitteeseen "ratings" ohjataan ratings-kontrollerin metodille <code>create</code>
 
-Kuten olemme jo huomanneet Rails 4:ssä komennon <code>rails routes</code> informaatio tulee myös virhetilanteissa renderöityvälle web-sivulle. Sivu jopa tarjoaa interaktiivisen työkalun, jonka avulla voi kokeilla miten sovellus reitittää syötetyn esimerkkipolun:
+Kuten olemme jo huomanneet komennon <code>rails routes</code> informaatio tulee myös virhetilanteissa renderöityvälle web-sivulle. Sivu jopa tarjoaa interaktiivisen työkalun, jonka avulla voi kokeilla miten sovellus reitittää syötetyn esimerkkipolun:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w2-6.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w2-6.png)
 
 
 > ## Tehtävä 7
@@ -1016,9 +1042,9 @@ eli lomakkeen <code>beer_id</code>:n arvo generoidaan HTML lomakkeen select-elem
 **Huom:** näkymäapumetodeja on mahdollista testata myös konsolista. Metodeja voi kutsua <code>helper</code>-olion kautta:
 
 ```ruby
-> beers = Beer.all
- 
- => "<option value=\"Iso 3\">1</option>\n<option value=\"Karhu\">2</option>\n<option value=\"Tuplahumala\">3</option>\n<option value=\"Huvila Pale Ale\">4</option>\n<option value=\"X Porter\">5</option>\n<option value=\"Hefezeizen\">6</option>\n<option value=\"Helles\">7</option>\n<option value=\"Punk IPA\">11</option>\n<option value=\"Nanny State\">12</option>"
+> b = Beer.all
+> helper.options_from_collection_for_select(beers, :id, :name)
+=> "<option value=\"1\">Iso 3</option>\n<option value=\"2\">Karhu</option>\n<option value=\"3\">Tuplahumala</option>\n<option value=\"4\">Huvila Pale Ale</option>\n<option value=\"5\">X Porter</option>\n<option value=\"6\">Hefeweizen</option>\n<option value=\"7\">Helles</option>\n<option value=\"8\">Lite</option>\n<option value=\"9\">IVB</option>\n<option value=\"10\">Extra Light Triple Brewed</option>\n<option value=\"13\">Punk IPA</option>\n<option value=\"14\">Nanny State</option>"
 >
 ```
 
@@ -1100,9 +1126,9 @@ Korvaa vielä templatessa app/views/ratings/index.erb.html käytetty vanha polku
 
 Lisätään ohjelmaan vielä mahdollisuus poistaa reittauksia. Lisätään ensin vastaava reitti muokkaamalla routes.rb:tä:
 
-    resources :ratings, only: [:index, :new, :create, :destroy]
+  resources :ratings, only: [:index, :new, :create, :destroy]
 
-Lisätään sitten reittauksien listalle linkki, jonka avulla kunkin reittauksen voi poistaa:
+Lisätään sitten reittauksien listalle linkki, jonka avulla kunkin reittauksen voi poistaa, eli muutetaan reittauksin listaa seuraavasti
 
 ```erb
 <ul>
@@ -1112,7 +1138,7 @@ Lisätään sitten reittauksien listalle linkki, jonka avulla kunkin reittauksen
 </ul>
 ```
 
-Railsin käyttämän konvention mukaan olion tuhoaminen tehdään HTTP:n DELETE-metodilla. Esim. jos tuhottavana on rating, jonka id on 5, tapahtuu nyt linkkiä klikkaamalla HTTP DELETE -kutsu osoitteeseen ratings/5.
+Railsin noudattaman REST-konvention mukaan olion tuhoaminen tehdään HTTP:n DELETE-metodilla. Esim. jos tuhottavana on rating, jonka id on 5, tapahtuu nyt linkkiä klikkaamalla HTTP DELETE -kutsu osoitteeseen ratings/5.
 
 Kuten jo aiemmin mainittiin, voi <code>rating_path(rating.id)</code>-kutsun sijaan <code>link_to</code>:n parametrina olla suoraan olio, jolle kutsu kohdistuu, eli edellinen hieman lyhemmässä muodossa:
 
@@ -1129,11 +1155,11 @@ Jotta saamme poiston toimimaan, tulee vielä määritellä kontrollerille poisto
 Metodiin johtava url on muotoa ratings/[tuohottavan olion id]. metodi pääsee Railsin konvention mukaan käsiksi tuhottavan olion id:hen <code>params</code>-olion kautta. Tuhoaminen tapahtuu hakemalla olio tietokannasta ja kutsumalla sen metodia <code>delete</code>:
 
 ```ruby
-  def destroy
-    rating = Rating.find(params[:id])
-    rating.delete
-    redirect_to ratings_path
-  end
+def destroy
+  rating = Rating.find(params[:id])
+  rating.delete
+  redirect_to ratings_path
+end
 ```
 
 Lopussa suoritetaan uudelleenohjaus takaisin kaikkien reittausten sivulle. Uudelleenohjaus siis aiheuttaa sen, että selain lähettää sovellukselle uudelleen GET-pyynnön osoitteeseen /ratings, ja ratings#index-metodi suoritetaan tämän takia uudelleen.
@@ -1195,8 +1221,6 @@ Lisää yhteys koodiisi ja kokeile seuraavaa konsolista (muista ensin <code>relo
 > k = Brewery.find_by name:"Koff"
 > k.ratings.count
  => 5
-> k.ratings
- => #<ActiveRecord::Associations::CollectionProxy [#<Rating id: 1, score: 10, beer_id: 1, created_at: "2017-01-17 13:09:31", updated_at: "2017-01-17 13:09:31">, #<Rating id: 2, score: 21, beer_id: 1, created_at: "2017-01-17 13:09:33", updated_at: "2017-01-17 13:09:33">, #<Rating id: 3, score: 17, beer_id: 1, created_at: "2017-01-17 13:09:35", updated_at: "2017-01-17 13:09:35">, #<Rating id: 10, score: 22, beer_id: 1, created_at: "2017-01-17 15:51:02", updated_at: "2017-01-17 15:51:02">, #<Rating id: 11, score: 34, beer_id: 1, created_at: "2017-01-17 15:51:52", updated_at: "2017-01-17 15:51:52">]>
 ```
 
 > ## Tehtävä 14
@@ -1205,9 +1229,9 @@ Lisää yhteys koodiisi ja kokeile seuraavaa konsolista (muista ensin <code>relo
 >
 > Tee reittausten yhteenlasketun määrän "kieliopillisesti moitteeton" tehtävän 6 tyyliin. Jos reittauksia ei ole, älä näytä keskiarvoa.
 
-Panimon sivun tulisi näyttää muutoksen jälkeen suunnilleen seuraavalta (sivulta on poistettu scaffoldingin luoma 'back'-linkki. Voit halutessasi tehdä muutoksen myös omaan koodiisi):
+Panimon sivun tulisi näyttää muutoksen jälkeen suunnilleen seuraavalta:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w2-8.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w2-8.png)
 
 ## Yhteisen koodin siirto moduuliin
 
@@ -1215,14 +1239,24 @@ Huomaamme, että oluella ja panimolla on täsmälleen samalla tavalla toimiva ja
 
 > ## Tehtävä 15
 >
-> Ruby tarjoaa keinon jakaa metodeja kahden luokan välillä moduulien avulla, ks. https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/rubyn_perusteita.md#moduuli
+> Ruby tarjoaa keinon jakaa metodeja kahden luokan välillä moduulien avulla, ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/rubyn_perusteita.md#moduuli
 >
 > Moduleilla on useampia käyttötarkoituksia, niiden avulla voidaan mm. muodostaa nimiavaruuksia. Nyt olemme kuitenkin kiinnostuneita modulien avulla toteutettavasta _mixin_-perinnästä.
 >
 > Tutustu nyt riittävällä tasolla moduleihin ja refaktoroi koodisi siten, että metodi <code>average_rating</code> siirretään moduuliin, jonka luokat <code>Beer</code> ja <code>Brewery</code> sisällyttävät.
-> * sijoita moduuli lib-kansioon
->* HUOM: lisää tiedostoon <code>config/application.rb</code> luokan <code>Application</code>määrittelyn  sisälle rivi <code>config.autoload_paths += Dir["#{Rails.root}/lib"]</code>, jotta Rails lataisi moduulin koodin sovelluksen luokkien käyttöön. **Rails server (ja konsoli) tulee käynnistää uudelleen lisäyksen jälkeen**. Tämä johtuu siitä, että Rails lukee (tai suorittaa) konfiguraatiotiedostot vain käynnistyessään ja muutokset niissä (toisin kuin sovelluskoodissa) ei oteta livenä huomioon.
-> * HUOM2: jos moduulisi nimi on ao. esimerkin tapaan <code>RatingAverage</code> tulee se Rubyn nimentäkonvention takia sijaita tiedostossa <code>rating_average.rb</code>, eli vaikka luokkien nimet ovat Rubyssä isolla alkavia CamelCase-nimiä, noudattavat niiden tiedostojen nimet snake_case.rb-tyyliä.
+>
+>  Koska nyt tehtävää moduulia käytetään ainoastaan modeleista on järkevintä määritellä se ns. [concernina](https://api.rubyonrails.org/classes/ActiveSupport/Concern.html) ja sijoittaa moduulin määrittelevä tiedosto hakemistoon _app/models/concerns_
+>
+>```ruby
+>module RatingAverage
+>  extend ActiveSupport::Concern
+>
+>  # ...
+>end
+```
+>
+> * HUOM: jos moduulisi nimi on ao. esimerkin tapaan <code>RatingAverage</code> tulee se Rubyn nimentäkonvention takia sijaita tiedostossa <code>app/models/concerns/rating_average.rb</code>, eli vaikka luokkien nimet ovat Rubyssä isolla alkavia CamelCase-nimiä, noudattavat niiden tiedostojen nimet snake_case.rb-tyyliä.
+
 
 Tehtävän jälkeen esim. luokan Brewery tulisi siis näyttää suunnilleen seuraavalta (olettaen että tekemäsi moduulin nimi on RatingAverage):
 
@@ -1247,22 +1281,6 @@ ja metodin <code>average_rating</code> tulisi edelleen toimia entiseen tyyliin:
 >
 ```
 
-Jos sovelluksessa on moduuli, jota tarvitaan ainoastaan modeleissa, on _lib_-hakemistoa parempi sijoituspaikka _app/models/concerns_. Hakemiston sisältämä koodi ladataan oletusarvoisesti modelien käyttöön eli muutosta muuttujaan <code>config.autoload_paths</code> ei tarvita. Hakemistossa app/models/concerns oleviin moduuleihin on lisättävä määritelmä <code>extend ActiveSupport::Concern</code>
-
-```ruby
-module RatingAverage
-  extend ActiveSupport::Concern
-
-  # ...
-end
-```
-
-Koska määrittelemäämme moduulia ei käytetä kuin modeleissa, on sen oikeaoppinen sijoituspaikka juuri concerns-hakemisto.
-
-**Siirrä moduuli models/concerns-hakemistoon.**
-
-Lisää conserneista, ks. http://api.rubyonrails.org/classes/ActiveSupport/Concern.html ja http://stackoverflow.com/questions/14541823/how-to-use-concerns-in-rails-4
-
 ## Yksinkertainen suojaus
 
 Haluamme viikon lopuksi tehdä sovelluksesta sellaisen, että ainoastaan ylläpitäjä pystyy poistamaan painimoita. Toteutamme viikolla 3 kattavamman tavan autentikointiin, teemme nyt nopean ratkaisun [http basic -autentikaatiota](http://en.wikipedia.org/wiki/Basic_access_authentication)  hyödyntäen. Ks. http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Basic.html
@@ -1281,7 +1299,7 @@ class BreweriesController < ApplicationController
   private
 
   def authenticate
-      raise "toteuta autentikointi"
+    raise "toteuta autentikointi"
   end
 end
 ```
@@ -1300,7 +1318,7 @@ class BreweriesController < ApplicationController
   private
 
   def authenticate
-      raise "toteuta autentikointi"
+    raise "toteuta autentikointi"
   end
 end
 ```
@@ -1321,8 +1339,15 @@ class BreweriesController < ApplicationController
   private
 
   def authenticate
-    authenticate_or_request_with_http_basic do |username, password|
-      username == "admin" and password == "secret"
+    authenticate_or_request_with_http_basic do |username, password| 
+      if username == "admin" and password == "secret"
+        login_ok = true
+      else
+        login_ok = false  # käyttäjätunnus/salasana oli väärä
+      end
+
+      # koodilohkon arvo on sen viimeisen komennon arvo eli true/false riippuen kirjautumisen onnistumisesta
+      login_ok  
     end
   end
 end
@@ -1333,6 +1358,12 @@ Ja sovellus toimii haluamallamme tavalla!
 HUOM: kun olet kerran antanut oikean käyttäjätunnus-salasanaparin, ei selain kysy uusia tunnuksia mennessäsi sivulle uudelleen. Avaa uusi incognito-ikkuna jos haluat testata kirjautumista uudelleen!
 
 Toimintaperiaatteena metodissa <code>authenticate_or_request_with_http_basic</code> on se, että sovellus pyytää selainta lähettämään käyttäjätunnuksen ja salasanan, jotka sitten välitetään <code>do</code>:n ja <code>end</code>:in välissä olevalle koodilohkolle parametrien <code>username</code> ja <code>password</code> avulla. Jos koodilohkon arvo on tosi, näytetään sivu käyttäjälle.
+
+Koska koodilohko saa saman arvon kuin if:n ehto, voidaan se yksinkertaistaa seuraavaan muotoon
+
+  def authenticate
+    username == "admin" and password == "secret"
+  end   
 
 HTTP Basic -autentikaatio on kätevä tapa yksinkertaisiin sivujen suojaamistarpeisiin, mutta monimutkaisemmissa tilanteissa ja parempaa tietoturvaa edellytettäessä kannattaa käyttää muita ratkaisuja.
 
@@ -1345,7 +1376,7 @@ http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Digest.ht
 >
 >```ruby
 >   def authenticate
->    admin_accounts = { "admin" => "secret", "pekka" => "beer", "arto" => "foobar", "matti" => "ittam"}
+>    admin_accounts = { "admin" => "secret", "pekka" => "beer", "arto" => "foobar", "matti" => "ittam", "vilma" => "kangas" } 
 >
 >    authenticate_or_request_with_http_basic do |username, password|
 >      # do something here
@@ -1370,18 +1401,26 @@ Tuotantomoodissa virheiden syy täytyykin kaivaa sovelluksen lokista. Kuten viim
 Tälläkin kertaa virheen syy paljastuu:
 
 ```ruby
-➜  ratebeer git:(master) heroku logs
-2017-01-17T17:47:20.918154+00:00 heroku[router]: at=info method=GET path="/ratings" host=enigmatic-eyrie-1511.herokuapp.com request_id=2f37ab40-cfb4-4ba3-800f-05da4e9f7ca8 fwd="87.92.42.254" dyno=web.1 connect=2ms service=19ms status=500 bytes=1754
-2017-01-17T17:47:20.912789+00:00 app[web.1]:   Rendered ratings/index.html.erb within layouts/application (3.0ms)
-2017-01-17T17:47:20.903311+00:00 app[web.1]: Started GET "/ratings" for 87.92.42.254 at 2017-01-17 17:47:20 +0000
-2017-01-17T17:47:20.912110+00:00 app[web.1]: LINE 1: SELECT "ratings".* FROM "ratings"
-2017-01-17T17:47:20.912112+00:00 app[web.1]:                                 ^
-2017-01-17T17:47:20.912107+00:00 app[web.1]: PG::UndefinedTable: ERROR:  relation "ratings" does not exist
-2017-01-17T17:47:20.912114+00:00 app[web.1]: : SELECT "ratings".* FROM "ratings"
-2017-01-17T17:47:20.914488+00:00 app[web.1]: LINE 1: SELECT "ratings"
-.* FROM "ratings"
-2017-01-17T17:47:20.914483+00:00 app[web.1]:
-2017-01-17T17:47:20.914486+00:00 app[web.1]: ActionView::Template::Error (PG::UndefinedTable: ERROR:  relation "ratings" does not exist
+> heroku logs
+2018-09-08T13:34:55.379420+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5] Processing by RatingsController#index as HTML
+2018-09-08T13:34:55.381470+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5]   Rendering ratings/index.html.erb within layouts/application
+2018-09-08T13:34:55.384735+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5]   Rating Load (1.2ms)  SELECT "ratings".* FROM "ratings"
+2018-09-08T13:34:55.385523+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5]   Rendered ratings/index.html.erb within layouts/application (3.9ms)
+2018-09-08T13:34:55.385780+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5] Completed 500 Internal Server Error in 6ms (ActiveRecord: 1.2ms)
+2018-09-08T13:34:55.386820+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5]
+2018-09-08T13:34:55.386846+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5] ActionView::Template::Error (PG::UndefinedTable: ERROR:  relation "ratings" does not exist
+2018-09-08T13:34:55.386848+00:00 app[web.1]: LINE 1: SELECT "ratings".* FROM "ratings"
+2018-09-08T13:34:55.386849+00:00 app[web.1]: ^
+2018-09-08T13:34:55.386850+00:00 app[web.1]: : SELECT "ratings".* FROM "ratings"):
+2018-09-08T13:34:55.386958+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5]     1: <h2>List of ratings</h2>
+2018-09-08T13:34:55.386960+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5]     2:
+2018-09-08T13:34:55.386966+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5]     3: <ul>
+2018-09-08T13:34:55.386968+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5]     4:  <% @ratings.each do |rating| %>
+2018-09-08T13:34:55.386970+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5]     5:    <li> <%= rating %> <%= link_to 'delete', rating_path(rating.id), method: :delete, data: { confirm: 'Are you sure?' } %> </li>
+2018-09-08T13:34:55.386972+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5]     6:  <% end %>
+2018-09-08T13:34:55.386973+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5]     7: </ul>
+2018-09-08T13:34:55.386977+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5]
+2018-09-08T13:34:55.387016+00:00 app[web.1]: [fc20f584-1aef-4d93-8bff-c1a55e5cb6f5] app/views/ratings/index.html.erb:4:in `_app_views_ratings_index_html_erb___3457620989041177195_70202650345860'
 ```
 
 Tietokantataulua *ratings* siis ei ole olemassa. Ongelma korjaantuu suorittamalla migratiot:
@@ -1393,43 +1432,43 @@ Generoidaan seuraavaksi tilanne, jossa tietokanta joutuu hieman epäkonsistentti
 Käynnistä heroku-konsoli komennolla <code>heroku run console</code> ja luo sovellukseen olut johon ei liity mitään panimoa
 
 ```ruby
-> Beer.create name:"crap beer", style:"lager"
-=> #<Beer id: 4, name: "crap beer", style: "lager", brewery_id: nil, created_at: "2017-01-17 17:58:43", updated_at: "2017-01-17 17:58:43">
+> b = Beer.new name:"crap beer", style:"lager"
+> b.save(validate: false)
 ```
 
 ja olut johon liittyvää panimoa ei ole olemassa (eli viiteavaimena oleva panimon id on virheellinen):
 
 ```ruby
-> Beer.create name:"shitty beer", style:"lager", brewery_id: 123
-=> #<Beer id: 5, name: "shitty beer", style: "lager", brewery_id: 123, created_at: "2017-01-17 17:59:50", updated_at: "2017-01-17 17:59:50">
->
+> b = Beer.new name:"shitty beer", style:"lager", brewery_id: 123
+> b.save(validate: false)
 ```
 
 Kun menet nyt kaikkien oluiden on seurauksena jälleen ikävä ilmoitus "We're sorry, but something went wrong.". Jälleen kerran ongelmaa on etsittävä lokeista:
 
 ```ruby
-2017-01-17T18:01:30.233677+00:00 app[web.1]: Started GET "/beers" for 87.92.42.254 at 2017-01-17 18:01:30 +0000
-2017-01-17T18:01:30.247271+00:00 app[web.1]:   Rendered beers/index.html.erb within layouts/application (10.4ms)
-2017-01-17T18:01:30.247375+00:00 app[web.1]: Completed 500 Internal Server Error in 12ms
-2017-01-17T18:01:30.248723+00:00 app[web.1]:
-2017-01-17T18:01:30.248726+00:00 app[web.1]: ActionView::Template::Error (undefined method `name' for nil:NilClass):
-2017-01-17T18:01:30.248728+00:00 app[web.1]:     15:       <tr>
-2017-01-17T18:01:30.248730+00:00 app[web.1]:     16:         <td><%= link_to beer.name, beer %></td>
-2017-01-17T18:01:30.248731+00:00 app[web.1]:     17:         <td><%= beer.style %></td>
-2017-01-17T18:01:30.248733+00:00 app[web.1]:     18:         <td><%= link_to beer.brewery.name, beer.brewery %></td>
-2017-01-17T18:01:30.248735+00:00 app[web.1]:     19:         <td><%= link_to 'Edit', edit_beer_path(beer) %></td>
-2017-01-17T18:01:30.248736+00:00 app[web.1]:     20:         <td><%= link_to 'Destroy', beer, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-2017-01-17T18:01:30.248738+00:00 app[web.1]:     21:       </tr>
-2017-01-17T18:01:30.248740+00:00 app[web.1]:   app/views/beers/index.html.erb:18:in `block in _app_views_beers_index_html_erb__1382470185882805202_69826514779900'
+2018-09-08T13:39:17.133318+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97]   Rendered beers/index.html.erb within layouts/application (14.1ms)
+2018-09-08T13:39:17.133472+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97] Completed 500 Internal Server Error in 15ms (ActiveRecord: 3.1ms)
+2018-09-08T13:39:17.134072+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97]
+2018-09-08T13:39:17.134111+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97] ActionView::Template::Error (undefined method `name' for nil:NilClass):
+2018-09-08T13:39:17.134992+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97]     17:       <tr>
+2018-09-08T13:39:17.134995+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97]     18:         <td><%= link_to beer.name, beer %></td>
+2018-09-08T13:39:17.134998+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97]     20:         <td><%= link_to beer.brewery.name, beer.brewery %></td>
+2018-09-08T13:39:17.134996+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97]     19:         <td><%= beer.style %></td>
+2018-09-08T13:39:17.135001+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97]     22:         <td><%= link_to 'Destroy', beer, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+2018-09-08T13:39:17.135003+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97]     23:       </tr>
+2018-09-08T13:39:17.135000+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97]     21:         <td><%= link_to 'Edit', edit_beer_path(beer) %></td>
+2018-09-08T13:39:17.135009+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97]
+2018-09-08T13:39:17.135058+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97] app/views/beers/index.html.erb:20:in `block in _app_views_beers_index_html_erb___3429094900426111748_70202515664160'
+2018-09-08T13:39:17.135060+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97] app/views/beers/index.html.erb:16:in `_app_views_beers_index_html_erb___3429094900426111748_70202515664160'
 ```
 
 Syy löytyy:
 
-    undefined method `name' for nil:NilClass
+  undefined method `name' for nil:NilClass
 
 virheen aiheuttanut rivi on
 
-    <td><%= link_to beer.brewery.name, beer.brewery %></td>
+  <td><%= link_to beer.brewery.name, beer.brewery %></td>
 
 eli on olemassa olut, jonka kentässä <code>brewery</code> on arvona <code>nil</code>. Tämä voi johtua joko siitä että oluen <code>brewery_id</code> on <code>nil</code> tai <code>brewery_id</code>:n arvona on virheellinen (esim. poistetun panimon) id.
 
@@ -1437,7 +1476,7 @@ Kun virheen syy paljastuu, on etsittävä syylliset. Eli avataan heroku-konsoli 
 
 ```ruby
 > Beer.all.select{ |b| b.brewery.nil? }
-=> [#<Beer id: 4, name: "crap beer", style: "lager", brewery_id: nil, created_at: "2017-01-17 17:58:43", updated_at: "2017-01-17 17:58:43">, #<Beer id: 5, name: "shitty beer", style: "lager", brewery_id: 123, created_at: "2017-01-17 17:59:50", updated_at: "2017-01-17 17:59:50">]
+=> [#<Beer id: 8, name: "crap beer", style: "lager", brewery_id: nil, created_at: "2018-09-08 13:37:21", updated_at: "2018-09-08 13:37:21">, #<Beer id: 9, name: "shitty beer", style: "lager", brewery_id: 123, created_at: "2018-09-08 13:38:51", updated_at: "2018-09-08 13:38:51">]
 >
 ```
 
@@ -1445,7 +1484,7 @@ Seuraavana toimenpiteenä on virheen aiheuttavien olioiden korjaaminen. Koska lo
 
 ```ruby
 > bad_beer = _
-=> [#<Beer id: 4, name: "crap beer", style: "lager", brewery_id: nil, created_at: "2017-01-17 17:58:43", updated_at: "2017-01-17 17:58:43">, #<Beer id: 5, name: "shitty beer", style: "lager", brewery_id: 123, created_at: "2017-01-17 17:59:50", updated_at: "2017-01-17 17:59:50">]
+=> [#<Beer id: 8, name: "crap beer", style: "lager", brewery_id: nil, created_at: "2018-09-08 13:37:21", updated_at: "2018-09-08 13:37:21">, #<Beer id: 9, name: "shitty beer", style: "lager", brewery_id: 123, created_at: "2018-09-08 13:38:51", updated_at: "2018-09-08 13:38:51">]
 > bad_beer.each{ |bad| bad.delete }
 > Beer.all.select{ |b| b.brewery.nil? }
 => []
@@ -1460,4 +1499,4 @@ Koska kyseessä on tuotannossa oleva ohjelma, tietokannan resetointi (<code>rail
 
 Commitoi kaikki tekemäsi muutokset ja pushaa koodi Githubiin. Deployaa myös uusin versio Herokuun.
 
-Tehtävät kirjataan palautetuksi osoitteeseen http://wadrorstats2017.herokuapp.com/courses/1
+Tehtävät kirjataan palautetuksi osoitteeseen https://studies.cs.helsinki.fi/courses/#/rails2018

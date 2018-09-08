@@ -3,4 +3,5 @@
 
 https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/wadror.md
 
-materiaali ja tehtävät [1](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md) 
+materiaali ja tehtävät [1](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md) [2](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md) 
+

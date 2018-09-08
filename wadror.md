@@ -57,7 +57,7 @@ Kurssin ainoa luento pidetään tiistaina 4.9. klo 12-14 salissa CK112
 ## Materiaali ja laskarit
 
 * [viikko 1](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md) tehtävien deadline su 9.9. klo 23.59
-
+* [viikko 2](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md) tehtävien deadline su 16.9. klo 23.59
 
 ## Linkkejä
 
