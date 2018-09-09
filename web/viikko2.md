@@ -1367,8 +1367,7 @@ Koska koodilohko saa saman arvon kuin if:n ehto, voidaan se yksinkertaistaa seur
 
 HTTP Basic -autentikaatio on kätevä tapa yksinkertaisiin sivujen suojaamistarpeisiin, mutta monimutkaisemmissa tilanteissa ja parempaa tietoturvaa edellytettäessä kannattaa käyttää muita ratkaisuja.
 
-Kannattaa huomata, että HTTP Basic -autentikaatiota ei tulisi käyttää kuin suojatun HTTPS-protokollan yli sillä käyttäjätunnus ja salasana lähtetään [Base64](http://en.wikipedia.org/wiki/Base64)-enkoodattuna, eli käytännössä kuka tahansa voi headereihin käsiksi päästyään selvittää salasanan. Hieman parempi vaihtoehto on [Digest-autentikaatio](http://en.wikipedia.org/wiki/Digest_access_authentication), jossa käyttäjätunnuksen ja salasanan sijaan tunnistautuminen tapahtuu yksisuuntaisella funktiolla laskettavan tunnisteen avulla. Digest-autentikaation käyttäminen Railsissa on helppoa, ks.
-http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Digest.html
+Kannattaa huomata, että HTTP Basic -autentikaatiota ei tule käyttää kuin suojatun HTTPS-protokollan yli sillä käyttäjätunnus ja salasana lähtetään [Base64](http://en.wikipedia.org/wiki/Base64)-enkoodattuna, eli käytännössä kuka tahansa voi headereihin käsiksi päästyään selvittää salasanan. Hieman parempi vaihtoehto on [Digest-autentikaatio](http://en.wikipedia.org/wiki/Digest_access_authentication), jossa käyttäjätunnuksen ja salasanan sijaan tunnistautuminen tapahtuu yksisuuntaisella funktiolla laskettavan tunnisteen avulla. Digest-autentikaation käyttäminen Railsissa on helppoa, ks. http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Digest.html
 
 > ## Tehtävä 16
 >
@@ -1376,7 +1375,7 @@ http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Digest.ht
 >
 >```ruby
 >   def authenticate
->    admin_accounts = { "admin" => "secret", "pekka" => "beer", "arto" => "foobar", "matti" => "ittam", "vilma" => "kangas" } 
+>    admin_accounts = { "pekka" => "beer", "arto" => "foobar", "matti" => "ittam", "vilma" => "kangas" } 
 >
 >    authenticate_or_request_with_http_basic do |username, password|
 >      # do something here
@@ -1385,6 +1384,16 @@ http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Digest.ht
 >```
 >
 > Testatessasi toiminnallisuutta, muista että joudut käyttämän incognito-selainta jos haluat kirjautua uudelleen annettuasi kertaalleen oikean käyttäjätunnus/salasanaparin.
+>
+> VIHJE: oikean koodin kirjoittaminen saattaa olla helpointa debuggerin avulla, pysäytä ohjelman suorutus byebugilla:
+>
+>    authenticate_or_request_with_http_basic do |username, password|
+>      byebug
+>    end
+>
+> ja kokeile mitä muuttujissa _admin_accounts_, _username_ ja _password_ on arvoina ja kehittele oikea komento.  
+>
+> VIHJE2: koodilohkon pitää siis saada arvokseen tosi/epätosi riipuen siitä onko salasana oikein. Arvon ei kuitenkaan tarvitse välttämättä olla true tai false, sillä ruby tulkitsee myös muut arvot joko todeksi (truthy) tai epätodeksi (falsy), esim. _nil_ tulkitaan epätodeksi katso tarkemmin esim. seuraavasta https://learn.co/lessons/truthiness-in-ruby-readme
 
 ## Ongelmia herokussa
 
