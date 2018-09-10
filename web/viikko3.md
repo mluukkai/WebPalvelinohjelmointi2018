@@ -1,6 +1,6 @@
 # KESKEN lukeminen omalla vastuulla
 
-Jatkamme sovelluksen rakentamista siitä, mihin jäimme viikon 1 lopussa. Allaoleva materiaali olettaa, että olet tehnyt kaikki edellisen viikon tehtävät. Jos et tehnyt kaikkia tehtäviä, voit täydentää ratkaisusi tehtävien palautusjärjestelmän kautta näkyvän esimerkivastauksen avulla.
+Jatkamme sovelluksen rakentamista siitä, mihin jäimme viikon 2 lopussa. Allaoleva materiaali olettaa, että olet tehnyt kaikki edellisen viikon tehtävät. Jos et tehnyt kaikkia tehtäviä, voit täydentää ratkaisusi tehtävien palautusjärjestelmän kautta näkyvän esimerkivastauksen avulla.
 
 **Huom:** muutamilla on ollut ongelmia Herokun tarvitseman pg-gemin kanssa. Paikallisesti gemiä ei tarvita ja se määriteltiinkin asennettavaksi ainoastaan tuotantoympäristöön. Jos ongelmia ilmenee, voit asentaa gemit antamalla <code>bundle install</code>-komentoon seuraavan lisämääreen:
 
@@ -330,7 +330,7 @@ Rubocop asennetaan antamalla komentoriviltä komento
 
   gem install rubocop
 
-Rubocopin tarkastama säännöstä määritellään projektin juureen sijoitettavassa tiedostossa _.rubocop.yml_. Luo tiedosto projektiisi ja kopioi sille sisältö [täältä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/misc/.rubocop.yml)
+Rubocopin tarkastama säännöstä määritellään projektin juureen sijoitettavassa tiedostossa _.rubocop.yml_. Luo tiedosto projektiisi ja kopioi sille sisältö [täältä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/.rubocop.yml)
 
 Tiedoston määrittelemä säännöstö perustuu [Relaxed Ruby](https://relaxed.ruby.style/)-tyyliin jota se tiukentaa muutamien sääntöjen osalta. Tiedostossa myös suljetaan osa projektin tiedostoja tyylitarkastuksen ulkopuolelle.
 
