@@ -4,14 +4,14 @@
 
 * materiaali ja tehtävät 
   * [viikko 1](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md) deadline su 9.9 klo 23:59
+  * [viikko 2](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md) deadline su 16.9. klo 23.59
 * [tehtäväkirjanpito](https://studies.cs.helsinki.fi/courses/#/rails2018) 
-* paja
-  * tiistaina 12-14 BK107, torstaina 14-16 BK107 ja perjantaina 12-14 B221
+* paja tiistaina 12-14 BK107, torstaina 14-16 BK107 ja perjantaina 12-14 B221
 * kurssin [telegram](https://telegram.org)-kanava <https://t.me/rorwepa>
   *  **Huom:** kaikki epäasialliset, halventavat ja jotain ihmisryhmää syrjivät kommentit kanavalla ovat kiellettyjä ja tälläisten kommenttien esittäjät poistetaan kanavalta
 * Rubyn harjoitteluun tarkoitetun materiaalin [ensimmäinen osa](https://github.com/HY-TKTL/ruby-materiaali/blob/master/Perusteet.md) ja [toinen osa](https://github.com/HY-TKTL/ruby-materiaali/blob/master/LuokkiaJaOlioita.md)
 * Kurssikoe Ti 23.10. klo 16.00 A111
-  * Kurssikokeeseen on *pakko* ilmoittautua viimeistään 13.10 osoitteessa https://weboodi.helsinki.fi/hy/opettaptied.jsp?MD5avain=4c9ff576-f054-4672-91f1-2bbe39fadb2d&Kieli=1&OpetTap=126156500&takaisin=vl_kehys.jsp&vl_tila=3&Opas=6191&haettuOpas=6191&ooo_SortJarj=3&Org=116716376
+  * Kurssikokeeseen on *pakko* ilmoittautua viimeistään 13.10 [weboodissa](https://weboodi.helsinki.fi/hy/opettaptied.jsp?MD5avain=4c9ff576-f054-4672-91f1-2bbe39fadb2d&Kieli=1&OpetTap=126156500&takaisin=vl_kehys.jsp&vl_tila=3&Opas=6191&haettuOpas=6191&ooo_SortJarj=3&Org=116716376)
 
 ## Yleistä
 
@@ -42,9 +42,9 @@ Yksi kurssin tärkeimmistä oppimistavoitteista on itsenäiseen tiedonhakuun kan
 Kurssin arvosana perustuu palautettujen tehtävien määrään. Arvosanaan 1 vaaditaan 50% tehtävistä ja arvosanaan 5 noin 90% tehtävistä. Hyväksytty suoritus edellyttää myös kurssikokeen hyväksyttyä suorittamista. Koe ei kuitenkaan vaikuta kurssin arvosanaan.
 
 
-Kurssikoe Ti 23.10. klo 16.00 A111
+Kurssikoe Tiistaina 23.10. klo 16.00 A111
 
-Kokeeseen on *pakko* ilmoittautua viimeistään 13.10 osoitteessa https://weboodi.helsinki.fi/hy/opettaptied.jsp?MD5avain=4c9ff576-f054-4672-91f1-2bbe39fadb2d&Kieli=1&OpetTap=126156500&takaisin=vl_kehys.jsp&vl_tila=3&Opas=6191&haettuOpas=6191&ooo_SortJarj=3&Org=116716376
+Kokeeseen on *pakko* ilmoittautua viimeistään 13.10 [weboodissa](https://weboodi.helsinki.fi/hy/opettaptied.jsp?MD5avain=4c9ff576-f054-4672-91f1-2bbe39fadb2d&Kieli=1&OpetTap=126156500&takaisin=vl_kehys.jsp&vl_tila=3&Opas=6191&haettuOpas=6191&ooo_SortJarj=3&Org=116716376)
 
 ## Opetus
 
@@ -52,7 +52,7 @@ Kurssin ainoa luento pidetään tiistaina 4.9. klo 12-14 salissa CK112
 
 ### Paja
 
-* paja-ajat päätetään ensimmäisellä luennolla
+* tiistaina 12-14 BK107, torstaina 14-16 BK107 ja perjantaina 12-14 B221
 
 ## Materiaali ja laskarit
 

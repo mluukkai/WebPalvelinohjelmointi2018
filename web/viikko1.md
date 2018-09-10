@@ -1241,6 +1241,6 @@ sqlite3 gem on siis käytössä ainoastaan development- ja test-ympäristöissä
 
 ## Tehtävien palautus
 
-Commitoi kaikki tekemäsi muutokset ja pushaa koodi Githubiin. Lisää Githubin readme-tiedostoon linkki sovelluksen Heroku-instanssiin. Oletusarvoisesti Rails-sovelluksen readme-tiedostoon generoituvan sisältö kannattanee poistaa.
+Commitoi kaikki tekemäsi muutokset ja pushaa koodi Githubiin. Lisää Githubin readme-tiedostoon linkki sovelluksen Heroku-instanssiin. Oletusarvoisesti Rails-sovelluksen readme-tiedostoon generoituvan sisältö kannattanee poistaa. _Sovelluksen vieminen Herokuun ei ole edellytys palautuksen tekeminen, se on kuitenkin ehdottoman suositeltavaa ja hyödyllistä._
 
 Tehtävät kirjataan palautetuksi osoitteeseen https://studies.cs.helsinki.fi/courses/#/rails2018
