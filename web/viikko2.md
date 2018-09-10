@@ -492,11 +492,11 @@ number of beers 2
 Metodeja olisi voitu kutsua olion sisältä myös käyttäen Rubyn 'thissiä' eli olion <code>self</code>-viitettä:
 
 ```ruby
-  def print_report
-    puts self.name
-    puts "established at year #{self.year}"
-    puts "number of beers #{self.beers.count}"
-  end
+def print_report
+  puts self.name
+  puts "established at year #{self.year}"
+  puts "number of beers #{self.beers.count}"
+end
 ```
 
 Tehdään sitten panimolle metodi, jonka avulla panimon voi 'uudelleenkäynnistää', tällöin panimon perustamisvuosi muuttuu vuodeksi 2018:
@@ -954,7 +954,7 @@ Aivan kuten debuggeria käytettäessä, web-konsolin näkymä avautuu siihen kon
 
 ## Polkuapumetodit
 
-Rails luo automaattisesti kaikille tiedostoon _routes.rb_ määritellyille reiteille ns. polkumetodit (engl. path helper), joita hyödyntämällä sovelluksessa ei ole tarvetta kovakoodata eri sivujen osoitteita.
+Rails luo automaattisesti kaikille tiedostoon _routes.rb_ määritellyille reiteille ns. polkuapumetodit (engl. path helper), joita hyödyntämällä sovelluksessa ei ole tarvetta kovakoodata eri sivujen osoitteita.
 
 Esim. uuden reittauksen jälkeisen uudelleenohjauksen osoite olisi voitu <code>ratings_path</code>-apufunktion sijaan kovakoodata:
 
@@ -1070,11 +1070,11 @@ eli lomakkeen <code>beer_id</code>:n arvo generoidaan HTML lomakkeen select-elem
 >
 > Kontrolleri
 >```ruby
->  def new
->    @beer = Beer.new
->    @breweries = Brewery.all
->    @styles = ["Weizen", "Lager", "Pale ale", "IPA", "Porter"]
->  end
+>def new
+>  @beer = Beer.new
+>  @breweries = Brewery.all
+>  @styles = ["Weizen", "Lager", "Pale ale", "IPA", "Porter"]
+>end
 >```
 >
 > Näkymän tulee siis generoida lomakkeeseen valintavaihtoehdot taulukon <code>@styles</code> perusteella. Vaihtoehtojen generointiin kannattaa nyt metodin <code>options_from_collection_for_select</code> sijaan käyttää metodia <code>options_for_select</code>, ks.
@@ -1120,7 +1120,7 @@ Koska emme tarvitse reittejä **delete**, **edit** ja **update**, käytämme <co
 
 Tulos on muuten sama kuin edellä, mutta apumetodin <code>ratings_new_path</code> nimi on nyt Railsin konvention mukainen <code>new_rating_path</code>.
 
-Korvaa vielä templatessa app/views/ratings/index.erb.html käytetty vanha polkumetodikutsu uudella.
+Korvaa vielä templatessa app/views/ratings/index.erb.html käytetty vanha polkuapumetodikutsu uudella.
 
 ## Ratingin poisto
 
