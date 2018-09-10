@@ -322,15 +322,15 @@ Jos käytössäsi on [Pry](https://github.com/mluukkai/WebPalvelinohjelmointi201
 
 ## Rubocop: tyyli ratkaisee
 
-Isommissa ohjelmistoprojekteissa on tapana sopia yhtenäisestä koodityylistä, eli esim. tavoista miten asioita nimetään, mihin aaltosulkeet sijoitetan, missä on välilyönti ja missä ei. Railsin konventiot määrittelevät jo jossain määrin koodin tyyliäkin, lähinnä luokkien ja metodien nimentätasolla.
+Isommissa ohjelmistoprojekteissa on tapana sopia yhtenäisestä koodityylistä, eli esim. tavoista miten asioita nimetään, mihin aaltosulkeet sijoitetan, missä on välilyönti ja missä ei. Railsin konventiot määrittelevät jo jossain määrin koodin tyyliäkin, lähinnä luokkien ja metodien nimennän tasolla.
 
-Otetaan nyt käyttöön [Rubocop](https://github.com/rubocop-hq/rubocop), jonka avulla voimme määritellä koodilemme tyylisäännöstön ja seurata, että pidättäydymme säännöstön mukaisessa tyylissä. Rubocop on vastaavanlainen _staattisen analyysin_ työkalu kuin Javascript-maailmassa käytetty [ESLint](https://eslint.org/) tai Javan kanssa käytetty checkstyle.
+Otetaan nyt käyttöön [Rubocop](https://github.com/rubocop-hq/rubocop), jonka avulla voimme määritellä koodilemme tyylisäännöstön ja seurata, että pidättäydymme säännöstön mukaisessa koodissa. Rubocop on vastaavanlainen _staattisen analyysin_ työkalu kuin Javascript-maailmassa käytetty [ESLint](https://eslint.org/) tai Javan [checkstyle](http://checkstyle.sourceforge.net/).
 
 Rubocop asennetaan antamalla komentoriviltä komento
 
   gem install rubocop
 
-Rubocopin tarkastama säännöstä määritellään projektin juureen sijoitettavassa tiedostossa _.rubocop.yml_. Luo tiedosto projektiisi ja kopioi sille sisältö [täältä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/misc/.rubocop.yml)
+Rubocopin tarkastama säännöstö määritellään projektin juureen sijoitettavassa tiedostossa _.rubocop.yml_. Luo tiedosto projektiisi (huomaa, että tiedoston nimen alussa on piste) ja kopioi sille sisältö [täältä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/misc/.rubocop.yml)
 
 Tiedoston määrittelemä säännöstö perustuu [Relaxed Ruby](https://relaxed.ruby.style/)-tyyliin jota se tiukentaa muutamien sääntöjen osalta. Tiedostossa myös suljetaan osa projektin tiedostoja tyylitarkastuksen ulkopuolelle.
 
