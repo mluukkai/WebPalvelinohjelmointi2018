@@ -332,7 +332,7 @@ Rubocop asennetaan antamalla komentoriviltä komento
 
 Rubocopin tarkastama säännöstö määritellään projektin juureen sijoitettavassa tiedostossa _.rubocop.yml_. Luo tiedosto projektiisi (huomaa, että tiedoston nimen alussa on piste) ja kopioi sille sisältö [täältä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/misc/.rubocop.yml)
 
-Tiedoston määrittelemä säännöstö perustuu [Relaxed Ruby](https://relaxed.ruby.style/)-tyyliin, jota se tiukentaa muutamien sääntöjen osalta. Tiedostossa myös jätetääm osa projektin tiedostoista tyylitarkastuksen ulkopuolelle.
+Tiedoston määrittelemä säännöstö perustuu [Relaxed Ruby](https://relaxed.ruby.style/) -tyyliin, jota se tiukentaa muutamien sääntöjen osalta. Tiedostossa myös jätetääm osa projektin tiedostoista tyylitarkastuksen ulkopuolelle.
 
 Tyylitarkastus suoritetaan komentoriviltä komennolla _rubocop_. 
 
