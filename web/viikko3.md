@@ -457,7 +457,7 @@ Tehdään nyt sovellukseen kirjautumisesta ja uloskirjautumisesta huolehtiva kon
 
 Voidaan ajatella, että kirjautumisen yhteydessä syntyy sessio, ja tätä voidaan pitää jossain mielessä samanlaisena "resurssina" kuin esim. olutta. Nimetäänkin kirjautumisesta huolehtiva kontrolleri <code>SessionsController</code>iksi
 
-Sessio-resurssi kuitenkin poikkeaa esim. oluista siinä mielessä että tietyllä ajanhetkellä käyttäjä joko ei ole tai on kirjaantuneena. Sessioita ei siis ole yhden käyttäjän näkökulmasta oluiden tapaan useitavaan maksimissaan yksi. Kaikkien sessioiden listaa ei nyt reittien tasolla ole mielekästä olla ollenkaan olemassa kuten esim. oluiden tilanteessa on. Reitit kannattaakin kirjoittaa yksikössä ja tämä saadaan aikaan kun session retit luodaan routes.rb:hen komennolla <code>resource</code>:
+Sessio-resurssi kuitenkin poikkeaa esim. oluista siinä mielessä että tietyllä ajanhetkellä käyttäjä joko ei ole tai on kirjaantuneena. Sessioita ei siis ole yhden käyttäjän näkökulmasta oluiden tapaan useita vaan maksimissaan yksi. Kaikkien sessioiden listaa ei nyt reittien tasolla ole mielekästä olla ollenkaan olemassa kuten esim. oluiden tilanteessa on. Reitit kannattaakin kirjoittaa yksikössä ja tämä saadaan aikaan kun session retit luodaan routes.rb:hen komennolla <code>resource</code>:
 
     resource :session, only: [:new, :create, :destroy]
 
@@ -491,7 +491,7 @@ class SessionsController < ApplicationController
 end
 ```
 
-Huomaa, että vaikka sessioiden reitit kirjoitetaan nyt yksikössä **session** ja **session/new** on kontrollerin ja näkymien hakemiston kirjoitusasu kuitenkin railsin normaalia monikkomuotoa noudattava.
+Huomaa, että vaikka sessioiden reitit kirjoitetaan nyt yksikössä **session** ja **session/new**, on kontrollerin ja näkymien hakemiston kirjoitusasu kuitenkin railsin normaalia monikkomuotoa noudattava.
 
 Kirjautumissivun app/views/sessions/new.html.erb koodi on seuraavassa:
 
@@ -550,9 +550,9 @@ menemällä osoitteeseen [/session/new](http://localhost:3000/session/new) voimm
   resource :session, only: [:new, :create, :destroy]
 ```
 
-> ## Tehtävä 1
+> ## Tehtävä 3
 >
-> Tee kaikki ylläesitetyt muutokset ja varmista, että kirjautuminen onnistuu (eli kirjautunut käyttäjä näytetään sivulla) olemassaolevalla käyttäjätunnuksella (jonka siis voit luoda osoitteessa [/signup](http://localhost:3000/signup). Vaikka uloskirjautuminen ei ole mahdollista, voit kirjautua uudella tunnuksella kirjautumisosoitteessa ja vanha kirjautuminen ylikirjoittuu.
+> Tee kaikki ylläesitetyt muutokset ja varmista, että kirjautuminen onnistuu (eli kirjautunut käyttäjä näytetään sivulla) olemassaolevalla käyttäjätunnuksella (jonka siis voit luoda osoitteessa [/signup](http://localhost:3000/signup) ). Vaikka uloskirjautuminen ei ole mahdollista, voit kirjautua uudella tunnuksella kirjautumisosoitteessa ja vanha kirjautuminen ylikirjoittuu.
 
 ## Kontrollerien ja näkymien apumetodi
 
@@ -607,13 +607,13 @@ Olisi periaatteessa ollut mahdollista määritellä myös
 
 eli mahdollistaa uloskirjautuminen HTTP GET:in avulla. Ei kuitenkaan pidetä hyvänä käytänteenä, että HTTP GET -pyyntö tekee muutoksia sovelluksen tilaan ja pysyttäydytään edelleen REST-filosofian mukaisessa käytänteessä, jonka mukaan resurssin tuhoaminen tapahtuu HTTP DELETE -pyynnöllä. Tässä tapauksessa vaan resurssi on hieman laveammin tulkittava asia eli käyttäjän sisäänkirjautuminen.
 
-> ## Tehtävä 2
+> ## Tehtävä 4
 >
 > Muokkaa nyt sovelluksen application layoutissa olevaa navigaatiopalkkia siten, että palkkiin tulee näkyville sisään- ja uloskirjautumislinkit. Huomioi, että uloskirjautumislinkin yhteydessä on määriteltävä käytettäväksi HTTP-metodiksi DELETE, katso esimerkki tähän esim. kaikki käyttäjät listaavalta sivulta.
 >
 > Edellisten lisäksi lisää palkkiin linkki kaikkien käyttäjien sivulle, sekä kirjautuneen käyttäjän nimi, joka toimii linkkinä käyttäjän omalle sivulle. Käyttäjän ollessa kirjaantuneena tulee palkissa olla myös linkki uuden oluen reittaukseen.
 >
-> Muistutus: näen järjestelmään määritellyt routet ja polkuapumetodit komentoriviltä komennolla <code>rake routes</code> tai menemällä mihin tahansa sovelluksen osoitteeseen, jota ei ole olemassa, esim. [http://localhost:3000/wrong](http://localhost:3000/wrong)
+> Muistutus: näet järjestelmään määritellyt routet ja polkuapumetodit komentoriviltä komennolla <code>rake routes</code> tai menemällä mihin tahansa sovelluksen osoitteeseen, jota ei ole olemassa, esim. [http://localhost:3000/wrong](http://localhost:3000/wrong)
 
 Tehtävän jälkeen sovelluksesi näyttää suunnilleen seuraavalta jos käyttäjä on kirjautuneena:
 
@@ -706,7 +706,7 @@ Päätetään että laitetaan kaikkien olemassaolevien reittausten käyttäjäks
 
 **HUOM:** reittausten tekeminen käyttöliittymän kautta ei toistaiseksi toimi kunnolla, sillä näin luotuja uusia reittauksia ei vielä liitetä mihinkään käyttäjään. Korjaamme tilanteen pian.
 
-> ## Tehtävä 3
+> ## Tehtävä 5
 >
 >  Lisää käyttäjän sivulle eli näkymään app/views/users/show.html.erb
 > * käyttäjän reittausten määrä ja keskiarvo (huom: käytä edellisellä viikolla  määriteltyä moduulia <code>RatingAverage</code>, jotta saat keskiarvon laskevan koodin käyttäjälle!)
@@ -746,7 +746,7 @@ Huomaa, että <code>current_user</code> on luokkaan <code>ApplicationController<
 
 Reittauksen luomisen jälkeen kontrolleri on laitettu uudelleenohjaamaan selain kirjautuneena olevan käyttäjän sivulle.
 
-> ## Tehtävä 4
+> ## Tehtävä 6
 >
 > Muuta sovellusta vielä siten, että kaikkien reittausten sivulla ei ole enää mahdollisuutta reittausten poistoon ja että reittauksen yhteydessä näkyy reittauksen tekijän nimi, joka myös toimii linkkinä reittaajan sivulle.
 
@@ -985,7 +985,7 @@ Validointivirheitä löytyessä, näkymätemplate renderöi nyt kaikki joukossa 
 Apuja seuraaviin tehtäviin löytyy osoitteesta
 http://guides.rubyonrails.org/active_record_validations.html ja http://apidock.com/rails/ActiveModel/Validations/ClassMethods
 
-> ## Tehtävä 5
+> ## Tehtävä 7
 >
 > Lisää ohjelmaasi seuraavat validoinnit
 > * oluen ja panimon nimi on epätyhjä
@@ -1016,7 +1016,7 @@ Mistä tämä johtuu? Jos oluen luonti epäonnistuu validoinnissa tapahtuneen vi
   end
 ```
 
-> ## Tehtävä 6
+> ## Tehtävä 8
 >
 > ### tehtävän teko ei ole viikon jatkamisen kannalta välttämätöntä eli ei kannata juuttua tähän tehtävään. Voit tehdä tehtävän myös viikon muiden tehtävien jälkeen.
 >
@@ -1026,7 +1026,7 @@ Mistä tämä johtuu? Jos oluen luonti epäonnistuu validoinnissa tapahtuneen vi
 >
 >   validates :year, numericality: { less_than_or_equal_to: Time.now.year }
 >
-> Nyt käy siten, että <code>Time.now.year</code> evaluoidaan siinä vaiheessa kun ohjelma lataa luokan koodin. Jos esim. ohjelma käynnistetään vuoden 2017 lopussa, ei vuoden 2017 alussa voida rekisteröidä 2017 aloittanutta panimoa, sillä vuoden yläraja validoinnissa on ohjelman käynnistyshetkellä evaluoitunut 2017
+> Nyt käy siten, että <code>Time.now.year</code> evaluoidaan siinä vaiheessa kun ohjelma lataa luokan koodin. Jos esim. ohjelma käynnistetään vuoden 2018 lopussa, ei vuoden 2018 alussa voida rekisteröidä 2018 aloittanutta panimoa, sillä vuoden yläraja validoinnissa on ohjelman käynnistyshetkellä evaluoitunut 2018
 >
 > Eräs kelvollinen ratkaisutapa on oman validointimetodin määritteleminen http://guides.rubyonrails.org/active_record_validations.html#custom-methods
 >
@@ -1037,7 +1037,7 @@ Mistä tämä johtuu? Jos oluen luonti epäonnistuu validoinnissa tapahtuneen vi
 
 Yhteen olueeseen liittyy monta reittausta, ja reittaus liittyy aina yhteen käyttäjään, eli olueeseen liittyy monta reittauksen tehnyttä käyttäjää. Vastaavasti käyttäjällä on monta reittausta ja reittaus liittyy yhteen olueeseen. Eli käyttäjään liittyy monta reitattua olutta. Oluiden ja käyttäjien välillä on siis **monen suhde moneen -yhteys**, jossa ratings-taulu toimii liitostaulun tavoin.
 
-Saammekin tuotua tämän many to many -yhteyden kooditasolle helposti käyttämällä jo [edellisen viikon lopulta tuttua](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko2.md#olioiden-ep%C3%A4suora-yhteys) tapaa, eli **has_many through** -yhteyttä:
+Saammekin tuotua tämän many to many -yhteyden kooditasolle helposti käyttämällä jo [edellisen viikon lopulta tuttua](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#olioiden-ep%C3%A4suora-yhteys) tapaa, eli **has_many through** -yhteyttä:
 
 ```ruby
 class Beer < ActiveRecord::Base
@@ -1117,7 +1117,7 @@ Huom: Railsissa on myös toinen tapa many to many -yhteyksien luomiseen <code>ha
 
 Trendinä kuitenkin on, että metodin has_and_belongs_to_many sijaan käytetään (sen monien ongelmien takia)  has_many through -yhdistelmää ja eksplisiittisesti määriteltyä yhteystaulua. Mm. Chad Fowler kehottaa kirjassaan [Rails recepies](http://pragprog.com/book/rr2/rails-recipes) välttämään has_and_belongs_to_many:n käyttöä, sama neuvo annetaan Obie Fernandezin autoritiivisessa teoksessa [Rails 4 Way](https://leanpub.com/tr4w)
 
-> ## Tehtävät 7-8: Olutseurat
+> ## Tehtävät 9-10: Olutseurat
 >
 > ### Tämän ja seuraavan tehtävän tekeminen ei ole välttämätöntä viikon jatkamisen kannalta. Voit tehdä tämän tehtävän myös viikon muiden tehtävien jälkeen.
 >
@@ -1133,7 +1133,7 @@ Trendinä kuitenkin on, että metodin has_and_belongs_to_many sijaan käytetää
 >
 > Tässä vaiheessa ei ole vielä tarvetta toteuttaa toiminnallisuutta, jonka avulla käyttäjän voi poistaa olutseurasta.
 
-> # Tehtävä 9
+> ## Tehtävä 11
 >
 > Hio edellisessä tehävässä toteuttamaasi toiminnallisuutta siten, että käyttäjä ei voi liittyä useampaan kertaan samaan olutseuraan. 
 >
@@ -1282,7 +1282,7 @@ Kokeile mitä tapahtuu, jos password confirmatioksi annetaan eri arvo kuin passw
 
 Huom: jos saat sisäänkirjautumisyrityksessä virheilmoitusen <code>BCrypt::Errors::InvalidHash</code> johtuu virhe melko varmasti siitä että käyttäjälle ei ole asetettu salasanaa. Eli aseta salasana konsolista ja yritä uudelleen.
 
-> ## Tehtävä 10
+> ## Tehtävä 12
 >
 > Tee luokalle User-validointi, joka varmistaa, että salasanan pituus on vähintää 4 merkkiä, ja että salasana sisältää vähintään yhden ison kirjaimen (voit unohtaa skandit) ja yhden numeron.
 
@@ -1320,21 +1320,21 @@ Reittauksen poistolinkkiä ei oikeastaan ole edes syytä näyttää muuta kuin k
 
 Huomaa, että pelkkä **delete**-linkin poistaminen ei estä poistamasta muiden käyttäjien tekemiä reittauksia, sillä on erittäin helppoa tehdä HTTP DELETE -operaatio mielivaltaisen reittauksen urliin. Tämän takia on oleellista tehdä kirjaantuneen käyttäjän tarkistus poistamisen suorittavassa kontrollerimetodissa.
 
-> ## Tehtävä 11
+> ## Tehtävä 13
 >
 > Kaikkien käyttäjien listalla [http://localhost:3000/users](http://localhost:3000/users) on nyt linkki **destroy**, jonka avulla käyttäjän voi tuhota, sekä linkki **edit** käyttäjän tietojen muuttamista varten. Poista molemmat linkit sivulta ja lisää ne (oikeastaan deleten siirto riittää, sillä edit on jo valmiina) käyttäjän sivulle.
 >
 > Näytä editointi- ja tuhoamislinkki vain kirjautuneen käyttäjän itsensä sivulla. Muuta myös User-kontrollerin metodeja <code>update</code> ja <code>destroy</code> siten, että olion tietojen muutosta tai poistoa ei voi tehdä kuin kirjaantuneena oleva käyttäjä itselleen.
 
-> ## Tehtävä 12
+> ## Tehtävä 14
 >
 > Luo uusi käyttäjätunnus, kirjaudu käyttäjänä ja tuhoa käyttäjä. Käyttäjätunnuksen tuhoamisesta seuraa ikävä virhe. **Pääset virheestä eroon tuhoamalla selaimesta cookiet.** Mieti mistä virhe johtuu ja korjaa asia myös sovelluksesta siten, että käyttäjän tuhoamisen jälkeen sovellus ei joudu virhetilanteeseen.
 >
 > Tämä tehtävä on vuosien varrella osoittautunut hankalaksi. Jos et pääse eteenpäin, kysy apua pajassa, kurssin telegram- tai irc-kanavalta, ks. kurssisivu
 
-> ## Tehtävä 13
+> ## Tehtävä 15
 >
-> Laajenna vielä sovellusta siten, että käyttäjän tuhoutuessa käyttäjän tekemät reittaukset tuhoutuvat automaattisesti. Ks. https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko2.md#orvot-oliot
+> Laajenna vielä sovellusta siten, että käyttäjän tuhoutuessa käyttäjän tekemät reittaukset tuhoutuvat automaattisesti. Ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#orvot-oliot
 >
 > Jos teit tehtävät 7-8 eli toteutit järjestelmään olutkerhot, tuhoa käyttäjän tuhoamisen yhteydessä myös käyttäjän jäsenyydet olutkerhoissa
 
@@ -1436,7 +1436,7 @@ Muutosten jälkeen käyttäjän tietojen muuttamislomake näyttää seuraavalta:
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w3-7.png)
 
-> ## Tehtävä 14
+> ## Tehtävä 16
 >
 > Ainoa käyttäjään liittyvä tieto on nyt salasana, joten muuta käyttäjän tietojen muuttamiseen tarkoitettua lomaketta siten, että se näyttää allaolevassa kuvassa olevalta. Huomaa, että uuden käyttäjän rekisteröitymisen (signup) on edelleen näytettävä samalta kuin ennen.
 
