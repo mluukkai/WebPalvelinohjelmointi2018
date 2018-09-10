@@ -1,6 +1,6 @@
 # KESKEN lukeminen omalla vastuulla
 
-Jatkamme sovelluksen rakentamista siitä, mihin jäimme viikon 1 lopussa. Allaoleva materiaali olettaa, että olet tehnyt kaikki edellisen viikon tehtävät. Jos et tehnyt kaikkia tehtäviä, voit täydentää ratkaisusi tehtävien palautusjärjestelmän kautta näkyvän esimerkivastauksen avulla.
+Jatkamme sovelluksen rakentamista siitä, mihin jäimme viikon 2 lopussa. Allaoleva materiaali olettaa, että olet tehnyt kaikki edellisen viikon tehtävät. Jos et tehnyt kaikkia tehtäviä, voit täydentää ratkaisusi tehtävien palautusjärjestelmän kautta näkyvän esimerkivastauksen avulla.
 
 **Huom:** muutamilla on ollut ongelmia Herokun tarvitseman pg-gemin kanssa. Paikallisesti gemiä ei tarvita ja se määriteltiinkin asennettavaksi ainoastaan tuotantoympäristöön. Jos ongelmia ilmenee, voit asentaa gemit antamalla <code>bundle install</code>-komentoon seuraavan lisämääreen:
 
@@ -332,7 +332,7 @@ Rubocop asennetaan antamalla komentoriviltä komento
 
 Rubocopin tarkastama säännöstö määritellään projektin juureen sijoitettavassa tiedostossa _.rubocop.yml_. Luo tiedosto projektiisi (huomaa, että tiedoston nimen alussa on piste) ja kopioi sille sisältö [täältä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/misc/.rubocop.yml)
 
-Tiedoston määrittelemä säännöstö perustuu [Relaxed Ruby](https://relaxed.ruby.style/)-tyyliin jota se tiukentaa muutamien sääntöjen osalta. Tiedostossa myös suljetaan osa projektin tiedostoja tyylitarkastuksen ulkopuolelle.
+Tiedoston määrittelemä säännöstö perustuu [Relaxed Ruby](https://relaxed.ruby.style/)-tyyliin, jota se tiukentaa muutamien sääntöjen osalta. Tiedostossa myös jätetääm osa projektin tiedostoista tyylitarkastuksen ulkopuolelle.
 
 Tyylitarkastus suoritetaan komentoriviltä komennolla _rubocop_. 
 
@@ -344,9 +344,9 @@ app/models/beer.rb:8:5: C: Layout/EmptyLineAfterGuardClause: Add empty line afte
     ^^^^^^^^^^^^^^^^^^^^^^^^^^
 </pre>
 
-Tiedoston _beer.rb_ rivillä 8 rikotaan nyt sääntöä [Layout/EmptyLineAfterGuardClause](http://docs.rubocop.org/en/latest/cops_layout/#layoutemptylineafterguardclause).
+Tiedoston _beer.rb_ rivillä 8 rikotaan sääntöä [Layout/EmptyLineAfterGuardClause](http://docs.rubocop.org/en/latest/cops_layout/#layoutemptylineafterguardclause).
 
-Sääntöjen [dokumentaatio](http://docs.rubocop.org/en/latest/cops/) selvittää mistä on kyse, eli nyt ongelmana on se, että äsken määrittelemässämme metodissa _average_ ensimmäisen koodirivin, joka on ns. _guard clause_ jälkeen ei ole tyhjää riviä:
+Sääntöjen [dokumentaatio](http://docs.rubocop.org/en/latest/cops/) selvittää mistä on kyse, eli nyt ongelmana on se, että äsken määrittelemässämme metodissa _average_ ensimmäisen koodirivin, joka on ns. _guard clause_, jälkeen ei ole tyhjää riviä:
 
 ```
 def average
@@ -384,7 +384,7 @@ app/models/rating.rb:7:1: C: Layout/TrailingWhitespace: Trailing whitespace dete
 >
 > HUOM: voit suorittaa tarkastuksen vain yksittäiselle tiedostolle tai hakemiston sisällölle. Esim. komento _rubocop app/models/beer.rb_ tekee tarkastuksen tiedostolle _beer.rb_
 >
-> HUOM2: jos ei suoraan ymmärrä mistä kussakin sääntörikkeessä on kyse, tarkasta asia dokumentaatiosta
+> HUOM2: jos ei suoraan ymmärrä mistä kussakin sääntörikkeessä on kyse, tarkasta asia [dokumentaatiosta](http://docs.rubocop.org/en/latest/cops/)
 
 > ## Tehtävä 2
 >
@@ -392,7 +392,7 @@ app/models/rating.rb:7:1: C: Layout/TrailingWhitespace: Trailing whitespace dete
 >
 > Löydät ohjeita säännön määrittelyyn [dokumentaation](http://docs.rubocop.org/en/latest/cops/) Metrics-osuudesta.
 
-Tästä lähtien kannattaa pitää huoli että kaikki koodi mitä teet säilyy rubocopin sääntöjen mukaisena. Voit halutessasi muokata konfiguroituja sääntöjä mielesi mukaiseksi.
+Tästä lähtien kannattaa pitää huoli, että kaikki koodi mitä teet säilyy rubocopin sääntöjen mukaisena. Voit halutessasi muokata konfiguroituja sääntöjä mielesi mukaiseksi.
 
 ## Käyttäjä ja sessio
 
