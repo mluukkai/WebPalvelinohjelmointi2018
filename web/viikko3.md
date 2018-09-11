@@ -295,21 +295,21 @@ Olemme siis jakamassa kokonaisluku nollaa luvulla nolla, katsotaan mikä laskuop
 eli estääksemme nollalla jakamisen, tulee metodin käsitellä tapaus erikseen:
 
 ```ruby
-  def average
-    return 0 if ratings.empty?
-    ratings.map{ |r| r.score }.sum / ratings.count.to_f
-  end
+def average
+  return 0 if ratings.empty?
+  ratings.map{ |r| r.score }.sum / ratings.count.to_f
+end
 ```
 
 Käytämme onliner-if:iä ja kokoelman metodia <code>empty?</code> joka evaluoituu todeksi kokoelman ollessa tyhjä. Kyseessä on rubymainen tapa toteuttaa tyhjyystarkastus, joka "javamaisesti" kirjotettuna olisi:
 
 ```ruby
-  def average
-    if ratings.count == 0
-      return 0
-    end
-    ratings.map{ |r| r.score }.sum / ratings.count.to_f
+def average
+  if ratings.count == 0
+    return 0
   end
+  ratings.map{ |r| r.score }.sum / ratings.count.to_f
+end
 ```
 
 Kutakin kieltä käytettäessä tulee kuitenkin mukautua kielen omaan tyyliin, varsinkin jos on mukana projekteissa joita ohjelmoi useampi ihminen.
@@ -399,7 +399,7 @@ Tästä lähtien kannattaa pitää huoli, että kaikki koodi mitä teet säilyy 
 Laajennetaan sovellusta seuraavaksi siten, että käyttäjien on mahdollista rekisteröidä itselleen järjestelmään käyttäjätunnus.
 Tulemme hetken päästä muuttamaan toiminnallisuutta myös siten, että jokainen reittaus liittyy sovellukseen kirjautuneena olevaan käyttäjään:
 
-![mvc-kuva](http://yuml.me/ddc9b7c9)
+![mvc-kuva](http://yuml.me/4abc9b51.png)
 
 Tehdään käyttäjä ensin pelkän käyttäjätunnuksen omaavaksi olioksi ja lisätään myöhemmin käyttäjälle myös salasana.
 
@@ -424,9 +424,10 @@ Talletetaan reittaus sessioon tekemällä seuraava lisäys reittauskontrolleriin
 
 ```ruby
   def create
+    # otetaan luotu reittaus muuttujaan
     rating = Rating.create params.require(:rating).permit(:score, :beer_id)
 
-    # talletetaan tehdyn reittauksen sessioon
+    # talletetaan tehty reittaus sessioon
     session[:last_rating] = "#{rating.beer.name} #{rating.score} points"
 
     redirect_to ratings_path
@@ -504,21 +505,21 @@ Kirjautumissivun app/views/sessions/new.html.erb koodi on seuraavassa:
 <% end %>
 ```
 
-Toisin kuin reittauksille tekemämme formi (kertaa asia [viime viikolta](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko2.md#lomake-ja-post)), nyt tekemämme lomake ei perustu olioon ja lomake luodaan <code>form_tag</code>-metodilla, ks. http://guides.rubyonrails.org/form_helpers.html#dealing-with-basic-forms
+Toisin kuin reittauksille tekemämme formi (kertaa asia [viime viikolta](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#lomake-ja-post)), nyt tekemämme lomake ei perustu olioon ja lomake luodaan <code>form_tag</code>-metodilla, ks. http://guides.rubyonrails.org/form_helpers.html#dealing-with-basic-forms
 
 Lomakkeen lähettäminen siis aiheuttaa HTTP POST -pyynnön session_pathiin (huomaa yksikkömuoto!) eli osoitteeseen **session**.
 
-Pyynnön käsittelevä metodi ottaa <code>params</code>-olioon talletetun käyttäjätunnuksen ja hakee sitä vastaavan käyttäjäolion kannasta ja tallettaa olion id:n sessioon jos käyttäjä on olemassa. Lopuksi käyttäjä _uudelleenohjataan_ (kertaa [viime viikolta](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko2.md#uudelleenohjaus) mitä uudelleenohjauksella tarkoitetaan) omalle sivulleen. Kontrollerin koodi vielä uudelleen seuraavassa:
+Pyynnön käsittelevä metodi ottaa <code>params</code>-olioon talletetun käyttäjätunnuksen ja hakee sitä vastaavan käyttäjäolion kannasta ja tallettaa olion id:n sessioon jos käyttäjä on olemassa. Lopuksi käyttäjä _uudelleenohjataan_ (kertaa [viime viikolta](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#uudelleenohjaus) mitä uudelleenohjauksella tarkoitetaan) omalle sivulleen. Kontrollerin koodi vielä uudelleen seuraavassa:
 
 ```ruby
-  def create
-    user = User.find_by username: params[:username]
-    session[:user_id] = user.id if not user.nil?
-    redirect_to user
-  end
+def create
+  user = User.find_by username: params[:username]
+  session[:user_id] = user.id if not user.nil?
+  redirect_to user
+end
 ```
 
-Huom1: komento <code>redirect_to user</code> siis on lyhennysmerkintä seuraavalla <code>redirect_to user_path(user)</code>, ks. [viikko 1](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko1.md#kertausta-polkujen-ja-kontrollerien-niment%C3%A4konventiot).
+Huom1: komento <code>redirect_to user</code> siis on lyhennysmerkintä seuraavalla <code>redirect_to user_path(user)</code>, ks. [viikko 1](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md#kertausta-polkujen-ja-kontrollerien-niment%C3%A4konventiot).
 
 Huom2: Rubyssa yhdistelmän <code>if not</code> sijaan voidaan käyttää myös komentoa <code>unless</code>, eli metodin toinen rivi oltaisiin voitu kirjoittaa muodossa
 
@@ -542,7 +543,7 @@ Lisätään application layoutiin seuraava koodi, joka lisää kirjautuneen käy
 <% end %>
 ```
 
-menemällä osoitteeseen [/session/new](http://localhost:3000/session/new) voimme nyt kirjautua sovellukseen (olettaen, että sovellukseen on luotu käyttäjiä). Uloskirjautuminen ei vielä toistaiseksi onnistu.
+menemällä osoitteeseen [/session/new](http://localhost:3000/session/new) voimme nyt kirjautua sovellukseen (olettaen, että sovellukseen on luotu käyttäjiä osoitteesta http://localhost:3000/signup). Uloskirjautuminen ei vielä toistaiseksi onnistu.
 
 **HUOM:** jos saat virheilmoituksen <code>uninitialized constant SessionsController></code> **varmista että määrittelit reitit routes.rb:hen oikein, eli**
 
@@ -560,8 +561,6 @@ Tietokantakyselyn tekeminen näkymän koodissa (kuten juuri teimme application l
 
 ```ruby
 class ApplicationController < ActionController::Base
-  protect_from_forgery
-
   # määritellään, että metodi current_user tulee käyttöön myös näkymissä
   helper_method :current_user
 
@@ -593,8 +592,8 @@ Pelkkä <code>current_user</code> toimii ehtona, sillä arvo <code>nil</code> tu
 Kirjautumisen osoite __sessions/new__ on hieman ikävä. Määritelläänkin kirjautumista varten luontevampi vaihtoehtoinen osoite __signin__. Määritellään myös reitti uloskirjautumiselle. Lisätään siis seuraavat routes.rb:hen:
 
 ```ruby
-  get 'signin', to: 'sessions#new'
-  delete 'signout', to: 'sessions#destroy'
+get 'signin', to: 'sessions#new'
+delete 'signout', to: 'sessions#destroy'
 ```
 
 eli sisäänkirjautumislomake on nyt osoitteessa [/signin](http://localhost:3000/signin) ja uloskirjautuminen tapahtuu osoitteeseen _signout_ tehtävän _HTTP DELETE_ -pyynnön avulla.
@@ -602,7 +601,7 @@ eli sisäänkirjautumislomake on nyt osoitteessa [/signin](http://localhost:3000
 Olisi periaatteessa ollut mahdollista määritellä myös
 
 ```ruby
-  get 'signout', to: 'sessions#destroy'
+get 'signout', to: 'sessions#destroy'
 ```
 
 eli mahdollistaa uloskirjautuminen HTTP GET:in avulla. Ei kuitenkaan pidetä hyvänä käytänteenä, että HTTP GET -pyyntö tekee muutoksia sovelluksen tilaan ja pysyttäydytään edelleen REST-filosofian mukaisessa käytänteessä, jonka mukaan resurssin tuhoaminen tapahtuu HTTP DELETE -pyynnöllä. Tässä tapauksessa vaan resurssi on hieman laveammin tulkittava asia eli käyttäjän sisäänkirjautuminen.
@@ -613,22 +612,22 @@ eli mahdollistaa uloskirjautuminen HTTP GET:in avulla. Ei kuitenkaan pidetä hyv
 >
 > Edellisten lisäksi lisää palkkiin linkki kaikkien käyttäjien sivulle, sekä kirjautuneen käyttäjän nimi, joka toimii linkkinä käyttäjän omalle sivulle. Käyttäjän ollessa kirjaantuneena tulee palkissa olla myös linkki uuden oluen reittaukseen.
 >
-> Muistutus: näet järjestelmään määritellyt routet ja polkuapumetodit komentoriviltä komennolla <code>rake routes</code> tai menemällä mihin tahansa sovelluksen osoitteeseen, jota ei ole olemassa, esim. [http://localhost:3000/wrong](http://localhost:3000/wrong)
+> Muistutus: näet järjestelmään määritellyt routet ja polkuapumetodit komentoriviltä komennolla <code>rails routes</code> tai menemällä mihin tahansa sovelluksen osoitteeseen, jota ei ole olemassa, esim. [http://localhost:3000/wrong](http://localhost:3000/wrong)
 
 Tehtävän jälkeen sovelluksesi näyttää suunnilleen seuraavalta jos käyttäjä on kirjautuneena:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w3-1.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w3-1.png)
 
 
 ja seuraavalta jos käyttäjä ei ole kirjautuneena (huomaa, että nyt näkyvillä on myös uuden käyttäjän rekisteröitymiseen tarkoitettu signup-linkki):
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w3-2.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w3-2.png)
 
 ## Reittaukset käyttäjälle
 
 Muutetaan seuraavaksi sovellusta siten, että reittaus kuuluu kirjautuneena olevalle käyttäjälle, eli tämän vaiheen jälkeen olioiden suhteen tulisi näyttää seuraavalta:
 
-![kuva](http://yuml.me/ccdb3938)
+![kuva](http://yuml.me/4abc9b51.png)
 
 Modelien tasolla muutos kulkee tuttuja latuja:
 
@@ -672,7 +671,7 @@ class AddUserIdToRatings < ActiveRecord::Migration
 end
 ```
 
-Jotta migraation määrittelemä muutos tapahtuu, suoritetaan komentoriviltä tuttu komento <code>rake db:migrate</code>
+Jotta migraation määrittelemä muutos tapahtuu, suoritetaan komentoriviltä tuttu komento <code>rails db:migrate</code>
 
 Migraatiot ovat varsin laaja aihe ja harjoittelemme niitä vielä lisää myöhemmin kurssilla. Lisää migraatiosta löytyy osoitteesta http://guides.rubyonrails.org/migrations.html
 
@@ -681,9 +680,8 @@ Huomaamme nyt konsolista, että yhteys olioiden välillä toimii:
 ```ruby
 > u = User.first
 > u.ratings
-  Rating Load (0.4ms)  SELECT "ratings".* FROM "ratings"  WHERE "ratings"."user_id" = ?  [["user_id", 1]]
- => #<ActiveRecord::Associations::CollectionProxy []>
->
+  Rating Load (0.3ms)  SELECT "ratings".* FROM "ratings" WHERE "ratings"."user_id" = ?  [["user_id", 1]]
+=> []
 ```
 
 Toistaiseksi antamamme reittaukset eivät liity mihinkään käyttäjään:
@@ -700,7 +698,6 @@ Päätetään että laitetaan kaikkien olemassaolevien reittausten käyttäjäks
 ```ruby
 > u = User.first
 > Rating.all.each{ |r| u.ratings << r }
- => 14
 >
 ```
 
@@ -712,18 +709,18 @@ Päätetään että laitetaan kaikkien olemassaolevien reittausten käyttäjäks
 > * käyttäjän reittausten määrä ja keskiarvo (huom: käytä edellisellä viikolla  määriteltyä moduulia <code>RatingAverage</code>, jotta saat keskiarvon laskevan koodin käyttäjälle!)
 > * lista käyttäjän reittauksista ja mahdollisuus poistaa reittauksia
 
-Käyttäjän sivu siis näyttää suunilleen seuraavalta (**HUOM:** sivulle olisi pitänyt lisätä myös tieto käyttäjän antamien reittausten keskiarvosta mutta se unohtui...):
+Käyttäjän sivu siis näyttää suunilleen seuraavalta :
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w3-3.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w3-3.png)
 
 Reittauksen poisto vie nyt kaikkien reittausten sivulle. Luontevinta olisi, että poiston jälkeen palattaisiin takaisin käyttäjän sivulle. Tee seuraava muutos reittauskontrolleriin, jotta näin tapahtuisi:
 
 ```ruby
-  def destroy
-    rating = Rating.find(params[:id])
-    rating.delete
-    redirect_to :back
-  end
+def destroy
+  rating = Rating.find(params[:id])
+  rating.delete
+  redirect_to :back
+end
 ```
 
 Eli kuten arvata saattaa, <code>redirect_to :back</code> aiheuttaa uudelleenohjauksen takaisin siihen osoitteeseen, jolta HTTP DELETE -pyynnön aiheuttama linkin klikkaus suoritettiin.
@@ -731,11 +728,12 @@ Eli kuten arvata saattaa, <code>redirect_to :back</code> aiheuttaa uudelleenohja
 Uusien reittausten luominen www-sivulta ei siis tällä hetkellä toimi, koska reittaukseen ei tällä hetkellä liitetä kirjautuneena olevaa käyttäjää. Muokataan siis  reittauskontrolleria siten, että kirjautuneena oleva käyttäjä linkitetään luotavaan reittaukseen:
 
 ```ruby
-  def create
-    rating = Rating.create params.require(:rating).permit(:score, :beer_id)
-    current_user.ratings << rating
-    redirect_to current_user
-  end
+def create
+  # huomaa että ensimmäinenkin rivi muuttuu hieman!
+  rating = Rating.create params.require(:rating).permit(:score, :beer_id)
+  current_user.ratings << rating
+  redirect_to current_user
+end
 ```
 
 Huomaa, että <code>current_user</code> on luokkaan <code>ApplicationController</code> äsken lisäämämme metodi, joka palauttaa kirjautuneena olevan käyttäjän eli suorittaa koodin:
@@ -752,7 +750,7 @@ Reittauksen luomisen jälkeen kontrolleri on laitettu uudelleenohjaamaan selain 
 
 Kaikkien reittausten sivun tulisi siis näyttää edellisen tehtävän jälkeen seuraavalta:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w3-4.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w3-4.png)
 
 ## Kirjautumisen hienosäätöä
 
@@ -761,29 +759,29 @@ Tällä hetkellä sovellus käyttäytyy ikävästi, jos kirjautumista yritetää
 Muutetaan sovellusta siten, että uudelleenohjataan käyttäjä takaisin kirjautumissivulle, jos kirjautuminen epäonnistuu. Eli muutetaan sessiokontrolleria seuraavasti:
 
 ```ruby
-    def create
-      user = User.find_by username: params[:username]
-      if user.nil?
-        redirect_to :back
-      else
-        session[:user_id] = user.id
-        redirect_to user
-      end
-    end
+def create
+  user = User.find_by username: params[:username]
+  if user.nil?
+    redirect_to signin_path
+  else
+    session[:user_id] = user.id
+    redirect_to user
+  end
+end
 ```
 
 muutetaan edellistä vielä siten, että lisätään käyttäjälle kirjautumisen epäonnistuessa, sekä onnistuessa näytettävät viestit:
 
 ```ruby
-    def create
-      user = User.find_by username: params[:username]
-      if user.nil?
-        redirect_to :back, notice: "User #{params[:username]} does not exist!"
-      else
-        session[:user_id] = user.id
-        redirect_to user, notice: "Welcome back!"
-      end
-    end
+def create
+  user = User.find_by username: params[:username]
+  if user.nil?
+    redirect_to signin_path, notice: "User #{params[:username]} does not exist!"
+  else
+    session[:user_id] = user.id
+    redirect_to user, notice: "Welcome back!"
+  end
+end
 ```
 
 Jotta viesti saadaan näkyville kirjautumissivulle, lisätään näkymään ```app/views/sessions/new.html.erb``` seuraava elementti:
@@ -842,55 +840,55 @@ Railsin scaffold-generaattorilla luodut kontrollerit toimivat siis siten, että 
 Mistä kontrolleri tietää, että validointi on epäonnistunut? Kuten mainittiin, validointi tapahtuu tietokantaan talletuksen yhteydessä. Jos kontrolleri tallettaa olion metodilla <code>save</code>, voi kontrolleri testata metodin paluuarvosta onko validointi onnistunut:
 
 ```ruby
-  @user = User.new(parametrit)
-  if @user.save
-    # validointi onnistui, uudelleenohjaa selain halutulle sivulle
-  else
-    # validointi epäonnistui, renderöi näkymätemplate :new
-  end
+@user = User.new(parametrit)
+if @user.save
+  # validointi onnistui, uudelleenohjaa selain halutulle sivulle
+else
+  # validointi epäonnistui, renderöi näkymätemplate :new
+end
 ```
 
 Scaffoldin generoima kontrolleri näyttää hieman monimutkaisemmalta:
 
 
 ```ruby
-  def create
-    @user = User.new(user_params)
+def create
+  @user = User.new(user_params)
 
-    respond_to do |format|
-      if @user.save
-        format.html { redirect_to @user, notice: 'User was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @user }
-      else
-        format.html { render action: 'new' }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
-      end
+  respond_to do |format|
+    if @user.save
+      format.html { redirect_to @user, notice: 'User was successfully created.' }
+      format.json { render action: 'show', status: :created, location: @user }
+    else
+      format.html { render action: 'new' }
+      format.json { render json: @user.errors, status: :unprocessable_entity }
     end
   end
+end
 ```
 
 Ensinnäkin mistä tulee olion luonnissa parametrina käytettävä <code>user_params</code>? Huomaamme, että tiedoston alalaitaan on määritelty metodi
 
 ```ruby
-    def user_params
-      params.require(:user).permit(:username)
-    end
+def user_params
+  params.require(:user).permit(:username)
+end
 ```
 
 eli metodin <code>create</code> ensimmäinen rivi on siis sama kuin
 
 ```ruby
-   @user = User.new(params.require(:user).permit(:username))
+@user = User.new(params.require(:user).permit(:username))
 ```
 
 Entä mitä metodin päättävä <code>respond_to</code> tekee? Jos olion luonti tapahtuu normaalin lomakkeen kautta, eli selain odottaa takaisin HTML-muotoista vastausta, on toiminnallisuus oleellisesti seuraava:
 
 ```ruby
- if @user.save
-   redirect_to @user, notice: 'User was successfully created.'
- else
-   render action: 'new'
- end
+if @user.save
+  redirect_to @user, notice: 'User was successfully created.'
+else
+  render action: 'new'
+end
 ```
 
 eli suoritetaan komentoon (joka on oikeastaan metodi) <code>respond_to</code> liittyvässä koodilohkossa merkintään (joka on jälleen teknisesti ottaen metodikutsu) <code>format.html</code> liittyvä koodilohko. Jos taas käyttäjä-olion luova HTTP POST -kutsu olisi tehty siten, että vastausta odotettaisiin json-muodossa (näin tapahtuisi esim. jos pyyntö tehtäisiin toisesta palvelusta tai Web-sivulta javascriptillä), suoritettaisiin <code>format.json</code>:n liittyvä koodi. Syntaksi saattaa näyttää aluksi oudolta, mutta siihen tottuu pian.
@@ -915,17 +913,17 @@ Jos luomme nyt virheellisen reittauksen, ei se talletu kantaan. Huomamme kuitenk
 Muutetaan ensin reittaus-kontrollerin metodia <code>create</code> siten, että validoinnin epäonnistuessa se renderöi uudelleen reittauksen luomisesta huolehtivan lomakkeen:
 
 ```ruby
-  def create
-    @rating = Rating.new params.require(:rating).permit(:score, :beer_id)
+def create
+  @rating = Rating.new params.require(:rating).permit(:score, :beer_id)
 
-    if @rating.save
-      current_user.ratings << @rating
-      redirect_to user_path current_user
-    else
-      @beers = Beer.all
-      render :new
-    end
+  if @rating.save
+    current_user.ratings << @rating
+    redirect_to user_path current_user
+  else
+    @beers = Beer.all
+    render :new
   end
+end
 ```
 
 Metodissa luodaan siis ensin Rating-olio <code>new</code>:llä, eli sitä ei vielä talleteta tietokantaan. Tämän jälkeen suoritetaan tietokantaan tallennus metodilla <code>save</code>. Jos tallennuksen yhteydessä suoritettava olion validointi epäonnistuu, metodi palauttaa epätoden, ja olio ei tallennu kantaan. Tällöin renderöidään new-näkymätemplate. Näkymätemplaten renderöinti edellyttää, että oluiden lista on talletettu muuttujaan <code>@beers</code>.
@@ -983,55 +981,54 @@ Validointivirheitä löytyessä, näkymätemplate renderöi nyt kaikki joukossa 
 **Huom:** validoinnin epäonnistuessa ei siis suoriteta uudelleenohjausta (miksi se ei tässä tapauksessa toimi?), vaan renderöidään näkymätemplate, johon tavallisesti päädytään <code>new</code>-metodin suorituksen yhteydessä.
 
 Apuja seuraaviin tehtäviin löytyy osoitteesta
-http://guides.rubyonrails.org/active_record_validations.html ja http://apidock.com/rails/ActiveModel/Validations/ClassMethods
+http://guides.rubyonrails.org/active_record_validations.html ja https://apidock.com/rails/v4.2.7/ActiveModel/Validations/ClassMethods/validates
 
 > ## Tehtävä 7
 >
 > Lisää ohjelmaasi seuraavat validoinnit
 > * oluen ja panimon nimi on epätyhjä
-> * panimon perustamisvuosi on kokonaisluku väliltä 1042-2017
+> * panimon perustamisvuosi on kokonaisluku väliltä 1040-2018
 > * käyttäjätunnuksen eli User-luokan attribuutin username pituus on vähintään 3 mutta enintään 30 merkkiä
 
 Jos yrität luoda oluen tyhjällä nimellä, seurauksena on virheilmoitus:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w3-9.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w3-9.png)
 
 Mistä tämä johtuu? Jos oluen luonti epäonnistuu validoinnissa tapahtuneen virheen takia, olutkontrollerin metodi <code>create</code> suorittaa else-haaran, eli renderöi uudelleen oluiden luomiseen käytettävän lomakkeen. Oluiden luomiseen käytettävä lomake käyttää muuttujaan <code>@styles</code> talletettua oluttyylien listaa lomakkeen generointiin. Virheilmoituksen syynä onkin se, että muuttujaa ei ole nyt alustettu (toisin kuin jos lomakkeeseen mennään kontrollerimetodin <code>new</code> kautta). Lomake olettaa myös, että muuttujaan <code>@breweries</code> on talletettu kaikkien panimoiden lista. Eli ongelma korjautuu jos alustamme muuttujat else-haarassa:
 
 ``` ruby
-  def create
-    @beer = Beer.new(beer_params)
+def create
+  @beer = Beer.new(beer_params)
 
-    respond_to do |format|
-      if @beer.save
-        format.html { redirect_to beers_path, notice: 'Beer was successfully created.' }
-        format.json { render :show, status: :created, location: @beer }
-      else
-        @breweries = Brewery.all
-        @styles = ["Weizen", "Lager", "Pale ale", "IPA", "Porter"]
-        format.html { render :new }
-        format.json { render json: @beer.errors, status: :unprocessable_entity }
-      end
+  respond_to do |format|
+    if @beer.save
+      format.html { redirect_to beers_path, notice: 'Beer was successfully created.' }
+      format.json { render :show, status: :created, location: @beer }
+    else
+      @breweries = Brewery.all
+      @styles = ["Weizen", "Lager", "Pale ale", "IPA", "Porter"]
+      format.html { render :new }
+      format.json { render json: @beer.errors, status: :unprocessable_entity }
     end
   end
+end
 ```
 
 > ## Tehtävä 8
 >
 > ### tehtävän teko ei ole viikon jatkamisen kannalta välttämätöntä eli ei kannata juuttua tähän tehtävään. Voit tehdä tehtävän myös viikon muiden tehtävien jälkeen.
 >
-> Parannellaan tehtävän 5 validointia siten, että panimon perustamisvuoden täytyy olla kokonaisluku, jonka suuruus on vähintään 1042 ja korkeintaan menossa oleva vuosi. Vuosilukua ei siis saa kovakoodata.
+> Parannellaan tehtävän 7 validointia siten, että panimon perustamisvuoden täytyy olla kokonaisluku, jonka suuruus on vähintään 1040 ja korkeintaan menossa oleva vuosi. Vuosilukua ei siis saa kovakoodata.
 >
 > Huomaa, että seuraava ei toimi halutulla tavalla:
 >
 >   validates :year, numericality: { less_than_or_equal_to: Time.now.year }
 >
-> Nyt käy siten, että <code>Time.now.year</code> evaluoidaan siinä vaiheessa kun ohjelma lataa luokan koodin. Jos esim. ohjelma käynnistetään vuoden 2018 lopussa, ei vuoden 2018 alussa voida rekisteröidä 2018 aloittanutta panimoa, sillä vuoden yläraja validoinnissa on ohjelman käynnistyshetkellä evaluoitunut 2018
+> Nyt käy siten, että <code>Time.now.year</code> evaluoidaan siinä vaiheessa kun ohjelma lataa luokan koodin. Jos esim. ohjelma käynnistetään vuoden 2018 lopussa, ei vuoden 2019 alussa voida rekisteröidä 2019 aloittanutta panimoa, sillä vuoden yläraja validoinnissa on ohjelman käynnistyshetkellä evaluoitunut 2018
 >
 > Eräs kelvollinen ratkaisutapa on oman validointimetodin määritteleminen http://guides.rubyonrails.org/active_record_validations.html#custom-methods
 >
 > Koodimäärällisesti lyhyempiäkin ratkaisuja löytyy, vihjeenä olkoon lambda/Proc/whatever...
-
 
 ## Monen suhde moneen -yhteydet
 
