@@ -1,5 +1,3 @@
-# KESKEN lukeminen omalla vastuulla
-
 Jatkamme sovelluksen rakentamista siitä, mihin jäimme viikon 2 lopussa. Allaoleva materiaali olettaa, että olet tehnyt kaikki edellisen viikon tehtävät. Jos et tehnyt kaikkia tehtäviä, voit täydentää ratkaisusi tehtävien palautusjärjestelmän kautta näkyvän esimerkivastauksen avulla.
 
 **Huom:** muutamilla on ollut ongelmia Herokun tarvitseman pg-gemin kanssa. Paikallisesti gemiä ei tarvita ja se määriteltiinkin asennettavaksi ainoastaan tuotantoympäristöön. Jos ongelmia ilmenee, voit asentaa gemit antamalla <code>bundle install</code>-komentoon seuraavan lisämääreen:
@@ -328,7 +326,7 @@ Otetaan nyt käyttöön [Rubocop](https://github.com/rubocop-hq/rubocop), jonka 
 
 Rubocop asennetaan antamalla komentoriviltä komento
 
-  gem install rubocop
+    gem install rubocop
 
 Rubocopin tarkastama säännöstö määritellään projektin juureen sijoitettavassa tiedostossa _.rubocop.yml_. Luo tiedosto projektiisi (huomaa, että tiedoston nimen alussa on piste) ja kopioi sille sisältö [täältä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/misc/.rubocop.yml)
 
@@ -348,7 +346,7 @@ Tiedoston _beer.rb_ rivillä 8 rikotaan sääntöä [Layout/EmptyLineAfterGuardC
 
 Sääntöjen [dokumentaatio](http://docs.rubocop.org/en/latest/cops/) selvittää mistä on kyse, eli nyt ongelmana on se, että äsken määrittelemässämme metodissa _average_ ensimmäisen koodirivin, joka on ns. _guard clause_, jälkeen ei ole tyhjää riviä:
 
-```
+```ruby
 def average
   return 0 if ratings.empty?
   ratings.map{ |r| r.score }.sum / ratings.count.to_f
@@ -617,7 +615,6 @@ eli mahdollistaa uloskirjautuminen HTTP GET:in avulla. Ei kuitenkaan pidetä hyv
 Tehtävän jälkeen sovelluksesi näyttää suunnilleen seuraavalta jos käyttäjä on kirjautuneena:
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w3-1.png)
-
 
 ja seuraavalta jos käyttäjä ei ole kirjautuneena (huomaa, että nyt näkyvillä on myös uuden käyttäjän rekisteröitymiseen tarkoitettu signup-linkki):
 
@@ -1203,7 +1200,7 @@ end
 
 Rails käyttää tiivisteen tallettamiseen <code>bcrypt-ruby</code> gemiä. Otetaan se käyttöön lisäämällä Gemfile:en rivi
 
-  gem 'bcrypt', '~> 3.1.12'
+    gem 'bcrypt', '~> 3.1.7'
 
 Tämän jälkeen annetaan komentoriviltä komento <code>bundle install</code> jotta gem asentuu.
 
@@ -1315,8 +1312,7 @@ Huom: jos saat sisäänkirjautumisyrityksessä virheilmoitusen <code>BCrypt::Err
 >
 > Tee luokalle User-validointi, joka varmistaa, että salasanan pituus on vähintää 4 merkkiä, ja että salasana sisältää vähintään yhden ison kirjaimen (voit unohtaa skandit) ja yhden numeron.
 
-**Huom**: Säännöllisiä lausekkeita voi testailla Rubular sovelluksella: http://rubular.com/
-
+**Huom**: Säännöllisiä lausekkeita voi testailla Rubular sovelluksella: http://rubular.com/ Tehtävän tekeminen onnistuu toki muillakin tekniikoilla.
 
 ## Vain omien reittausten poisto
 
@@ -1366,7 +1362,6 @@ Huomaa, että pelkkä **delete**-linkin poistaminen ei estä poistamasta muiden 
 > Laajenna vielä sovellusta siten, että käyttäjän tuhoutuessa käyttäjän tekemät reittaukset tuhoutuvat automaattisesti. Ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#orvot-oliot
 >
 > Jos teit tehtävät 9-11 eli toteutit järjestelmään olutkerhot, tuhoa käyttäjän tuhoamisen yhteydessä myös käyttäjän jäsenyydet olutkerhoissa
-
 
 ## Lisää hienosäätöä
 
@@ -1530,6 +1525,14 @@ Toistetaan vielä viikon lopuksi edellisen viikon "ongelmia herokussa"-luvun lop
 <quote>
 Useimmiten tuotannossa vastaan tulevat ongelmat johtuvat siitä, että tietokantaskeeman muutosten takia jotkut oliot ovat joutuneet epäkonsistenttiin tilaan, eli ne esim. viittaavat olioihin joita ei ole tai viitteet puuttuvat. *Sovellus kannattaakin deployata tuotantoon mahdollisimman usein*, näin tiedetään että mahdolliset ongelmat ovat juuri tehtyjen muutosten aiheuttamia ja korjaus on helpompaa.
 </quote>
+
+## Rubocop
+
+Muista testata rubocopilla, että koodisi noudattaa edelleen määriteltyjä tyylisääntöjä. 
+
+Jos käytät Visual Studio Codea, voit asentaa [ruby-rubocop](https://marketplace.visualstudio.com/items?itemName=misogi.ruby-rubocop) laajennuksen, jolloin editori huomauttaa heti jos teet koodiin tyylivirheen:
+
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w3-10.png)
 
 ## Tehtävien palautus
 

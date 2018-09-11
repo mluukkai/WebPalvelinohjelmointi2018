@@ -382,6 +382,53 @@ Reittaukset siis lisätään ensimmäisenä kannasta löytyvälle oluelle. Huoma
 b.ratings << Rating.create(score:15)		
  ```		
 
+## Puuttuva viiteavain
+
+Yritetään luoda olut ilman panimoa:
+
+```ruby
+> b = Beer.create name: 'anonymous', style: 'watery'
+   (0.1ms)  begin transaction
+   (0.1ms)  rollback transaction
+=> #<Beer:0x00007fb9d5b7f958 id: nil, name: "anonymous", style: "watery", brewery_id: nil, created_at: nil, updated_at: nil>
+[3] pry(main)>
+```
+
+_id_ ja aikaleimakentät eivät saa arvoja ollenkaan, näyttääkin siltä että olut ei talletu ollenkaan tietokantaan.
+
+Jos kutsumme oluen metodia _errors_, kertoo olut syyn tallettumisen epäonnistumiselle
+
+```ruby
+> b.errors
+=> #<ActiveModel::Errors:0x00007fb9d54f8b98
+ @base=
+  #<Beer:0x00007fb9d5b7f958 id: nil, name: "anonymous", style: "watery", brewery_id: nil, created_at: nil, updated_at: nil>,
+ @details={:brewery=>[{:error=>:blank}]},
+ @messages={:brewery=>["must exist"]}>
+```
+
+eli olut ei suostu tallettumaan kantaan ilman tietoa panimosta. Voimme korjata tilanteen antamalla arvon panimolle ja kutsumalla oluelle metodia _save_:
+
+```ruby
+> b.brewery = Brewery.find_by(name: 'Koff')
+> b.save
+   (0.1ms)  begin transaction
+  Beer Create (1.9ms)  INSERT INTO "beers" ("name", "style", "brewery_id", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)  [["name", "anonymous"], ["style", "watery"], ["brewery_id", 1], ["created_at", "2018-09-11 18:21:40.830949"], ["updated_at", "2018-09-11 18:21:40.830949"]]
+   (0.8ms)  commit transaction
+```
+
+Syynä talletuksen epäonnistumiselle on se, että Rails vaatii oletusarvoisesti, että tilanteissa, joissa olio viittaa vierasavaimen avulla toiseen olioon ja koodissa käytetään _belongs_to_ määrettä liitoksen tekemiseen, kuten oluiden tapauksessa tehdään
+
+```ruby
+class Beer < ApplicationRecord
+  belongs_to :brewery
+
+  # ...
+end
+```
+
+vierasavaimen arvo [ei saa olla alustamaton](https://blog.bigbinary.com/2016/02/15/rails-5-makes-belong-to-association-required-by-default.html) kun olio talletetaan.
+
 >## Tehtävä 1
 >
 >Konsolin käyttörutiini on Rails-kehittäjälle äärimmäisen tärkeää. Tee seuraavat asiat konsolista käsin:
@@ -664,7 +711,7 @@ Railsin konventioiden mukaan Rating-olion luontiin tarkoitetun lomakkeen tulee l
 
 Luodaan vastaava reitti routes.rb:hen
 
-  get 'ratings/new', to:'ratings#new'
+    get 'ratings/new', to:'ratings#new'
 
 Lisäämme siis ratings-kontrolleriin (joka siis täydelliseltä nimeltään on RatingsController) metodin <code>new</code>, joka huolehtii lomakkeen renderöinnistä. Metodi on yksinkertainen:
 
@@ -1097,9 +1144,7 @@ Onkin hyvin tyypillistä, että kontrollerimetodit <code>new</code> ja <code>edi
 
 REST (representational state transfer) on HTTP-protokollaan perustuva arkkitehtuurimalli erityisesti web-pohjaisten sovellusten toteuttamiseen. Taustaidea on periaatteessa yksinkertainen: osoitteilla määritellään haettavat ja muokattavat resurssit, pyyntömetodit kuvaavat resurssiin kohdistuvaa operaatiota, ja pyynnön rungossa on tarvittaessa resurssiin liittyvää dataa.
 
-Lue nyt http://guides.rubyonrails.org/routing.html kohtaan 2.5 asti. Rails siis tekee helpoksi REST-tyylisen rakenteen noudattamisen.
-Jos kiinnostaa, RESTistä voi lukea lisää esim.
-[täältä](http://www.ibm.com/developerworks/webservices/library/ws-restful/)
+Lue nyt http://guides.rubyonrails.org/routing.html kohtaan 2.5 asti. Rails siis tekee helpoksi REST-tyylisen rakenteen noudattamisen. Jos kiinnostaa, RESTistä voi lukea lisää esim. [täältä](http://www.ibm.com/developerworks/webservices/library/ws-restful/)
 
 Muutetaan reittauksen polut tiedostoon routes.rb siten, että käytetään valmista <code>resources</code>-määrittelyä:
 
@@ -1197,7 +1242,6 @@ end
 
 Nyt orpojen ongelma poistuu.
 
-
 > ## Tehtävä 13
 >
 > Tee vastaava muutos panimoihin, eli kun panimo poistetaan, tulee panimoon liittyvien oluiden poistua.
@@ -1258,7 +1302,6 @@ Huomaamme, että oluella ja panimolla on täsmälleen samalla tavalla toimiva ja
 ```
 >
 > * HUOM: jos moduulisi nimi on ao. esimerkin tapaan <code>RatingAverage</code> tulee se Rubyn nimentäkonvention takia sijaita tiedostossa <code>app/models/concerns/rating_average.rb</code>, eli vaikka luokkien nimet ovat Rubyssä isolla alkavia CamelCase-nimiä, noudattavat niiden tiedostojen nimet snake_case.rb-tyyliä.
-
 
 Tehtävän jälkeen esim. luokan Brewery tulisi siis näyttää suunnilleen seuraavalta (olettaen että tekemäsi moduulin nimi on RatingAverage):
 
@@ -1363,9 +1406,11 @@ Toimintaperiaatteena metodissa <code>authenticate_or_request_with_http_basic</co
 
 Koska koodilohko saa saman arvon kuin if:n ehto, voidaan se yksinkertaistaa seuraavaan muotoon
 
-  def authenticate
-    username == "admin" and password == "secret"
-  end   
+```ruby
+def authenticate
+  username == "admin" and password == "secret"
+end   
+```
 
 HTTP Basic -autentikaatio on kätevä tapa yksinkertaisiin sivujen suojaamistarpeisiin, mutta monimutkaisemmissa tilanteissa ja parempaa tietoturvaa edellytettäessä kannattaa käyttää muita ratkaisuja.
 
@@ -1475,11 +1520,11 @@ Kun menet nyt kaikkien oluiden on seurauksena jälleen ikävä ilmoitus "We're s
 
 Syy löytyy:
 
-  undefined method `name' for nil:NilClass
+    undefined method `name' for nil:NilClass
 
 virheen aiheuttanut rivi on
 
-  <td><%= link_to beer.brewery.name, beer.brewery %></td>
+    <td><%= link_to beer.brewery.name, beer.brewery %></td>
 
 eli on olemassa olut, jonka kentässä <code>brewery</code> on arvona <code>nil</code>. Tämä voi johtua joko siitä että oluen <code>brewery_id</code> on <code>nil</code> tai <code>brewery_id</code>:n arvona on virheellinen (esim. poistetun panimon) id.
 
