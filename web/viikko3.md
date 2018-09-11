@@ -1171,14 +1171,14 @@ Seuraavat kaksi kuvaa antavat suuntaviivoja sille miltä sovelluksesi voi näytt
 
 ## Salasana
 
-Muutetaan sovellusta vielä siten, että käyttäjillä on myös salasana. Tietoturvasyistä salasanaa ei kannata tallentaa tietokantaan. Kantaan talletetaan ainoastaan salasanasta yhdensuuntaisella funktiolla laskettu tiiviste. Tehdään tätä varten migraatio:
+Muutetaan sovellusta vielä siten, että käyttäjillä on myös salasana. Tietoturvasyistä salasanaa ei tule missään tapauksessa tallentaa tietokantaan. Kantaan talletetaan ainoastaan salasanasta yhdensuuntaisella funktiolla laskettu tiiviste. Tehdään tätä varten migraatio:
 
     rails g migration AddPasswordDigestToUser
 
 migraation (ks. hakemisto db/migrate) koodiksi tulee seuraava:
 
 ```ruby
-class AddPasswordDigestToUser < ActiveRecord::Migration
+class AddPasswordDigestToUser < ActiveRecord::Migration[5.2]
   def change
     add_column :users, :password_digest, :string
   end
@@ -1203,17 +1203,24 @@ end
 
 Rails käyttää tiivisteen tallettamiseen <code>bcrypt-ruby</code> gemiä. Otetaan se käyttöön lisäämällä Gemfile:en rivi
 
-    gem 'bcrypt', '~> 3.1.7'
+  gem 'bcrypt', '~> 3.1.12'
 
 Tämän jälkeen annetaan komentoriviltä komento <code>bundle install</code> jotta gem asentuu.
 
 
-Kokeillaan nyt hieman uutta toiminnallisuutta konsolista (joudut uudelleenkäynnistämään konsolin, jotta se saa käyttöönsä uuden gemin).
-
-__Muista myös suorittaa migraatio!__
+Kokeillaan nyt hieman uutta toiminnallisuutta konsolista. Uudelleenkäynnistä konsoli, jotta se saa käyttöönsä uuden gemin. Myös rails-sovellus kannattaa tässä vaiheessa uudelleenkäynnistää. Muista myös suorittaa migraatio!
 
 Salasanatoiminnallisuus <code>has_secure_password</code> lisää oliolle  attribuutit <code>password</code> ja <code>password_confirmation</code>. Ideana on, että salasana ja se varmistettuna sijoitetaan näihin attribuutteihin. Kun olio talletetaan tietokantaan esim. metodin <code>save</code> kutsun yhteydessä, lasketaan tiiviste joka tallettuu tietokantaan olion sarakkeen <code>password_digest</code> arvoksi. Selväkielinen salasana eli attribuutti <code>password</code> ei siis tallennu tietokantaan, vaan on ainoastaan olion muistissa olevassa representaatiossa.
 
+*HUOM* törmäsin seuraavaa tehdessäni virheilmoitukseen
+
+<pre>
+You don't have bcrypt installed in your application. Please add it to your Gemfile and run bundle install
+LoadError: cannot load such file -- bcrypt
+from /Users/mluukkai/.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/bootsnap-1.3.1/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:32:in `require'
+</pre>
+
+Jos näin käy, sulje konsoli, anna komentoriviltä komento _sprint stop_ ja käynnistä konsoli uudelleen.
 
 Talletetaan käyttäjälle salasana:
 
@@ -1222,28 +1229,24 @@ Talletetaan käyttäjälle salasana:
 > u.password = "salainen"
 > u.password_confirmation = "salainen"
 > u.save
-   (0.2ms)  begin transaction
-  User Exists (0.3ms)  SELECT  1 AS one FROM "users"  WHERE ("users"."username" = 'mluukkai' AND "users"."id" != 1) LIMIT 1
-Binary data inserted for `string` type on column `password_digest`
-  SQL (0.4ms)  UPDATE "users" SET "password_digest" = ?, "updated_at" = ? WHERE "users"."id" = 1  [["password_digest", "$2a$10$DZaWkl73GurTQG3ilOVz9./X6jGT49ngZb3Q9ZCF3YjVvXPrl1JLm"], ["updated_at", "2017-01-24 18:28:24.069587"]]
-   (0.8ms)  commit transaction
- => true
+   (0.1ms)  begin transaction
+  User Exists (0.2ms)  SELECT  1 AS one FROM "users" WHERE "users"."username" = ? AND "users"."id" != ? LIMIT ?  [["username", "hellas"], ["id", 1], ["LIMIT", 1]]
+  User Update (0.4ms)  UPDATE "users" SET "updated_at" = ?, "password_digest" = ? WHERE "users"."id" = ?  [["updated_at", "2018-09-11 15:39:19.258281"], ["password_digest", "$2a$10$UVsfl5fYQfQDLqI8nsn/Zejpn/dUqzqqhzZ6jDIRzcb7RvArfevIq"], ["id", 1]]
+   (1.5ms)  commit transaction
+=> true
 >
 ```
-
-Jos komento <code>u.password = "salainen"</code> saa aikaan virheilmoituksen <code>NoMethodError: undefined method `password_digest=' for ...</code>, käynnistä konsoli uudelleen ja muista myös suorittaa migraatio!
 
 Autentikointi tapahtuu <code>User</code>-olioille lisätyn metodin <code>authenticate</code> avulla seuraavasti:
 
 ```ruby
 > u.authenticate "salainen"
-=> #<User:0x007f833eac8b40
+=> #<User:0x00007fb9d59ffce0
  id: 1,
- username: "mluukkai",
- created_at: Fri, 27 Jan 2017 20:55:11 UTC +00:00,
- updated_at: Sat, 28 Jan 2017 12:27:18 UTC +00:00,
- password_digest:
-  "$2a$10$eBOVzbk3oETQtbk9N9FMFuxG3NvjcwQLfRFSEZvstqkUIHcGTyUXK">
+ username: "hellas",
+ created_at: Tue, 11 Sep 2018 07:28:39 UTC +00:00,
+ updated_at: Tue, 11 Sep 2018 15:39:19 UTC +00:00,
+ password_digest: "$2a$10$UVsfl5fYQfQDLqI8nsn/Zejpn/dUqzqqhzZ6jDIRzcb7RvArfevIq">
 > u.authenticate "this_is_wrong_password"
  => false
 >
@@ -1268,15 +1271,16 @@ Lisätään nyt kirjautumiseen salasanan tarkistus. Muutetaan ensin kirjautumiss
 ja muutetaan sessions-kontrolleria siten, että se varmistaa metodia <code>authenticate</code> käyttäen, että lomakkeelta on annettu oikea salasana.
 
 ```ruby
-    def create
-      user = User.find_by username: params[:username]
-      if user && user.authenticate(params[:password])
-        session[:user_id] = user.id
-        redirect_to user_path(user), notice: "Welcome back!"
-      else
-        redirect_to :back, notice: "Username and/or password mismatch"
-      end
-    end
+def create
+  user = User.find_by username: params[:username]
+  # tarkastetaan että käyttäjä olemassa, ja että salasana on oikea
+  if user && user.authenticate(params[:password])
+    session[:user_id] = user.id
+    redirect_to user_path(user), notice: "Welcome back!"
+  else
+    redirect_to :back, notice: "Username and/or password mismatch"
+  end
+end
 ```
 
 Kokeillaan toimiiko kirjautuminen (**huom: jotta bcrypt-gem tulisi sovelluksen käyttöön, käynnistä rails server uudelleen**). Kirjautuminen onnistuu toistaiseksi vain niiden käyttäjien tunnuksilla joihin olet lisännyt salasanan konsolista käsin.
@@ -1284,14 +1288,15 @@ Kokeillaan toimiiko kirjautuminen (**huom: jotta bcrypt-gem tulisi sovelluksen k
 Lisätään vielä uuden käyttäjän luomiseen (eli näkymään view/users/_form.html.erb) salasanan syöttökenttä:
 
 ```erb
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password %>
-  </div>
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation  %>
-  </div>
+<div class="field">
+  <%= form.label :password %><br />
+  <%= form.password_field :password %>
+</div>
+
+<div class="field">
+  <%= form.label :password_confirmation %><br />
+  <%= form.password_field :password_confirmation  %>
+</div>
 ```
 
 Käyttäjien luomisesta huolehtivan kontrollerin apumetodia <code>user_params</code> on myös muutettava siten, että lomakkeelta lähetettyyn salasanaan ja sen varmenteeseen päästään käsiksi:
@@ -1318,11 +1323,11 @@ Huom: jos saat sisäänkirjautumisyrityksessä virheilmoitusen <code>BCrypt::Err
 Tällä hetkellä kuka tahansa voi poistaa kenen tahansa reittauksia. Muutetaan sovellusta siten, että käyttäjä voi poistaa ainoastaan omia reittauksiaan. Tämä onnistuu helposti tarkastamalla asia reittauskontrollerissa:
 
 ```ruby
-  def destroy
-    rating = Rating.find params[:id]
-    rating.delete if current_user == rating.user
-    redirect_to :back
-  end
+def destroy
+  rating = Rating.find params[:id]
+  rating.delete if current_user == rating.user
+  redirect_to :back
+end
 ```
 
 eli tehdään poisto-operaatio ainoastaan, jos ```current_user``` on sama kuin reittaukseen liittyvä käyttäjä.
@@ -1330,16 +1335,16 @@ eli tehdään poisto-operaatio ainoastaan, jos ```current_user``` on sama kuin r
 Reittauksen poistolinkkiä ei oikeastaan ole edes syytä näyttää muuta kuin kirjaantuneen käyttäjän omalla sivulla. Eli muutetaan käyttäjän show-sivua seuraavasti:
 
 ```erb
-  <ul>
-    <% @user.ratings.each do |rating| %>
-      <li>
-        <%= rating %>
-        <% if @user == current_user %>
-            <%= link_to 'delete', rating, method: :delete, data: { confirm: 'Are you sure?' } %>
-        <% end %>
-      </li>
-    <% end %>
-  </ul>
+<ul>
+  <% @user.ratings.each do |rating| %>
+    <li>
+      <%= rating %>
+      <% if @user == current_user %>
+          <%= link_to 'delete', rating, method: :delete, data: { confirm: 'Are you sure?' } %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
 ```
 
 Huomaa, että pelkkä **delete**-linkin poistaminen ei estä poistamasta muiden käyttäjien tekemiä reittauksia, sillä on erittäin helppoa tehdä HTTP DELETE -operaatio mielivaltaisen reittauksen urliin. Tämän takia on oleellista tehdä kirjaantuneen käyttäjän tarkistus poistamisen suorittavassa kontrollerimetodissa.
@@ -1354,13 +1359,13 @@ Huomaa, että pelkkä **delete**-linkin poistaminen ei estä poistamasta muiden 
 >
 > Luo uusi käyttäjätunnus, kirjaudu käyttäjänä ja tuhoa käyttäjä. Käyttäjätunnuksen tuhoamisesta seuraa ikävä virhe. **Pääset virheestä eroon tuhoamalla selaimesta cookiet.** Mieti mistä virhe johtuu ja korjaa asia myös sovelluksesta siten, että käyttäjän tuhoamisen jälkeen sovellus ei joudu virhetilanteeseen.
 >
-> Tämä tehtävä on vuosien varrella osoittautunut hankalaksi. Jos et pääse eteenpäin, kysy apua pajassa, kurssin telegram- tai irc-kanavalta, ks. kurssisivu
+> Tämä tehtävä on vuosien varrella osoittautunut hankalaksi. Jos et pääse eteenpäin, kysy apua pajassa, kurssin telegram--kanavalta, ks. kurssisivu
 
 > ## Tehtävä 15
 >
 > Laajenna vielä sovellusta siten, että käyttäjän tuhoutuessa käyttäjän tekemät reittaukset tuhoutuvat automaattisesti. Ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#orvot-oliot
 >
-> Jos teit tehtävät 7-8 eli toteutit järjestelmään olutkerhot, tuhoa käyttäjän tuhoamisen yhteydessä myös käyttäjän jäsenyydet olutkerhoissa
+> Jos teit tehtävät 9-11 eli toteutit järjestelmään olutkerhot, tuhoa käyttäjän tuhoamisen yhteydessä myös käyttäjän jäsenyydet olutkerhoissa
 
 
 ## Lisää hienosäätöä
@@ -1383,46 +1388,47 @@ Käyttäjän editointiin tarkoitettu näkymätemplate on seuraavassa:
 eli ensin se renderöi _form-templatessa olevat elementit ja sen jälkeen pari linkkiä. Lomakkeen koodi on seuraava:
 
 ```erb
-<%= form_for(@user) do |f| %>
-  <% if @user.errors.any? %>
+<%= form_with(model: user, local: true) do |form| %>
+  <% if user.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+      <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
 
       <ul>
-      <% @user.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
+      <% user.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
       <% end %>
       </ul>
     </div>
   <% end %>
 
   <div class="field">
-    <%= f.label :username %><br>
-    <%= f.text_field :username %>
+    <%= form.label :username %>
+    <%= form.text_field :username %>
   </div>
+
   <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password %>
+    <%= form.label :password %><br />
+    <%= form.password_field :password %>
   </div>
+  
   <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation  %>
+    <%= form.label :password_confirmation %><br />
+    <%= form.password_field :password_confirmation  %>
   </div>
 
   <div class="actions">
-    <%= f.submit %>
+    <%= form.submit %>
   </div>
 <% end %>
-
 ```
 
 Haluaisimme siis poistaa lomakkeesta seuraavat
 
 ```erb
-  <div class="field">
-    <%= f.label :username %><br>
-    <%= f.text_field :username %>
-  </div>
+<div class="field">
+  <%= form.label :username %>
+  <%= form.text_field :username %>
+</div>
 ```
 
 _jos_ käyttäjän tietoja ollaan editoimassa, eli käyttäjäolio on jo luotu aiemmin.
@@ -1430,12 +1436,12 @@ _jos_ käyttäjän tietoja ollaan editoimassa, eli käyttäjäolio on jo luotu a
 Lomake voi kysyä oliolta <code>@user</code> onko se vielä tietokantaan tallentamaton metodin <code>new_record?</code> avulla. Näin saadaan <code>username</code>-kenttä näkyville lomakkeeseen ainoastaan silloin kuin kyseessä on uuden käyttäjän luominen:
 
 ```erb
-  <% if @user.new_record? %>
-    <div class="field">
-      <%= f.label :username %><br />
-      <%= f.text_field :username %>
-    </div>
-  <% end %>
+<% if @user.new_record? %>
+  <div class="field">
+  <%= form.label :username %>
+  <%= form.text_field :username %>
+  </div>
+<% end %>
 ```
 
 Nyt lomake on kunnossa, mutta käyttäjänimeä on edelleen mahdollista muuttaa lähettämällä HTTP POST -pyyntö suoraan palvelimelle siten, että mukana on uusi username.
@@ -1443,22 +1449,22 @@ Nyt lomake on kunnossa, mutta käyttäjänimeä on edelleen mahdollista muuttaa 
 Tehdään vielä User-kontrollerin <code>update</code>-metodiin tarkastus, joka estää käyttäjänimen muuttamisen:
 
 ```ruby
-  def update
-    respond_to do |format|
-      if user_params[:username].nil? and @user == current_user and @user.update(user_params)
-        format.html { redirect_to @user, notice: 'User was successfully updated.' }
-        format.json { head :no_content }
-      else
-        format.html { render action: 'edit' }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
-      end
+def update
+  respond_to do |format|
+    if user_params[:username].nil? and @user == current_user and @user.update(user_params)
+      format.html { redirect_to @user, notice: 'User was successfully updated.' }
+      format.json { head :no_content }
+    else
+      format.html { render action: 'edit' }
+      format.json { render json: @user.errors, status: :unprocessable_entity }
     end
   end
+end
 ```
 
 Muutosten jälkeen käyttäjän tietojen muuttamislomake näyttää seuraavalta:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w3-7.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w3-7.png)
 
 > ## Tehtävä 16
 >
@@ -1473,7 +1479,7 @@ Kun ohjelman päivitetty versio deployataan herokuun, törmätään jälleen ong
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w2-12.png)
 
 Kuten [viime viikolla](
-https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko2.md#ongelmia-herokussa) jo totesimme, tulee ongelman syy selvittää herokun lokeista.
+https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#ongelmia-herokussa) jo totesimme, tulee ongelman syy selvittää herokun lokeista.
 
 Kaikkien käyttäjien sivu aiheuttaa seuraavan virheen:
 
