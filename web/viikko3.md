@@ -1504,7 +1504,7 @@ Reittausten sivun ongelma ei korjaantunut migraatioiden avulla ja syytä on etsi
 Syy on jälleen tuttu, eli näkymäkoodi yrittää kutsua metodia <code>username</code> nil-arvoiselle oliolle. Syyn täytyy olla <code>link_to</code> metodissa oleva parametri
 
 ```ruby
-    rating.user.username
+rating.user.username
 ```
 
 eli järjestelmässä on reittauksia joihin ei liity user-olioa.
