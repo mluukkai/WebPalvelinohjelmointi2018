@@ -423,14 +423,14 @@ Kokeillaan ensin sessioiden käyttöä muistamaan käyttäjän viimeksi tekemä 
 Talletetaan reittaus sessioon tekemällä seuraava lisäys reittauskontrolleriin:
 
 ```ruby
-  def create
-    # otetaan luotu reittaus muuttujaan
-    rating = Rating.create params.require(:rating).permit(:score, :beer_id)
+def create
+  # otetaan luotu reittaus muuttujaan
+  rating = Rating.create params.require(:rating).permit(:score, :beer_id)
 
-    # talletetaan tehty reittaus sessioon
-    session[:last_rating] = "#{rating.beer.name} #{rating.score} points"
+  # talletetaan tehty reittaus sessioon
+  session[:last_rating] = "#{rating.beer.name} #{rating.score} points"
 
-    redirect_to ratings_path
+  redirect_to ratings_path
   end
 ```
 
@@ -1476,32 +1476,34 @@ Muutosten jälkeen käyttäjän tietojen muuttamislomake näyttää seuraavalta:
 
 Kun ohjelman päivitetty versio deployataan herokuun, törmätään jälleen ongelmiin. Kaikkien reittausten ja kaikkien käyttäjien sivu ja signup-linkki saavat aikaan tutun virheen:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w2-12.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w2-12.png)
 
 Kuten [viime viikolla](
 https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#ongelmia-herokussa) jo totesimme, tulee ongelman syy selvittää herokun lokeista.
 
 Kaikkien käyttäjien sivu aiheuttaa seuraavan virheen:
 
-    ActionView::Template::Error (PG::UndefinedTable: ERROR:  relation "users" does not exist
+  ActionView::Template::Error (PG::UndefinedTable: ERROR:  relation "users" does not exist
 
 eli tietokantataulua *users* ei ole olemassa koska sovelluksen uusia migraatioita ei ole suoritettu herokussa. Ongelma korjaantuu suorittamalla migraatiot:
 
-    heroku run rake db:migrate
+    heroku run rails db:migrate
 
 Myös signup-sivu toimii migraatioiden suorittamisen jälkeen.
 
 Reittausten sivun ongelma ei korjaantunut migraatioiden avulla ja syytä on etsittävä lokeista:
 
 ```ruby
-2017-01-24T19:19:58.672580+00:00 app[web.1]: ActionView::Template::Error (undefined method `username' for nil:NilClass):
-2017-01-24T19:19:58.672582+00:00 app[web.1]:     2:
-2017-01-24T19:19:58.672583+00:00 app[web.1]:     3: <ul>
-2017-01-24T19:19:58.672584+00:00 app[web.1]:     4:   <% @ratings.each do |rating| %>
-2017-01-24T19:19:58.672586+00:00 app[web.1]:     5:     <li> <%= rating %> <%= link_to rating.user.username, rating.user %> </li>
-2017-01-24T19:19:58.672588+00:00 app[web.1]:     6:   <% end %>
-2017-01-24T19:19:58.672589+00:00 app[web.1]:     7: </ul>
-2017-01-24T19:19:58.672590+00:00 app[web.1]:     8:
+2018-09-11T16:28:33.610096+00:00 app[web.1]: [2fb11437-8b3c-4ec2-a65c-5f725a7e65b4] ActionView::Template::Error (undefined method `name' for nil:NilClass):
+2018-09-11T16:28:33.610221+00:00 app[web.1]: [2fb11437-8b3c-4ec2-a65c-5f725a7e65b4]     2:
+2018-09-11T16:28:33.610225+00:00 app[web.1]: [2fb11437-8b3c-4ec2-a65c-5f725a7e65b4]     3: <ul>
+2018-09-11T16:28:33.610227+00:00 app[web.1]: [2fb11437-8b3c-4ec2-a65c-5f725a7e65b4]     4:  <% @ratings.each do |rating| %>
+2018-09-11T16:28:33.610229+00:00 app[web.1]: [2fb11437-8b3c-4ec2-a65c-5f725a7e65b4]     5:    <li> <%= rating %> <%= link_to rating.user.username, rating.user %></li>
+2018-09-11T16:28:33.610231+00:00 app[web.1]: [2fb11437-8b3c-4ec2-a65c-5f725a7e65b4]     6:  <% end %>
+2018-09-11T16:28:33.610232+00:00 app[web.1]: [2fb11437-8b3c-4ec2-a65c-5f725a7e65b4]     7: </ul>
+2018-09-11T16:28:33.610234+00:00 app[web.1]: [2fb11437-8b3c-4ec2-a65c-5f725a7e65b4]     8:
+2018-09-11T16:28:33.610239+00:00 app[web.1]: [2fb11437-8b3c-4ec2-a65c-5f725a7e65b4]
+2018-09-11T16:28:33.610241+00:00 app[web.1]: [2fb11437-8b3c-4ec2-a65c-5f725a7e65b4] app/models/rating.rb:10:in `to_s'
 ```
 
 Syy on jälleen tuttu, eli näkymäkoodi yrittää kutsua metodia <code>username</code> nil-arvoiselle oliolle. Syyn täytyy olla <code>link_to</code> metodissa oleva parametri
@@ -1517,11 +1519,8 @@ Vaikka tietokantamigraatio on suoritettu, on osa järjestelmän datasta edelleen
 Luodaan järjestelmään käyttäjä ja laitetaan herokun konsolista kaikkien olemassaolevien reittausten käyttäjäksi järjestelmään ensimmäisenä luotu käyttäjä:
 
 ```ruby
-irb(main):002:0> u = User.first
-=> #<User id: 1, username: "mluukkai", created_at: "2017-01-24 19:56:38", updated_at: "2017-01-24 19:56:38", password_digest: "$2a$10$g3AEFZtiOa186yfBql3tOO9ELAIgBUwOFnnWIVwwfYS...">
-irb(main):003:0> Rating.all.each{ |r| u.ratings << r }
-=> [#<Rating id: 1, score: 21, beer_id: 1, created_at: "2017-01-17 17:55:43", updated_at: "2017-01-24 19:56:51", user_id: 1>, #<Rating id: 2, score: 15, beer_id: 2, created_at: "2017-01-18 20:12:59", updated_at: "2017-01-24 19:56:51", user_id: 1>]
-irb(main):004:0>
+> u = User.first
+> Rating.all.each{ |r| u.ratings << r }
 ```
 
 Nyt sovellus toimii.
@@ -1529,7 +1528,7 @@ Nyt sovellus toimii.
 Toistetaan vielä viikon lopuksi edellisen viikon "ongelmia herokussa"-luvun lopetus
 
 <quote>
-Useimmiten tuotannossa vastaan tulevat ongelmat johtuvat siitä, että tietokantaskeeman muutosten takia jotkut oliot ovat joutuneet epäkonsistenttiin tilaan, eli ne esim. viittaavat olioihin joita ei ole tai viitteet puuttuvat. **Sovellus kannattaakin deployata tuotantoon mahdollisimman usein**, näin tiedetään että mahdolliset ongelmat ovat juuri tehtyjen muutosten aiheuttamia ja korjaus on helpompaa.
+Useimmiten tuotannossa vastaan tulevat ongelmat johtuvat siitä, että tietokantaskeeman muutosten takia jotkut oliot ovat joutuneet epäkonsistenttiin tilaan, eli ne esim. viittaavat olioihin joita ei ole tai viitteet puuttuvat. *Sovellus kannattaakin deployata tuotantoon mahdollisimman usein*, näin tiedetään että mahdolliset ongelmat ovat juuri tehtyjen muutosten aiheuttamia ja korjaus on helpompaa.
 </quote>
 
 ## Tehtävien palautus
