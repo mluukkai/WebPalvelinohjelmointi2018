@@ -285,7 +285,7 @@ Kokeile nyt sivua selaimella vielä kerran.
 
 Seurauksena on uusi virheilmoitus
 
-  Missing template ratings/index, application/index with {:locale=>[:en], :formats=>[:html], :handlers=>[:erb, :builder, :raw, :ruby, :jbuilder, :coffee]}. Searched in: * "/Users/mluukkai/kurssirepot/wadror/ratebeer/app/views"
+    Missing template ratings/index, application/index with {:locale=>[:en], :formats=>[:html], :handlers=>[:erb, :builder, :raw, :ruby, :jbuilder, :coffee]}. Searched in: * "/Users/mluukkai/kurssirepot/wadror/ratebeer/app/views"
 
 joka taas johtuu siitä, että Rails yrittää renderöidä kontrollerin metodia vastaavan oletusarvoisen, hakemistossa /app/views/ratings/index.html.erb olevan näkymätemplaten, mutta sellaista ei löydy.
 
@@ -336,21 +336,21 @@ Reittauksella on kokonaislukuarvoinen <code>score</code> sekä vierasavain, joka
 
 Model ja tietokannan generoiva migraatio saadaan luotua antamalla komentoriviltä komento:
 
-  rails g model Rating score:integer beer_id:integer
+    rails g model Rating score:integer beer_id:integer
 
 ja luodaan tietokantataulu suorittamalla komentoriviltä migraatio
 
-  rails db:migrate
+    rails db:migrate
 
 Toisin kuin viime viikolla käyttämämme _scaffold_-generaattori, model-generaattori ei luo ollenkaan kontrolleria eikä näkymätemplateja.
 
 **Muistutuksena viime viikolta:** railsin generaattorien (scaffold, model, ...) luomat tiedostot on mahdollista poistaa komennolla *destroy*:
 
-  rails destroy model Rating
+    rails destroy model Rating
 
 Jos olet suorittanut jo migraation ja huomaat että generaattorin luoma koodi onkin tuohottava, on **erittäin tärkeää** ensin perua migraatio komennolla
 
-  rails db:rollback
+    rails db:rollback
 
 Jotta yhteydet saadaan myös oliotasolle (muistutuksena [viime viikon materiaali](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md#oluet-ja-yhden-suhde-moneen--yhteys)), tulee luokkia päivittää seuraavasti
 
@@ -716,9 +716,9 @@ Jos yritämme luoda reittauksen aiheutuu virheilmoitus <code>No route matches [P
 Uuden olion luonnista vastaava metodi on Railsin konvention mukaan nimeltään <code>create</code>, luodaan sen pohja:
 
 ```ruby
-  def create
-    raise
-  end
+def create
+  raise
+end
 ```
 
 Tässä vaiheessa metodi ei tee muuta kuin aiheuttaa poikkeuksen (metodikutsu <code>raise</code>).
@@ -820,13 +820,13 @@ end
 
 Kokeile nyt luoda reittaus. Vastoin kaikkia odotuksia, luomisoperaatio epäonnistuu ja seurauksena on virheilmoitus
 
-  ActiveModel::ForbiddenAttributesError
+    ActiveModel::ForbiddenAttributesError
 
 Mistä on kyse?
 
 Jos olisimme tehneet reittauksen luovan komennon muodossa
 
-  Rating.create beer_id: params[:rating][:beer_id], score: params[:rating][:score]
+    Rating.create beer_id: params[:rating][:beer_id], score: params[:rating][:score]
 
 joka siis periaatteessa tarkoittaa täysin samaa kuin ylläoleva muoto (sillä <code>params[:rating]</code> on sisällöltään __täysin sama__ hash kuin <code>beer_id:params[:rating][:beer_id], score:params[:rating][:score]</code>), ei virheilmoitusta olisi tullut. [Tietoturvasyistä](http://en.wikipedia.org/wiki/Mass_assignment_vulnerability) Rails ei kuitenkaan salli mielivaltaista <code>params</code>-muuttujasta tapahtuvaa "massasijoitusta" (engl. mass assignment eli kaikkien parametrien antamista hashina) olion luomisen yhteydessä.
 
@@ -834,11 +834,11 @@ Rails 4:stä lähtien kontrollerin on lueteltava eksplisiittisesti mitä hashin 
 
 Periaatteena on, että ensin requirella otetaan paramsin sisältä luotavan olion tiedot sisältävä hash:
 
-  params.require(:rating)
+    params.require(:rating)
 
 tämän jälkeen luetellaan permitillä ne kentät, joiden arvon massasijoitus sallitaan:
 
-  params.require(:rating).permit(:score, :beer_id)
+    params.require(:rating).permit(:score, :beer_id)
 
 Kontrollerimme on siis seuraava:
 
@@ -1037,7 +1037,9 @@ Sivua http://guides.rubyonrails.org/form_helpers.html#making-select-boxes-with-e
 <% end %>
 ```
 
-eli lomakkeen <code>beer_id</code>:n arvo generoidaan HTML lomakkeen select-elementillä, jonka valintavaihtoehdot muodostetaan  näkymäapumetodilla <code>options_from_collection_for_select</code> <code>@beers</code>-muuttujassa olevasta oluiden listasta siten, että arvoksi otetaan oluen id ja lomakkeen käyttäjälle näytetään oluen nimi.
+eli lomakkeen <code>beer_id</code>:n arvo generoidaan HTML lomakkeen select-elementillä, jonka valintavaihtoehdot muodostetaan  näkymäapumetodilla <code>options_from_collection_for_select</code> <code>@beers</code>-muuttujassa olevasta oluiden listasta (ensimmäinen parametri @beers) siten, että arvoksi otetaan oluen id (toinen parametri :id) ja lomakkeen käyttäjälle näytetään oluen nimi (kolmas parametri :name). 
+
+Kolmas parametri siis määrittelee miten yksittäiset valinnat näytetään lomakkeella. Nyt siis näytetään kunkin oluen metodin _name_ tulos. Rubyssä viittaukset metodeiden nimiin määritellään symboleina, eli kaksoispisteellä alkavina merkkijonoina.  
 
 **Huom:** näkymäapumetodeja on mahdollista testata myös konsolista. Metodeja voi kutsua <code>helper</code>-olion kautta:
 
