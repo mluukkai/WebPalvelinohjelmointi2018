@@ -1136,7 +1136,7 @@ Lisää asiaa yhteyksien määrittelemisestä normaaleissa ja hieman monimutkais
 
 Huom: Railsissa on myös toinen tapa many to many -yhteyksien luomiseen <code>has_and_belongs_to_many</code> ks. http://guides.rubyonrails.org/association_basics.html#the-has-and-belongs-to-many-association jonka käyttö saattaa tulla kyseeseen jos liitostaulua ei tarvita mihinkään muuhun kuin yhteyden muodostamiseen.
 
-Trendinä kuitenkin on, että metodin has_and_belongs_to_many sijaan käytetään (sen monien ongelmien takia)  has_many through -yhdistelmää ja eksplisiittisesti määriteltyä yhteystaulua. Mm. Chad Fowler kehottaa kirjassaan [Rails recepies](http://pragprog.com/book/rr2/rails-recipes) välttämään has_and_belongs_to_many:n käyttöä, sama neuvo annetaan Obie Fernandezin autoritiivisessa teoksessa [Rails 4 Way](https://leanpub.com/tr4w)
+Trendinä kuitenkin on, että metodin has_and_belongs_to_many sijaan käytetään (sen monien ongelmien takia)  has_many through -yhdistelmää ja eksplisiittisesti määriteltyä yhteystaulua. Mm. Chad Fowler kehottaa kirjassaan [Rails recepies](http://pragprog.com/book/rr2/rails-recipes) välttämään has_and_belongs_to_many:n käyttöä, sama neuvo annetaan Obie Fernandezin autoritiivisessa teoksessa [Rails 5 Way](https://leanpub.com/tr5w)
 
 > ## Tehtävät 9-10: Olutseurat
 >
