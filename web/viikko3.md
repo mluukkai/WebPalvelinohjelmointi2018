@@ -709,7 +709,7 @@ Päätetään että laitetaan kaikkien olemassaolevien reittausten käyttäjäks
 > * käyttäjän reittausten määrä ja keskiarvo (huom: käytä edellisellä viikolla  määriteltyä moduulia <code>RatingAverage</code>, jotta saat keskiarvon laskevan koodin käyttäjälle!)
 > * lista käyttäjän reittauksista ja mahdollisuus poistaa reittauksia
 
-Käyttäjän sivu siis näyttää suunilleen seuraavalta :
+Käyttäjän sivu siis näyttää suunilleen seuraavalta:
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w3-3.png)
 
@@ -1060,16 +1060,32 @@ end
 Ja monen suhde moneen -yhteys toimii käyttäjästä päin:
 
 ```ruby
-> User.first.beers
- => #<ActiveRecord::Associations::CollectionProxy [#<Beer id: 1, name: "Iso 3", style: "Lager", brewery_id: 1, created_at: "2017-01-11 14:29:25", updated_at: "2017-01-11 14:29:25">, #<Beer id: 1, name: "Iso 3", style: "Lager", brewery_id: 1, created_at: "2017-01-11 14:29:25", updated_at: "2017-01-11 14:29:25">, #<Beer id: 11, name: "Punk IPA", style: "IPA", brewery_id: 4, created_at: "2017-01-17 13:12:12", updated_at: "2017-01-17 13:12:12">, #<Beer id: 11, name: "Punk IPA", style: "IPA", brewery_id: 4, created_at: "2017-01-17 13:12:12", updated_at: "2017-01-17 13:12:12">, #<Beer id: 11, name: "Punk IPA", style: "IPA", brewery_id: 4, created_at: "2017-01-17 13:12:12", updated_at: "2017-01-17 13:12:12">, #<Beer id: 12, name: "Nanny State", style: "lowalcohol", brewery_id: 4, created_at: "2017-01-17 13:12:27", updated_at: "2017-01-17 13:12:52">, #<Beer id: 12, name: "Nanny State", style: "lowalcohol", brewery_id: 4, created_at: "2017-01-17 13:12:27", updated_at: "2017-01-17 13:12:52">, #<Beer id: 7, name: "Helles", style: "Lager", brewery_id: 3, created_at: "2017-01-11 14:29:25", updated_at: "2017-01-11 14:29:25">, #<Beer id: 1, name: "Iso 3", style: "Lager", brewery_id: 1, created_at: "2017-01-11 14:29:25", updated_at: "2017-01-11 14:29:25">, #<Beer id: 4, name: "Huvila Pale Ale", style: "Pale Ale", brewery_id: 2, created_at: "2017-01-11 14:29:25", updated_at: "2017-01-11 14:29:25">, ...]>
->
+User.first.beers
+=> [#<Beer:0x00007fbe23b8a770
+  id: 1,
+  name: "Iso 3",
+  style: "Lager",
+  brewery_id: 1,
+  created_at: Sat, 01 Sep 2018 16:41:53 UTC +00:00,
+  updated_at: Sat, 01 Sep 2018 16:41:53 UTC +00:00>,
+ #<Beer:0x00007fbe23b8a608
+  id: 1,
+  # ...
 ```
 
 ja oluesta päin:
 
 ```ruby
 > Beer.first.users
- => #<ActiveRecord::Associations::CollectionProxy [#<User id: 1, username: "mluukkai", created_at: "2017-01-24 14:20:10", updated_at: "2017-01-24 14:20:10">, #<User id: 1, username: "mluukkai", created_at: "2017-01-24 14:20:10", updated_at: "2017-01-24 14:20:10">, #<User id: 1, username: "mluukkai", created_at: "2017-01-24 14:20:10", updated_at: "2017-01-24 14:20:10">, #<User id: 2, username: "pekka", created_at: "2017-01-24 16:51:42", updated_at: "2017-01-24 16:51:42">]>
+=> [#<User:0x00007fbe240cab68
+  id: 1,
+  username: "hellas",
+  created_at: Tue, 11 Sep 2018 07:28:39 UTC +00:00,
+  updated_at: Tue, 11 Sep 2018 07:50:37 UTC +00:00>,
+ #<User:0x00007fbe240caa28
+  id: 1,
+  username: "hellas", 
+  # ...
 ```
 
 Vaikuttaa ihan toimivalta, mutta tuntuu hieman kömpeltä viitata oluen reitanneisiin käyttäjiin nimellä <code>users</code>. Luontevampi viittaustapa oluen reitanneisiin käyttäjiin olisi kenties <code>raters</code>. Tämä onnistuu vaihtamalla yhteyden määrittelyä seuraavasti
@@ -1083,17 +1099,28 @@ Oletusarvoisesti <code>has_many</code> etsii liitettävää taulun nimeä ensimm
 Yhteytemme uusi nimi toimii:
 
 ```ruby
-> b = Beer.first
-> b.raters
- => #<ActiveRecord::Associations::CollectionProxy [#<User id: 1, username: "mluukkai", created_at: "2017-01-24 14:20:10", updated_at: "2017-01-24 14:20:10">, #<User id: 1, username: "mluukkai", created_at: "2017-01-24 14:20:10", updated_at: "2017-01-24 14:20:10">, #<User id: 1, username: "mluukkai", created_at: "2017-01-24 14:20:10", updated_at: "2017-01-24 14:20:10">, #<User id: 2, username: "pekka", created_at: "2017-01-24 16:51:42", updated_at: "2017-01-24 16:51:42">]>
+> Beer.first.raters
+=> [#<User:0x00007fbe240cab68
+  id: 1,
+  username: "hellas",
+  created_at: Tue, 11 Sep 2018 07:28:39 UTC +00:00,
+  updated_at: Tue, 11 Sep 2018 07:50:37 UTC +00:00>,
+ #<User:0x00007fbe240caa28
+  id: 1,
+  username: "hellas", 
+  # ...
 ```
 
 Koska sama käyttäjä voi tehdä useita reittauksia samasta oluesta, näkyy käyttäjä useaan kertaan oluen reittaajien joukossa. Jos haluamme yhden reittaajan näkymään ainoastaan kertaalleen, onnistuu tämä esim. seuraavasti:
 
 ```ruby
-> b.raters.uniq
-> b.raters.uniq
- => [#<User id: 1, username: "mluukkai", created_at: "2017-01-24 14:20:10", updated_at: "2017-01-24 14:20:10">, #<User id: 2, username: "pekka", created_at: "2017-01-24 16:51:42", updated_at: "2017-01-24 16:51:42">]
+> Beer.first.raters.uniq
+=> [#<User:0x00007fbe244c4c78
+  id: 1,
+  username: "hellas",
+  created_at: Tue, 11 Sep 2018 07:28:39 UTC +00:00,
+  updated_at: Tue, 11 Sep 2018 07:50:37 UTC +00:00>]
+>
 ```
 
 Olisi mahdollista myös määritellä, että oluen <code>raters</code> palauttaisi oletusarvoisesti vain kertaalleen yksittäisen käyttäjän. Tämä onnistuisi asettamalla <code>has_many</code>-määreelle __scope__, joka rajoittaa niiden olioiden joukkoa, jotka näytetään assosiaatioon liittyviksi:
@@ -1136,7 +1163,7 @@ Trendinä kuitenkin on, että metodin has_and_belongs_to_many sijaan käytetää
 >
 > Tämän tehtävän tekemiseen on monia tapoja, validointien käyttö ei ole välttämättä järkevin tapa tehtävän toteuttamiseen. Liittymislomakkeella tuskin kannattaa edes tarjota sellasia seuroja joiden jäsenenä käyttäjä jo on. 
 
-Seuraavat kaksi kuvaa antavat suuntaviivoja sille miltä sovelluksesi voi näyttää tehtävien 7-9 jälkeen.
+Seuraavat kaksi kuvaa antavat suuntaviivoja sille miltä sovelluksesi voi näyttää tehtävien 9-11 jälkeen.
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w3-5.png)
 

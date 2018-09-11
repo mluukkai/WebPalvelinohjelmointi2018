@@ -640,7 +640,7 @@ Tehtävän jälkeen oluen sivun tulisi näyttää suunnilleen seuraavalta (huom:
 >
 > Oliokokoelmamaiset luokat voivat sisällyttää moduulin enumerable toiminnallisuuden itselleen, ja tällöin ne perivät moduulin tarjoaman toiminnallisuuden.
 >
-> Tutustu nyt <code>map</code>- ja <code>inject</code>-metodeihin (ks. esim. [reduce](https://ruby-doc.org/core-2.5.1/Enumerable.html#reduce) [map](https://ruby-doc.org/core-2.5.1/Enumerable.html#map) ja etsi googlella lisää ohjeita) ja muuta (tarvittaessa) oluen reittausten keskiarvon laskeva metodi käyttämään reducea tai mapia ja sumia.
+> Tutustu nyt <code>map</code>- ja <code>reduce</code>-metodeihin (ks. esim. [reduce](https://ruby-doc.org/core-2.5.1/Enumerable.html#reduce) [map](https://ruby-doc.org/core-2.5.1/Enumerable.html#map) ja etsi googlella lisää ohjeita) ja muuta (tarvittaessa) oluen reittausten keskiarvon laskeva metodi käyttämään reducea tai mapia ja sumia.
 >
 > Keskiarvon laskeminen onnistuu tässä tapauksessa myös helpommin hyödyntämällä ActiveRecordin metodeja, ks. http://api.rubyonrails.org/classes/ActiveRecord/Calculations.html
 
