@@ -1408,8 +1408,10 @@ Koska koodilohko saa saman arvon kuin if:n ehto, voidaan se yksinkertaistaa seur
 
 ```ruby
 def authenticate
-  username == "admin" and password == "secret"
-end   
+  authenticate_or_request_with_http_basic do |username, password|
+    username == "admin" and password == "secret"
+  end  
+end
 ```
 
 HTTP Basic -autentikaatio on kätevä tapa yksinkertaisiin sivujen suojaamistarpeisiin, mutta monimutkaisemmissa tilanteissa ja parempaa tietoturvaa edellytettäessä kannattaa käyttää muita ratkaisuja.
