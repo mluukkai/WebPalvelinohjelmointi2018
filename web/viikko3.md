@@ -15,7 +15,7 @@ Tarkastellaan esimerkkinä viime viikolla toteutetun oluiden reittausten keskiar
 Jokainen olut siis sisältää kokoelman reittauksia:
 
 ```ruby
-class Beer < ActiveRecord::Base
+class Beer < ApplicationRecord
   belongs_to :brewery
   has_many :ratings
 end
@@ -24,7 +24,7 @@ end
 Tehtävänämme on luoda oluelle metodi <code>average</code>
 
 ```ruby
-class Beer < ActiveRecord::Base
+class Beer < ApplicationRecord
   belongs_to :brewery
   has_many :ratings, dependent: :destroy
 
@@ -41,7 +41,7 @@ Kaikki rubyn kokoelmamaiset asiat (mm. taulukko ja <code>has_many</code>-kenttä
 Koodin kirjoittamisessa kannattaa _ehdottomasti_ hyödyntää konsolia. Oikeastaan konsoliakin parempi vaihtoehdo on debuggerin käyttö. Debuggerin avulla saadaan avattua konsoli suoraan siihen kontekstiin, johon koodia ollaan kirjoittamassa. Lisätään metodikutsuun debuggerin käynnistävä komento <code>byebug</code> tai komento <code>binding.pry</code> jos käytössä on pry-konsoli:
 
 ```ruby
-class Beer < ActiveRecord::Base
+class Beer < ApplicationRecord
   belongs_to :brewery
   has_many :ratings, dependent: :destroy
 
@@ -226,7 +226,7 @@ Muodostetaan sitten lopullinen versio keskiarvon laskevasta koodista:
 Nyt koodi on valmis ja testattu, joten se voidaan kopioida metodiin:
 
 ```ruby
-class Beer < ActiveRecord::Base
+class Beer < ApplicationRecord
   belongs_to :brewery
   has_many :ratings, dependent: :destroy
 
@@ -629,11 +629,11 @@ Muutetaan seuraavaksi sovellusta siten, että reittaus kuuluu kirjautuneena olev
 Modelien tasolla muutos kulkee tuttuja latuja:
 
 ```ruby
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   has_many :ratings   # käyttäjällä on monta ratingia
 end
 
-class Rating < ActiveRecord::Base
+class Rating < ApplicationRecord
   belongs_to :beer
   belongs_to :user   # rating kuuluu myös käyttäjään
 
@@ -800,7 +800,7 @@ Railsiin on sisäänrakennettu monipuolinen mekanismi olioiden kenttien validoin
 Käyttäjätunnuksen yksikäsitteisyyden validointi onkin helppoa, pieni lisäys User-luokkaan riittää:
 
 ```ruby
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   include RatingAverage
 
   validates :username, uniqueness: true
@@ -822,7 +822,7 @@ Lisätään saman tien muitakin validointeja sovellukseemme. Lisätään käytt�
 samaa attribuuttia koskevat validointisäännöt voidaan myös yhdistää, yhden <code>validates :attribuutti</code> -kutsun alle:
 
 ```ruby
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   include RatingAverage
 
   validates :username, uniqueness: true,
@@ -893,7 +893,7 @@ eli suoritetaan komentoon (joka on oikeastaan metodi) <code>respond_to</code> li
 Jatketaan sitten validointien parissa. Määritellään että oluen reittauksen tulee olla kokonaisluku väliltä 1-50:
 
 ```ruby
-class Rating < ActiveRecord::Base
+class Rating < ApplicationRecord
   belongs_to :beer
   belongs_to :user
 
@@ -1034,7 +1034,7 @@ Yhteen olueeseen liittyy monta reittausta, ja reittaus liittyy aina yhteen käyt
 Saammekin tuotua tämän many to many -yhteyden kooditasolle helposti käyttämällä jo [edellisen viikon lopulta tuttua](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#olioiden-ep%C3%A4suora-yhteys) tapaa, eli **has_many through** -yhteyttä:
 
 ```ruby
-class Beer < ActiveRecord::Base
+class Beer < ApplicationRecord
   include RatingAverage
 
   belongs_to :brewery
@@ -1044,7 +1044,7 @@ class Beer < ActiveRecord::Base
   # ...
 end
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   include RatingAverage
 
   has_many :ratings
@@ -1123,7 +1123,7 @@ Koska sama käyttäjä voi tehdä useita reittauksia samasta oluesta, näkyy kä
 Olisi mahdollista myös määritellä, että oluen <code>raters</code> palauttaisi oletusarvoisesti vain kertaalleen yksittäisen käyttäjän. Tämä onnistuisi asettamalla <code>has_many</code>-määreelle __scope__, joka rajoittaa niiden olioiden joukkoa, jotka näytetään assosiaatioon liittyviksi:
 
 ```ruby
-class Beer < ActiveRecord::Base
+class Beer < ApplicationRecord
   #...
 
   has_many :raters, -> { uniq }, through: :ratings, source: :user
@@ -1187,7 +1187,7 @@ huomaa, että lisättävän sarakkeen nimen on oltava <code>password_digest</cod
 Tehdään seuraava lisäys luokkaan <code>User</code>:
 
 ```ruby
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   include RatingAverage
 
   has_secure_password
