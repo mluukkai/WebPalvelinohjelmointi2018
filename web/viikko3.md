@@ -386,7 +386,7 @@ app/models/rating.rb:7:1: C: Layout/TrailingWhitespace: Trailing whitespace dete
 
 > ## Tehtävä 2
 >
-> Ota käyttöön sääntö, joka estää yli 15 merkkiä pitkät metodit. Varmista, että _rubocop_ ilmoittaa, jos koodiisi tulee liian pitkä metodi.
+> Ota käyttöön sääntö, joka estää yli 15 riviä pitkät metodit. Varmista, että _rubocop_ ilmoittaa, jos koodiisi tulee liian pitkä metodi.
 >
 > Löydät ohjeita säännön määrittelyyn [dokumentaation](http://docs.rubocop.org/en/latest/cops/) Metrics-osuudesta.
 
