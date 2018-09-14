@@ -1501,7 +1501,7 @@ ja olut johon liittyvää panimoa ei ole olemassa (eli viiteavaimena oleva panim
 > b.save(validate: false)
 ```
 
-Kun menet nyt kaikkien oluiden on seurauksena jälleen ikävä ilmoitus "We're sorry, but something went wrong.". Jälleen kerran ongelmaa on etsittävä lokeista:
+Kun menet nyt kaikkien oluiden sivulle on seurauksena jälleen ikävä ilmoitus "We're sorry, but something went wrong.". Jälleen kerran ongelmaa on etsittävä lokeista:
 
 ```ruby
 2018-09-08T13:39:17.133318+00:00 app[web.1]: [c355e369-86e1-4a48-9bca-b7bda15ddc97]   Rendered beers/index.html.erb within layouts/application (14.1ms)
@@ -1528,7 +1528,7 @@ virheen aiheuttanut rivi on
 
     <td><%= link_to beer.brewery.name, beer.brewery %></td>
 
-eli on olemassa olut, jonka kentässä <code>brewery</code> on arvona <code>nil</code>. Tämä voi johtua joko siitä että oluen <code>brewery_id</code> on <code>nil</code> tai <code>brewery_id</code>:n arvona on virheellinen (esim. poistetun panimon) id.
+eli on olemassa olut, jonka kentässä <code>brewery</code> on arvona <code>nil</code>. Tämä voi johtua joko siitä, että oluen <code>brewery_id</code> on <code>nil</code> tai <code>brewery_id</code>:n arvona on virheellinen (esim. poistetun panimon) id.
 
 Kun virheen syy paljastuu, on etsittävä syylliset. Eli avataan heroku-konsoli komennolla <code>heroku run console</code> ja haetaan panimottomat oluet:
 
