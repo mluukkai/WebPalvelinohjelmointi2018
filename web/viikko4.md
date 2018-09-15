@@ -49,49 +49,49 @@ Näiden muutosten jälkeen oluen tietojen editointi ei yllättäen enää toimi.
 Syynä tälle on se, että uuden oluen luominen ja oluen tietojen editointi käyttävät molemmat samaa lomakkeen generoivaa näkymätemplatea (app/views/beers/_form.html.erb) ja muutosten jälkeen näkymän toiminta edellyttää, että muuttuja <code>@breweries</code> sisältää panimoiden listan ja muuttuja <code>@styles</code> sisältää oluiden tyylit. Oluen tietojen muutossivulle mennään kontrollerimetodin <code>edit</code> suorituksen jälkeen, ja joudummekin muuttamaan kontrolleria seuraavasti korjataksemme virheen:
 
 ```ruby
-  def edit
-    @breweries = Brewery.all
-    @styles = ["Weizen", "Lager", "Pale ale", "IPA", "Porter"]
-  end
+def edit
+  @breweries = Brewery.all
+  @styles = ["Weizen", "Lager", "Pale ale", "IPA", "Porter"]
+end
 ```
 
 Täsmälleen samaan ongelmaan törmätään jos yritetään luoda olut, joka ei ole validi. Tällöin nimittäin kontrollerin metodi <code>create</code> yrittää renderöidä uudelleen lomakkeen generoivan näkymätemplaten. Metodissa on siis ennen renderöintiä asetettava arvo templaten tarvitsemille muuttujille <code>@styles</code> ja <code>@breweries</code>:
 
 ```ruby
-  def create
-    @beer = Beer.new(beer_params)
+def create
+  @beer = Beer.new(beer_params)
 
-    respond_to do |format|
-      if @beer.save
-        format.html { redirect_to beers_path, notice: 'Beer was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @beer }
-      else
-        @breweries = Brewery.all
-        @styles = ["Weizen", "Lager", "Pale ale", "IPA", "Porter"]
+  respond_to do |format|
+    if @beer.save
+      format.html { redirect_to beers_path, notice: 'Beer was successfully created.' }
+      format.json { render action: 'show', status: :created, location: @beer }
+    else
+      @breweries = Brewery.all
+      @styles = ["Weizen", "Lager", "Pale ale", "IPA", "Porter"]
 
-        format.html { render action: 'new' }
-        format.json { render json: @beer.errors, status: :unprocessable_entity }
-      end
+      format.html { render action: 'new' }
+      format.json { render json: @beer.errors, status: :unprocessable_entity }
     end
   end
+end
 ```
 
 Onkin hyvin tyypillistä, että kontrollerimetodit <code>new</code>, <code>create</code> ja <code>edit</code> sisältävät paljon samaa, näkymätemplaten tarvitsemien muuttujien alustukseen käytettyä koodia. Onkin järkevää ekstraktoida yhteinen koodi omaan metodiin:
 
 ```ruby
-  def set_breweries_and_styles_for_template
-    @breweries = Brewery.all
-    @styles = ["Weizen", "Lager", "Pale ale", "IPA", "Porter"]
-  end
+def set_breweries_and_styles_for_template
+  @breweries = Brewery.all
+  @styles = ["Weizen", "Lager", "Pale ale", "IPA", "Porter"]
+end
 ```
 
 Metodia voidaan kutsua kontrollerin metodeista <code>new</code>, <code>create</code> ja <code>edit</code>:
 
 ```ruby
-  def new
-    @beer = Beer.new
-    set_breweries_and_styles_for_template
-  end
+def new
+  @beer = Beer.new
+  set_breweries_and_styles_for_template
+end
 ```
 
  tai ehkä vielä tyylikkäämpää on hoitaa asia <code>before_action</code> määreellä:
@@ -119,26 +119,26 @@ Seuraavassa tyypillisen ongelmatilanteen loki:
 
 ```ruby
 mbp-18:ratebeer-public mluukkai$ heroku logs
-2017-02-03T18:53:05.867973+00:00 app[web.1]:                   ON a.attrelid = d.adrelid AND a.attnum = d.adnum
-2017-02-03T18:53:05.867973+00:00 app[web.1]:
-2017-02-03T18:53:05.867973+00:00 app[web.1]:                                           ^
-2017-02-03T18:53:05.867973+00:00 app[web.1]:                WHERE a.attrelid = '"users"'::regclass
-2017-02-03T18:53:05.874380+00:00 app[web.1]: Completed 500 Internal Server Error in 10ms
-2017-02-03T18:53:05.878587+00:00 app[web.1]: :               SELECT a.attname, format_type(a.atttypid, a.atttypmod),
-2017-02-03T18:53:05.878587+00:00 app[web.1]:                                           ^
-2017-02-03T18:53:05.878587+00:00 app[web.1]:
-2017-02-03T18:53:05.868310+00:00 app[web.1]:
-2017-02-03T18:53:05.867973+00:00 app[web.1]:                      pg_get_expr(d.adbin, d.adrelid), a.attnotnull, a.atttypid, a.atttypmod
-2017-02-03T18:53:05.867973+00:00 app[web.1]:                  AND a.attnum > 0 AND NOT a.attisdropped
-2017-02-03T18:53:05.868310+00:00 app[web.1]:                ORDER BY a.attnum
-2017-02-03T18:53:05.878587+00:00 app[web.1]:                WHERE a.attrelid = '"users"'::regclass
-2017-02-03T18:53:05.867973+00:00 app[web.1]:                 FROM pg_attribute a LEFT JOIN pg_attrdef d
-2017-02-03T18:53:05.882824+00:00 app[web.1]: LINE 5:                WHERE a.attrelid = '"users"'::regclass
-2017-02-03T18:53:05.882824+00:00 app[web.1]:                                           ^
-2017-02-03T18:53:05.878587+00:00 app[web.1]:                      pg_get_expr(d.adbin, d.adrelid), a.attnotnull, a.atttypid, a.atttypmod
-2017-02-03T18:53:05.878587+00:00 app[web.1]:                   ON a.attrelid = d.adrelid AND a.attnum = d.adnum
-2017-02-03T18:53:05.874380+00:00 app[web.1]: Completed 500 Internal Server Error in 10ms
-2017-02-03T18:53:05.878587+00:00 app[web.1]: ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "users" does not exist
+2018-09-15T18:53:05.867973+00:00 app[web.1]:                   ON a.attrelid = d.adrelid AND a.attnum = d.adnum
+2018-09-15T18:53:05.867973+00:00 app[web.1]:
+2018-09-15T18:53:05.867973+00:00 app[web.1]:                                           ^
+2018-09-15T18:53:05.867973+00:00 app[web.1]:                WHERE a.attrelid = '"users"'::regclass
+2018-09-15T18:53:05.874380+00:00 app[web.1]: Completed 500 Internal Server Error in 10ms
+2018-09-15T18:53:05.878587+00:00 app[web.1]: :               SELECT a.attname, format_type(a.atttypid, a.atttypmod),
+2018-09-15T18:53:05.878587+00:00 app[web.1]:                                           ^
+2018-09-15T18:53:05.878587+00:00 app[web.1]:
+2018-09-15T18:53:05.868310+00:00 app[web.1]:
+2018-09-15T18:53:05.867973+00:00 app[web.1]:                      pg_get_expr(d.adbin, d.adrelid), a.attnotnull, a.atttypid, a.atttypmod
+2018-09-15T18:53:05.867973+00:00 app[web.1]:                  AND a.attnum > 0 AND NOT a.attisdropped
+2018-09-15T18:53:05.868310+00:00 app[web.1]:                ORDER BY a.attnum
+2018-09-15T18:53:05.878587+00:00 app[web.1]:                WHERE a.attrelid = '"users"'::regclass
+2018-09-15T18:53:05.867973+00:00 app[web.1]:                 FROM pg_attribute a LEFT JOIN pg_attrdef d
+2018-09-15T18:53:05.882824+00:00 app[web.1]: LINE 5:                WHERE a.attrelid = '"users"'::regclass
+2018-09-15T18:53:05.882824+00:00 app[web.1]:                                           ^
+2018-09-15T18:53:05.878587+00:00 app[web.1]:                      pg_get_expr(d.adbin, d.adrelid), a.attnotnull, a.atttypid, a.atttypmod
+2018-09-15T18:53:05.878587+00:00 app[web.1]:                   ON a.attrelid = d.adrelid AND a.attnum = d.adnum
+2018-09-15T18:53:05.874380+00:00 app[web.1]: Completed 500 Internal Server Error in 10ms
+2018-09-15T18:53:05.878587+00:00 app[web.1]: ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "users" does not exist
 ```
 
 lokia tarkasti lukemalla selviää että syynä on seuraava
@@ -148,27 +148,27 @@ ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "users" doe
 ```
 eli migraatiot ovat jääneet suorittamatta. Korjaus on helppo:
 
-    heroku run rake db:migrate
+    heroku run rails db:migrate
 
 Seuraavassa loki eräästä toisesta hyvin tyypillisestä virhetilanteesta:
 
 ```ruby
-2017-02-03T19:04:43.830852+00:00 app[web.1]: Started POST "/ratings" for 84.253.203.234 at 2017-02-03 19:04:43 +0000
-2017-02-03T19:04:43.833992+00:00 app[web.1]:   Parameters: {"utf8"=>"✓", "authenticity_token"=>"n1VTj7WrICHZUT594fbxJBue2uqcSk6wrYQR7lY5nzk=", "rating"=>{"beer_id"=>"2", "score"=>"10"}, "commit"=>"Create Rating"}
-2017-02-03T19:04:43.833913+00:00 app[web.1]: Processing by RatingsController#create as HTML
-2017-02-03T19:04:43.833992+00:00 app[web.1]: Processing by RatingsController#create as HTML
-2017-02-03T19:04:43.833992+00:00 app[web.1]:   Parameters: {"utf8"=>"✓", "authenticity_token"=>"n1VTj7WrICHZUT594fbxJBue2uqcSk6wrYQR7lY5nzk=", "rating"=>{"beer_id"=>"2", "score"=>"10"}, "commit"=>"Create Rating"}
-2017-02-03T19:04:43.853276+00:00 app[web.1]:
-2017-02-03T19:04:43.851427+00:00 app[web.1]: Completed 500 Internal Server Error in 19ms
-2017-02-03T19:04:43.852028+00:00 app[web.1]: Completed 500 Internal Server Error in 19ms
-2017-02-03T19:04:43.853276+00:00 app[web.1]:   app/controllers/ratings_controller.rb:15:in `create'
-2017-02-03T19:04:43.853276+00:00 app[web.1]:
-2017-02-03T19:04:43.853276+00:00 app[web.1]: NoMethodError (undefined method `ratings' for nil:NilClass):
-2017-02-03T19:04:43.853276+00:00 app[web.1]:   app/controllers/ratings_controller.rb:15:in `create'
-2017-02-03T19:04:43.853276+00:00 app[web.1]:
-2017-02-03T19:04:43.853276+00:00 app[web.1]:
-2017-02-03T19:04:43.853276+00:00 app[web.1]: NoMethodError (undefined method `ratings' for nil:NilClass):
-2017-02-03T19:04:43.853276+00:00 app[web.1]:
+2018-09-15T19:04:43.830852+00:00 app[web.1]: Started POST "/ratings" for 84.253.203.234 at 2018-09-15 19:04:43 +0000
+2018-09-15T19:04:43.833992+00:00 app[web.1]:   Parameters: {"utf8"=>"✓", "authenticity_token"=>"n1VTj7WrICHZUT594fbxJBue2uqcSk6wrYQR7lY5nzk=", "rating"=>{"beer_id"=>"2", "score"=>"10"}, "commit"=>"Create Rating"}
+2018-09-15T19:04:43.833913+00:00 app[web.1]: Processing by RatingsController#create as HTML
+2018-09-15T19:04:43.833992+00:00 app[web.1]: Processing by RatingsController#create as HTML
+2018-09-15T19:04:43.833992+00:00 app[web.1]:   Parameters: {"utf8"=>"✓", "authenticity_token"=>"n1VTj7WrICHZUT594fbxJBue2uqcSk6wrYQR7lY5nzk=", "rating"=>{"beer_id"=>"2", "score"=>"10"}, "commit"=>"Create Rating"}
+2018-09-15T19:04:43.853276+00:00 app[web.1]:
+2018-09-15T19:04:43.851427+00:00 app[web.1]: Completed 500 Internal Server Error in 19ms
+2018-09-15T19:04:43.852028+00:00 app[web.1]: Completed 500 Internal Server Error in 19ms
+2018-09-15T19:04:43.853276+00:00 app[web.1]:   app/controllers/ratings_controller.rb:15:in `create'
+2018-09-15T19:04:43.853276+00:00 app[web.1]:
+2018-09-15T19:04:43.853276+00:00 app[web.1]: NoMethodError (undefined method `ratings' for nil:NilClass):
+2018-09-15T19:04:43.853276+00:00 app[web.1]:   app/controllers/ratings_controller.rb:15:in `create'
+2018-09-15T19:04:43.853276+00:00 app[web.1]:
+2018-09-15T19:04:43.853276+00:00 app[web.1]:
+2018-09-15T19:04:43.853276+00:00 app[web.1]: NoMethodError (undefined method `ratings' for nil:NilClass):
+2018-09-15T19:04:43.853276+00:00 app[web.1]:
 ```
 
 Virhe on aiheutunut tiedoston *app/controllers/ratings_controller.rb* rivillä 15 ja syynä on <code>NoMethodError (undefined method `ratings' for nil:NilClass)</code>.
@@ -176,35 +176,35 @@ Virhe on aiheutunut tiedoston *app/controllers/ratings_controller.rb* rivillä 1
 Katsotaan ko. tiedostoa ja ongelman aiheuttanutta riviä:
 
 ```ruby
-  def create
-    @rating = Rating.new params.require(:rating).permit(:score, :beer_id)
+def create
+  @rating = Rating.new params.require(:rating).permit(:score, :beer_id)
 
-    if @rating.save
-      current_user.ratings << @rating  ## virheen aiheuttanut rivi
-      redirect_to user_path current_user
-    else
-      @beers = Beer.all
-      render :new
-    end
+  if @rating.save
+    current_user.ratings << @rating  ## virheen aiheuttanut rivi
+    redirect_to user_path current_user
+  else
+    @beers = Beer.all
+    render :new
   end
+end
 ```
 
 eli ongelman aiheutti se, että yritettiin tehdä reittaus tilanteessa, jossa kukaan ei ollut kirjaantuneena ja <code>current_user</code> oli <code>nil</code>. Ongelma voidaan korjata esim. seuraavasti:
 
 ```ruby
-  def create
-    @rating = Rating.new params.require(:rating).permit(:score, :beer_id)
+def create
+  @rating = Rating.new params.require(:rating).permit(:score, :beer_id)
 
-    if current_user.nil?
-      redirect_to signin_path, notice:'you should be signed in'
-    elsif @rating.save
-      current_user.ratings << @rating  ## virheen aiheuttanut rivi
-      redirect_to user_path current_user
-    else
-      @beers = Beer.all
-      render :new
-    end
+  if current_user.nil?
+    redirect_to signin_path, notice: 'you should be signed in'
+  elsif @rating.save
+    current_user.ratings << @rating  ## virheen aiheuttanut rivi
+    redirect_to user_path current_user
+  else
+    @beers = Beer.all
+    render :new
   end
+end
 ```
 
 eli jos käyttäjä ei ole kirjautunut, ohjataan selain kirjautumissivulle. Kannattaa myös poistaa _ratings_-näkymään ehkä jäänyt linkki, joka mahdollistaa reittauksen yrittämisen kirjautumattomana.
@@ -212,18 +212,18 @@ eli jos käyttäjä ei ole kirjautunut, ohjataan selain kirjautumissivulle. Kann
 Tarkastellaan lopuksi erään suorastaan klassikon asemaan nousseen virheen lokia:
 
 ```ruby
-2017-02-03T19:32:31.609344+00:00 app[web.1]:     6:   <% @ratings.each do |rating| %>
-2017-02-03T19:32:31.609530+00:00 app[web.1]:
-2017-02-03T19:32:31.609530+00:00 app[web.1]:
-2017-02-03T19:32:31.609530+00:00 app[web.1]:   app/views/ratings/index.html.erb:6:in `_app_views_ratings_index_html_erb___254869282653960432_70194062879340'
-2017-02-03T19:32:31.609530+00:00 app[web.1]:
-2017-02-03T19:32:31.609530+00:00 app[web.1]: ActionView::Template::Error (undefined method `username' for nil:NilClass):
-2017-02-03T19:32:31.609344+00:00 app[web.1]:   app/views/ratings/index.html.erb:7:in `block in _app_views_ratings_index_html_erb___254869282653960432_70194062879340'
-2017-02-03T19:32:31.609530+00:00 app[web.1]:     7:       <li> <%= rating %> <%= link_to rating.user.username, rating.user %> </li>
-2017-02-03T19:32:31.609530+00:00 app[web.1]:     4:
-2017-02-03T19:32:31.609530+00:00 app[web.1]:     6:   <% @ratings.each do |rating| %>
-2017-02-03T19:32:31.609530+00:00 app[web.1]:     5: <ul>
-2017-02-03T19:32:31.609715+00:00 app[web.1]:    10:
+2018-09-15T19:32:31.609344+00:00 app[web.1]:     6:   <% @ratings.each do |rating| %>
+2018-09-15T19:32:31.609530+00:00 app[web.1]:
+2018-09-15T19:32:31.609530+00:00 app[web.1]:
+2018-09-15T19:32:31.609530+00:00 app[web.1]:   app/views/ratings/index.html.erb:6:in `_app_views_ratings_index_html_erb___254869282653960432_70194062879340'
+2018-09-15T19:32:31.609530+00:00 app[web.1]:
+2018-09-15T19:32:31.609530+00:00 app[web.1]: ActionView::Template::Error (undefined method `username' for nil:NilClass):
+2018-09-15T19:32:31.609344+00:00 app[web.1]:   app/views/ratings/index.html.erb:7:in `block in _app_views_ratings_index_html_erb___254869282653960432_70194062879340'
+2018-09-15T19:32:31.609530+00:00 app[web.1]:     7:       <li> <%= rating %> <%= link_to rating.user.username, rating.user %> </li>
+2018-09-15T19:32:31.609530+00:00 app[web.1]:     4:
+2018-09-15T19:32:31.609530+00:00 app[web.1]:     6:   <% @ratings.each do |rating| %>
+2018-09-15T19:32:31.609530+00:00 app[web.1]:     5: <ul>
+2018-09-15T19:32:31.609715+00:00 app[web.1]:    10:
 ```
 
 Tarkka silmä huomaa lokin seasta että ongelma on _ActionView::Template::Error (undefined method `username' for nil:NilClass)_ ja virhe syntyi tiedoston _app/views/ratings/index.html.erb_ riviä 7 suoritettaessa. Virheen aiheuttanut rivi on
@@ -232,16 +232,16 @@ Tarkka silmä huomaa lokin seasta että ongelma on _ActionView::Template::Error 
 <li> <%= rating %> <%= link_to rating.user.username, rating.user %> </li>
 ```
 
-vaikuttaa siis siltä, että tietokannassa on <code>rating</code>-olio, johon liittyvä <code>user</code> on <code>nil</code>. Kyseessä on siis jo [viikolta 2 tuttu](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko2.md#ongelmia-herokussa) ongelma.
+vaikuttaa siis siltä, että tietokannassa on <code>rating</code>-olio, johon liittyvä <code>user</code> on <code>nil</code>. Kyseessä on siis jo [viikolta 2 tuttu](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#ongelmia-herokussa) ongelma.
 
 Ongelman perimmäinen syy on joko se, että jonkin ratingin <code>user_id</code>-kentän arvo on <code>nil</code>, tai että jonkin rating-olion <code>user_id</code>:n arvona on virheellinen id. Tilanteesta selvitään esim. tuhoamalla 'huonot' rating-oliot komennolla <code>heroku run console</code> käynnistyvän Herokun konsolin avulla:
 
 
 ```ruby
 > bad_ratings = Rating.all.select{ |r| r.user.nil? or r.beer.nil? }
-=> [#<Rating id: 1, score: 10, beer_id: 2, created_at: "2017-02-03 19:04:43", updated_at: "2017-02-03 19:04:43", user_id: nil>]
+=> [#<Rating id: 1, score: 10, beer_id: 2, created_at: "2018-09-15 19:04:43", updated_at: "2018-09-15 19:04:43", user_id: nil>]
 > bad_ratings.each{ |bad| bad.destroy }
-=> [#<Rating id: 1, score: 10, beer_id: 2, created_at: "2017-02-03 19:04:43", updated_at: "2017-02-03 19:04:43", user_id: nil>]
+=> [#<Rating id: 1, score: 10, beer_id: 2, created_at: "2018-09-15 19:04:43", updated_at: "2018-09-15 19:04:43", user_id: nil>]
 > Rating.all.select{ |r| r.user.nil? or r.beer.nil? }
 => []
 >
@@ -255,7 +255,7 @@ Eli jos joudut Herokun kanssa ongelmiin, selvitä analyyttisesti mistä on kyse,
 
 Silloin tällöin (esim. jos luodaan vahingossa huono scaffold, ks. seuraava kohta) syntyy tilanteita, joissa edelliseksi suoritetettu migraatio on syytä perua. Tämä onnistuu komennolla
 
-    rake db:rollback
+    rails db:rollback
 
 ### Huono scaffold
 
@@ -263,22 +263,7 @@ Jos haluat poistaa scaffold-generaattorin luomat tiedostot, onnistuu tämä kome
 
     rails destroy scaffold resurssin_nimi
 
-missä _resurssin_nimi_ on scaffoldilla luomasi resurssin nimi. **HUOM:** jos suoritit jo huonoon scaffoldiin liittyvän migraation, tee ehdottomasti ennen scaffoldin tuhoamista <code>rake db:rollback</code>
-
-## Huomio Rails 5:n käyttäjille
-
-Rails 5:n hieman nelosversiosta poikkeavan oletuskäyttäytymisen (ks.
-<http://blog.bigbinary.com/2016/02/15/rails-5-makes-belong-to-association-required-by-default.html>) takia
-takia tee luokkan <code>Rating</code> seuraava lisäys:
-
-```ruby
-class Rating < ApplicationRecord
-  # lisätään määre optionl: true
-  belongs_to :beer, optional: true   
-  
-  # muu jää ennalleen
-end
-```
+missä _resurssin_nimi_ on scaffoldilla luomasi resurssin nimi. **HUOM:** jos suoritit jo huonoon scaffoldiin liittyvän migraation, tee ehdottomasti ennen scaffoldin tuhoamista <code>rails db:rollback</code>
 
 Muuten kaikki allaoleva koodi ei toimi ilman muutoksia.
 
@@ -292,7 +277,7 @@ Otetaan käyttöön rspec-rails gem lisäämällä Gemfileen seuraava:
 
 ```ruby
 group :development, :test do
-  gem 'rspec-rails', '~> 3.5'
+  gem 'rspec-rails', '~> 3.8'
 end
 ```
 
@@ -328,96 +313,31 @@ end
 
 Kokeillaan ajaa testit komentoriviltä komennolla <code>rspec spec</code> (huom: saattaa olla, että joudut tässä vaiheessa käynnistämään terminaalin uudelleen!).
 
-Se mitä komentoa suoritettaessa nyt tapahtuu, riippuen käyttämästäsi Railsin versiosta.
-
-## Testien suorittaminen vanhemmalla Railsin versiolla
-
-Jos käytössäsi on hieman vanhempi versio Railsista, esim. Rails 4.0 käy todennäköisesti seuraavalla tavalla:
-
-```ruby
-$ rspec spec
-/Users/mluukkai/.rvm/gems/ruby-2.0.0-p451/gems/activerecord-4.0.2/lib/active_record/migration.rb:379:in `check_pending!': Migrations are pending; run 'bin/rake db:migrate RAILS_ENV=test' to resolve this issue. (ActiveRecord::PendingMigrationError)
-```
-
-eli seurauksena on melko ikävä, noin 30 riviä pitkä virheilmoitus. Virheilmoituksen seasta, heti sen alusta löytyy kuitenkin syy ongelmalla
-
-     Migrations are pending; run 'bin/rake db:migrate RAILS_ENV=test' to resolve this issue.
-
-eli migraatiot ovat jostain syystä suorittamatta. Syynä tälle on [viikolla 1](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko1.md#riippuvuuksien-hallinta-ja-suoritusymp%C3%A4rist%C3%B6t) esiin nostamamme seikka, eli Railsissa on käytössä oma ympäristö sovelluskehitykseen, tuotantoon ja testaamiseen ja jokaisessa ympäristössä on käytössä oma tietokanta. Vaikka sovelluskehitysympäristön tietokannan migraatiot ovat ajan tasalla, ei testausympäristön migraatioita ole suoritettu ja sen takia testienkään suorittaminen ei onnistu.
-
-*Huom:* uudemmilla Railsin versioilla testitietokannan migraatiot suoritetaan automaattisesti rspecin alustuksen yhteydessä ja et törmää edellä olevaan virheilmoitukseen.
-
-Testiympäristön migraatiot on mahdollista suorittaa komennolla <code>rake db:migrate RAILS_ENV=test</code>, kannattaa kuitenkin suorittaa komentoriviltä testiympäristön ajantasaistaminen yleisemmin käytetyn komento
-
-    rake db:test:prepare
-
-ja tämän jälkeen suorittaa testit uudelleen komennolla <code>rspec spec</code>
-
-
-## testien suorittaminen uudemmilla Railsin versiolla
-
-Uudemmilla Railsin versioilla (4.1 ja sitä uudemmat) testitietokannan migraatiot siis suoritetaan automaattisesti rspecin alustuksen yhteydessä ja edellisessä luvussa kuvattua virhetilannetta ei esiinny.
-
-Ensimmäinen testien suoritus etenee seuraavasti:
+Testien suoritus etenee seuraavasti:
 
 ```ruby
 $ rspec spec
 *
 
-Pending:
-  User add some examples to (or delete) /Users/mluukkai/kurssirepot/rors/lagi/spec/models/user_spec.rb
-    # Not yet implemented
-    # ./spec/models/user_spec.rb:4
+Pending: (Failures listed here are expected and do not affect your suite's status)
 
-Finished in 0.00047 seconds (files took 1.48 seconds to load)
+  1) User add some examples to (or delete) /Users/mluukkai/opetus/ratebeer/spec/models/user_spec.rb
+     # Not yet implemented
+     # ./spec/models/user_spec.rb:4
+
+
+Finished in 0.00932 seconds (files took 3.31 seconds to load)
 1 example, 0 failures, 1 pending
 ```
-
-*Huom* jos testi toimii muuten mutta saat testien ajamisen yhteydessä suuren määrän epämääräisiä virheilmoituksia , lisää tiedostoon _spec/spec_helper.rb_ seuraava rivi
-
-```ruby
-  config.warnings = false
-```
-
-Rivin tulee sijaita tiedostossa olevan <code>do</code> <code>end</code> -lohkon sisällä.
 
 Komento  <code>rspec spec</code> määrittelee, että suoritetaan kaikki testit, jotka löytyvät hakemiston spec alihakemistoista. Jos testejä on paljon, on myös mahdollista ajaa suppeampi joukko testejä:
 
     rspec spec/models                # suoritetaan hakemiston model sisältävät testit
     rspec spec/models/user_spec.rb   # suoritetaan user_spec.rb:n määrittelemät testi
 
-rspec-rails luo myös rake-komennot eli taskit testien suorittamiseen. Voit listata kaikki testeihin liittyvät taskit komennolla ```rake -T spec```.
-
-```ruby
-$ rake -T spec
-rake spec         # Run all specs in spec directory (excluding plugin specs)
-rake spec:models  # Run the code examples in spec/models
-```
-
-eli komento <code>rake spec</code> saa aikaan saman kuin <code>rspec spec</code>:
-
-```ruby
-$ rake spec
-*
-
-Pending:
-  User add some examples to (or delete) /Users/mluukkai/kurssirepot/wadror/ratebeer/spec/models/user_spec.rb
-    # No reason given
-    # ./spec/models/user_spec.rb:4
-
-Finished in 0.00046 seconds
-1 example, 0 failures, 1 pending
-
-Randomized with seed 7711
-```
-
-Komennon <code>rspec spec</code> ja <code>rake spec</code> erona on se, että rake:lla suoritettaessa testiympäristön tietokanta päivitetään automaattisesti, eli käytettäessä komentoa <code>rake spec</code> ei ole tarvetta komennon <code>rake db:test:prepare</code> suorittamiselle vaikka tietokannan skeemassa olisikin muutoksia. Käytämme materiaalissa jatkossa <code>rspec</code>-komentoa.
-
-Huomaa, että komento <code>rake spec</code> toimii (suoraan) ainoastaan jos gemi <code>rspec-rails</code> on määritelty Gemfilessä testiscopen lisäksi myös tuotantoscopeen.
-
 Testien ajon voi myös automatisoida aina kun testi tai sitä koskeva koodi muuttuu. [guard](https://github.com/guard/guard) on tähän käytetty kirjasto ja siihen löytyy monia laajennoksia.
 
-Aloitetaan testien tekeminen. Kirjoitetaan aluksi testi joka testaa, että konstruktori asettaa käyttäjätunnuksen oikein:
+Aloitetaan testien tekeminen. Kirjoitetaan (tiedostoon *user_spec.rb*) aluksi testi joka testaa, että konstruktori asettaa käyttäjätunnuksen oikein:
 
 ```ruby
 require 'rails_helper'
@@ -426,12 +346,12 @@ RSpec.describe User, type: :model do
   it "has the username set correctly" do
     user = User.new username:"Pekka"
 
-    user.username.should == "Pekka"
+    expect(user.username).to eq("Pekka")
   end
 end
 ```
 
-Testi kirjoitetaan <code>it</code>-nimiselle metodille annettavan koodilohkon sisälle. Metodin ensimmäisenä parametrina on merkkijono, joka toimii testin nimenä. Muuten testi kirjoitetaan "xUnit-tyyliin", eli ensin luodaan testattava data, sitten suoritetaan testattava toimenpide ja lopuksi varmistetaan että vastaus on odotettu.
+Testi kirjoitetaan <code>it</code>-nimiselle metodille annettavan koodilohkon sisälle. Metodin ensimmäisenä parametrina on merkkijono, joka toimii testin nimenä. Muuten testi kirjoitetaan samaan tapan kuin esim. jUnitilla, eli ensin luodaan testattava data, sitten suoritetaan testattava toimenpide ja lopuksi varmistetaan että vastaus on odotettu.
 
 Suoritetaan testi ja havaitaan sen menevän läpi:
 
@@ -440,33 +360,28 @@ $ rspec spec
 
 Finished in 0.00553 seconds (files took 2.11 seconds to load)
 1 example, 0 failures
-$
 ```
 
-Testin suorituksesta seuraa myös varoitus vanhahtavan syntaksin käytöstä. Unohdetaan varoitus hetkeksi ja tarkastellaan testin sisältöä.
-
-Toisin kuin xUnit-perheen testauskehyksissä, Rspecin yhteydessä ei käytetä assert-komentoja testin odotetun tuloksen määrittelemiseen. Käytössä on hieman erikoisemman näköinen syntaksi, kuten testin viimeisellä rivillä oleva:
-
-    user.username.should == "Pekka"
-
-Rspec lisää jokaiselle luokalle metodin <code>should</code>, jonka avulla voidaan määritellä testin odotettu käyttäytyminen siten, että määrittely olisi luettavuudeltaan mahdollisimman luonnollisen kielen ilmaisun kaltainen.
-
-Kuten aina Rubyssä, on myös Rspecissä useita vaihtoehtoisia tapoja tehdä sama asia. Metodin should sijaan edellinen voitaisiin kirjoittaa myös modernimman rspec-tyylin mukaisesti:
+Toisin kuin jUnit-testauskehyksessä, Rspecin yhteydessä ei käytetä assert-komentoja testin odotetun tuloksen määrittelemiseen. Käytössä on hieman erikoisemman näköinen syntaksi, kuten testin viimeisellä rivillä oleva:
 
     expect(user.username).to eq("Pekka")
 
-Rspecin versiosta 3 alkaen vanhempi should-syntaksi on deprekoitu, eli sitä ei tulisi enää käyttää.
-Shouldin muuttaminen expectiksi poisti myös <code>Deprecation Warning</code>in
+Äskeisessä testissä käytettiin komentoa <code>new</code>, joten olioa ei talletettu tietokantaan. Kokeillaan nyt olion tallettamista. Olemme määritelleet, että User-olioilla tulee olla salasana, jonka pituus on vähintään 4 ja että salasana sisältää sekä numeron että ison kirjaimen. Eli jos salasanaa ei aseteta, ei oliota tulisi tallettaa tietokantaan. Voimme kysyä oliolta metodilla _valid?_ onko sille suoritettu validointi onnistuneesti eli käytännössä, onko olio talletettu tietokantaan.
 
-Äskeisessä testissä käytettiin komentoa <code>new</code>, joten olioa ei talletettu tietokantaan. Kokeillaan nyt olion tallettamista. Olemme määritelleet, että User-olioilla tulee olla salasana, jonka pituus on vähintään 4 ja että salasana sisältää sekä numeron että ison kirjaimen. Eli jos salasanaa ei aseteta, ei oliota tulisi tallettaa tietokantaan. Testataan että näin tapahtuu:
+Testataan että näin tapahtuu:
 
 ```ruby
+RSpec.describe User, type: :model do
+
+  # aiemmin määritellyn testin koodi ...
+
   it "is not saved without a password" do
     user = User.create username:"Pekka"
 
     expect(user.valid?).to be(false)
     expect(User.count).to eq(0)
   end
+end  
 ```
 
 Testi menee läpi.
@@ -474,13 +389,13 @@ Testi menee läpi.
 Testin ensimmäinen tarkistus
 
 ```ruby
-   expect(user.valid?).to be(false)
+expect(user.valid?).to be(false)
 ```
 
 on kyllä ymmärrettävä, mutta kiitos rspec-magian, voimme ilmaista sen myös seuraavasti
 
 ```ruby
-    expect(user).not_to be_valid
+expect(user).not_to be_valid
 ```
 
 Tämän muodon toiminta perustuu sille, että oliolla <code>user</code> on totuusarvoinen metodi <code>valid?</code>.
@@ -488,13 +403,21 @@ Tämän muodon toiminta perustuu sille, että oliolla <code>user</code> on totuu
 Huomaamme, että käytämme testeissä kahta samuuden tarkastustapaa <code>be(false)</code> ja <code>eq(0)</code>, mikä näillä on erona? Matcherin eli 'tarkastimen' <code>be</code> avulla voidaan varmistaa, että kyse on kahdesta samasta oliosta. Totuusarvojen vertailussa <code>be</code> onkin toimiva tarkistin. Esim. merkkijonojen vertailuun se ei toimi, kokeile muuttaa ensimmäisen testin vertailu muotoon:
 
 ```ruby
-  expect(user.username).to be("Pekka")
+expect(user.username).to be("Pekka")
 ```
 nyt testi ei mene läpi:
 
 ```ruby
-       expected #<String:70243704887740> => "Pekka"
-            got #<String:70243704369920> => "Pekka"
+1) User has the username set correctly
+    Failure/Error: expect(user.username).to be("Pekka")
+
+      expected #<String:70322613325340> => "Pekka"
+          got #<String:70322613325560> => "Pekka"
+
+      Compared using equal?, which compares object identity,
+      but expected and actual are not the same object. Use
+      `expect(actual).to eq(expected)` if you don't care about
+      object identity in this example.
 ```
 
 Kun riittää että vertailtavat oliot ovat sisällöltään samat, tuleekin käyttää tarkistinta <code>eq</code>, käytännössä useimmissa tilanteissa näin on kaikkien muiden paitsi totuusarvojen kanssa. Tosin totuusarvojenkin <code>eq</code> toimisi eli voisimme kirjoittaa myös
@@ -519,25 +442,25 @@ Testin ensimmäinen "ekspektaatio" varmistaa, että luodun olion validointi onni
 Olisimme jälleen voineet käyttää käyttäjän validiteetin tarkastamiseen hieman luettavampaa muotoa
 
 ```ruby
-    expect(user).to be_valid
+expect(user).to be_valid
 ```
 
 On huomattavaa, että rspec **nollaa tietokannan aina ennen jokaisen testin ajamista**, eli jos teemme uuden testin, jossa tarvitaan Pekkaa, on se luotava uudelleen:
 
 ```ruby
-  it "with a proper password and two ratings, has the correct average rating" do
-    user = User.create username:"Pekka", password:"Secret1", password_confirmation:"Secret1"
-    brewery = Brewery.new name: "test", year: 2000
-    beer = Beer.new name: "testbeer", style: "teststyle"
-    rating = Rating.new score: 10
-    rating2 = Rating.new score: 20
+it "with a proper password and two ratings, has the correct average rating" do
+  user = User.create username:"Pekka", password:"Secret1", password_confirmation:"Secret1"
+  brewery = Brewery.new name: "test", year: 2000
+  beer = Beer.new name: "testbeer", style: "teststyle", brewery: brewery
+  rating = Rating.new score: 10, beer: beer
+  rating2 = Rating.new score: 20, beer: beer
 
-    user.ratings << rating
-    user.ratings << rating2
+  user.ratings << rating
+  user.ratings << rating2
 
-    expect(user.ratings.count).to eq(2)
-    expect(user.average_rating).to eq(15.0)
-  end
+  expect(user.ratings.count).to eq(2)
+  expect(user.average_rating).to eq(15.0)
+end  
 ```
 
 Kuten arvata saattaa, ei testin alustuksen (eli testattavan olion luomisen) toistaminen ole järkevää, ja yhteinen osa voidaan helposti eristää. Tämä tapahtuu esim. tekemällä samanlaisen alustuksen omaavalle osalle testeistä oma <code>describe</code>-lohko, jonka alkuun määritellään ennen jokaista testiä suoritettava <code>let</code>-komento, joka alustaa user-muuttujan uudelleen jokaista testiä ennen:
@@ -549,7 +472,7 @@ RSpec.describe User, type: :model do
   it "has the username set correctly" do
     user = User.new username:"Pekka"
 
-    user.username.should == "Pekka"
+    expect(user.username).to eq("Pekka")
   end
 
   it "is not saved without a password" do
@@ -561,6 +484,8 @@ RSpec.describe User, type: :model do
 
   describe "with a proper password" do
     let(:user){ User.create username:"Pekka", password:"Secret1", password_confirmation:"Secret1" }
+    let(:test_brewery) { Brewery.new name: "test", year: 2000 }
+    let(:test_beer) { Beer.create name: "testbeer", style: "teststyle", brewery: test_brewery }
 
     it "is saved" do
       expect(user).to be_valid
@@ -568,8 +493,8 @@ RSpec.describe User, type: :model do
     end
 
     it "and with two ratings, has the correct average rating" do
-      rating = Rating.new score:10
-      rating2 = Rating.new score:20
+      rating = Rating.new score: 10, beer: test_beer
+      rating2 = Rating.new score: 20, beer: test_beer
 
       user.ratings << rating
       user.ratings << rating2
@@ -580,6 +505,12 @@ RSpec.describe User, type: :model do
   end
 end
 ```
+
+Muuttujien alustus tapahtuu hieman erikoisen <code>let</code>-metodin avulla, esim.
+
+    let(:user){ User.create username:"Pekka", password:"Secret1", password_confirmation:"Secret1" }
+
+saa aikaan sen, että määrittelyn jälkeen muuttuja _user_ viittaa <code>let</code>-metodin koodilohkossa luotuun User-olioon.
 
 Siitä huolimatta, että muuttujan alustus on nyt vain yhdessä paikassa koodia, suoritetaan alustus uudelleen ennen jokaista metodia. Huom: metodi <code>let</code> suorittaa olion alustuksen vasta kun olioa tarvitaan oikeasti, tästä saattaa joissain tilanteissa olla yllättäviä seurauksia!
 
@@ -604,18 +535,6 @@ Finished in 0.12949 seconds (files took 1.95 seconds to load)
 Pyrkimyksenä onkin kirjoittaa testien nimet siten, että testit suorittamalla saadaan ohjelmasta mahdollisimman ihmisluettava "spesifikaatio".
 
 Voit myös lisätä rivin ```-fd``` tiedostoon ```.rspec```, jolloin projektin rspec-testit näytetään aina documentation formaatissa.
-
-**HUOM:** jos törmäät testiraportissasi ikävään varoitukseen
-
-<pre>
-[deprecated] I18n.enforce_available_locales will default to true in the future. If you really want to skip validation of your locale you can set I18n.enforce_available_locales = false to avoid this message.
-</pre>
-
-pääset siitä eroon lisäämällä tiedostoon spec/rails_helper.rb rivin
-
-```ruby
-    I18n.enforce_available_locales = false
-```
 
 > ## Tehtävä 1
 >
@@ -1784,9 +1703,9 @@ Githubissa olevat Rails-projektit on helppo asettaa Travisin tarkkailtavaksi.
 >  - 2.3.0
 >
 >script:
->  - bundle exec rake db:migrate --trace
->  - RAILS_ENV=test bundle exec rake db:migrate --trace
->  - bundle exec rake db:test:prepare
+>  - bundle exec rails db:migrate --trace
+>  - RAILS_ENV=test bundle exec rails db:migrate --trace
+>  - bundle exec rails db:test:prepare
 >  - bundle exec rspec -fd spec/
 >```
 >
