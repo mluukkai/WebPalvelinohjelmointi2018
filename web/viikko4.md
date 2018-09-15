@@ -423,18 +423,18 @@ nyt testi ei mene läpi:
 Kun riittää että vertailtavat oliot ovat sisällöltään samat, tuleekin käyttää tarkistinta <code>eq</code>, käytännössä useimmissa tilanteissa näin on kaikkien muiden paitsi totuusarvojen kanssa. Tosin totuusarvojenkin <code>eq</code> toimisi eli voisimme kirjoittaa myös
 
 ```ruby
-   expect(user.valid?).to eq(false)
+expect(user.valid?).to eq(false)
 ```
 
 Tehdään sitten testi kunnollisella salasanalla:
 
 ```ruby
-  it "is saved with a proper password" do
-    user = User.create username:"Pekka", password:"Secret1", password_confirmation:"Secret1"
+it "is saved with a proper password" do
+  user = User.create username:"Pekka", password:"Secret1", password_confirmation:"Secret1"
 
-    expect(user.valid?).to be(true)
-    expect(User.count).to eq(1)
-  end
+  expect(user.valid?).to be(true)
+  expect(User.count).to eq(1)
+end
 ```
 
 Testin ensimmäinen "ekspektaatio" varmistaa, että luodun olion validointi onnistuu, eli että metodi <code>valid?</code> palauttaa true. Toinen ekspektaatio taas varmistaa, että tietokannassa olevien olioiden määrä on yksi.
@@ -545,9 +545,9 @@ Muista aina nimetä testisi niin että ajamalla Rspec dokumentointiformaatissa, 
 > ## Tehtävä 2
 >
 > Luo Rspecin generaattorilla (tai käsin) testipohja luokalle <code>Beer</code> ja tee testit, jotka varmistavat, että
-> * oluen luonti onnistuu ja olut tallettuu kantaan jos oluella on nimi ja tyyli asetettuna
+> * oluen luonti onnistuu ja olut tallettuu kantaan jos oluella on nimi, tyyli ja panimo asetettuna
 > * oluen luonti ei onnistu (eli creatella ei synny validia oliota), jos sille ei anneta nimeä
-> * oluen luonti ei onnistu, jos sille ei määritellä tyyliä
+> oluen luonti ei onnistu, jos sille ei määritellä tyyliä
 >
 > Jos jälkimmäinen testi ei mene läpi, laajenna koodiasi siten, että se läpäisee testin.
 >
@@ -555,14 +555,14 @@ Muista aina nimetä testisi niin että ajamalla Rspec dokumentointiformaatissa, 
 
 ## Testiympäristöt eli fixturet
 
-Edellä käyttämämme tapa, jossa testien tarvitsemia oliorakenteita luodaan testeissä käsin, ei ole välttämättä kaikissa tapauksissa järkevä. Parempi tapa on koota testiympäristön rakentaminen, eli testien alustamiseen tarvittava data omaan paikkaansa, "testifixtureen". Käytämme testien alustamiseen Railsin oletusarvoisen fixture-mekanismin sijaan FactoryGirl-nimistä gemiä, kts.
-https://github.com/thoughtbot/factory_girl/blob/master/GETTING_STARTED.md
+Edellä käyttämämme tapa, jossa testien tarvitsemia oliorakenteita luodaan testeissä käsin, ei ole välttämättä kaikissa tapauksissa järkevä. Parempi tapa on koota testiympäristön rakentaminen, eli testien alustamiseen tarvittava data omaan paikkaansa, "testifixtureen". Käytämme testien alustamiseen Railsin oletusarvoisen fixture-mekanismin sijaan FactoryBot-nimistä gemiä, kts.
+https://github.com/thoughtbot/factory_bot_rails
 
 Lisätään Gemfileen seuraava
 
 ```ruby
-group :test do
-  gem 'factory_girl_rails'
+group :development, :test do
+  gem 'factory_bot_rails'
 end
 ```
 
@@ -571,51 +571,32 @@ ja päivitetään gemit komennolla <code>bundle install</code>
 Tehdään fixtureja varten tiedosto spec/factories.rb ja kirjoitetaan sinne seuraava:
 
 ```ruby
-FactoryGirl.define do
+FactoryBot.define do
   factory :user do
-    username "Pekka"
-    password "Foobar1"
-    password_confirmation "Foobar1"
-  end
-
-  factory :rating do
-    score 10
-  end
-
-  factory :rating2, class: Rating do
-    score 20
+    username { "Pekka" }
+    password { "Foobar1" }
+    password_confirmation { "Foobar1" }
   end
 end
 ```
 
-Tiedostossa määritellään kolme "oliotehdasta". Ensimmäinen näistä on nimeltään user:
-
-```ruby
-  factory :user do
-    username "Pekka"
-    password "Foobar1"
-    password_confirmation "Foobar1"
-  end
-```
-
-Tehdasta voi käyttää luokan <code>User</code> olion luomiseen. Tehtaaseen ei tarvinnut määritellä erikseen tehtaan luomien olioiden luokkaa, sillä FactoryGirl päättelee sen suoraan käytettävän fixtuurin nimestä <code>user</code>.
-
-Tiedostossa määritellään myös kaksi erinimistä reittausolioita generoivaa tehdasta <code>rating</code> ja <code>rating2</code>. FactoryGirl ei osaa päätellä näistä jälkimmäisen tyyppiä suoraan tehtaan nimestä, joten se on määriteltävä eksplisiittisesti.
+Tiedostossa määritellään "oliotehdas" luokan <code>User</code> olion luomiseen. Tehtaaseen ei tarvinnut määritellä erikseen tehtaan luomien olioiden luokkaa, sillä FactoryBot päättelee sen suoraan käytettävän fixtuurin nimestä <code>user</code>.
 
 Määriteltyjä tehtaita voidaan pyytää luomaan olioita seuraavasti:
 
 ```ruby
-  user = FactoryGirl.create(:user)
-  rating = FactoryGirl.create(:rating)
+user = FactoryBot.create(:user)
 ```
 
-FactoryGirlin tehdasmetodin kutsuminen luo olion automaattisesti testausympäristön tietokantaan.
+FactoryBotin tehdasmetodin _create_ kutsuminen luo olion automaattisesti testausympäristön tietokantaan.
 
-Muutetaan nyt testimme käyttämään FactoryGirliä.
+Muutetaan nyt testimme käyttämään _user_-olioiden luomiseen FactoryBotiä:
 
 ```ruby
   describe "with a proper password" do
-    let(:user){ FactoryGirl.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
+    let(:test_brewery) { Brewery.new name: "test", year: 2000 }
+    let(:test_beer) { Beer.create name: "testbeer", style: "teststyle", brewery: test_brewery }
 
     it "is saved" do
       expect(user).to be_valid
@@ -623,8 +604,11 @@ Muutetaan nyt testimme käyttämään FactoryGirliä.
     end
 
     it "and with two ratings, has the correct average rating" do
-      user.ratings << FactoryGirl.create(:rating)
-      user.ratings << FactoryGirl.create(:rating2)
+      rating = Rating.new score: 10, beer: test_beer
+      rating2 = Rating.new score: 20, beer: test_beer
+
+      user.ratings << rating
+      user.ratings << rating2
 
       expect(user.ratings.count).to eq(2)
       expect(user.average_rating).to eq(15.0)
@@ -632,17 +616,117 @@ Muutetaan nyt testimme käyttämään FactoryGirliä.
   end
 ```
 
-Testi on nyt siistiytynyt jossain määrin.
+Muutos aiempaan on vielä melko pieni. Laajennetaan fixtureita vielä siten, että voimme luoda niiden avulla myös testien käyttämät _rating_-oliot. Muutetaan tiedostoa spec/factories.rb seuraavasti
 
-Huom: samaa tehdasta voidaan pyytää luomaan useita oliota:
+```ruby
+FactoryBot.define do
+  factory :user do
+    username { "Pekka" }
+    password { "Foobar1" }
+    password_confirmation { "Foobar1" }
+  end
 
-``` ruby
-  r1 = FactoryGirl.create(:rating)
-  r2 = FactoryGirl.create(:rating)
-  r3 = FactoryGirl.create(:rating)
+  factory :brewery do
+    name { "anonymous" }
+    year { 1900 } 
+  end
+
+  factory :beer do
+    name { "anonymous" }
+    brewery
+    style { "Lager" }
+  end
+
+  factory :rating do
+    score { 10 }
+    beer
+    user
+  end
+end
 ```
 
-nyt luotaisiin kolme _eri_ olioa, jotka ovat kaikki samansisältöistä. Myös tehtaalta <code>user</code> voitaisiin pyytää kahta eri olioa. Tämä kuitenkin aiheuttaisi poikkeuksen, sillä <code>User</code>-olioiden validointi edellyttää, että username on yksikäsitteinen ja tehdas luo oletusarvoisesti aina "Pekka"-nimisen käyttäjän.
+Reittausten luvan olitehtaan _:rating_ lisäksi tiedostossa määritellään panimoita ja oluita luovat fixturet:
+
+```ruby
+FactoryBot.define do
+  factory :user do
+    username { "Pekka" }
+    password { "Foobar1" }
+    password_confirmation { "Foobar1" }
+  end
+
+  factory :brewery do
+    name { "anonymous" }
+    year { 1900 } 
+  end
+
+  factory :beer do
+    name { "anonymous" }
+    style { 1900 } 
+    association :brewery, factory: :brewery
+  end
+
+  factory :rating do
+    association :beer, factory: :beer
+  end
+end
+```
+
+Tehdas <code>FactoryBot.create(:brewery)</code> luo panimon, jonka nimi on 'anonymous' ja perustamisvuosi 1900. 
+
+Tehdas <code>FactoryBot.create(:beer)</code> luo oluen, jonka tyyli on 'Lager' ja nimi 'anonymous' ja oluelle luodaan panimo, johon olut liittyy. Vastaavastit ehdas <code>FactoryBot.create(:rating)</code> luo reittauksen, johon liittyy tehtaan luoma olut. Tehdas ei aseta oletuksena mitään arvoa reittauksen pisteytykselle eli kentälle _score_ tai reittauksen tehneelle käyttäjälle.
+
+Testi voidaan muuttaa seuraavaan muotoon
+
+```ruby
+describe "with a proper password" do
+  let(:user) { FactoryBot.create(:user) }
+
+  it "is saved" do
+    expect(user).to be_valid
+    expect(User.count).to eq(1)
+  end
+
+  it "and with two ratings, has the correct average rating" do
+    FactoryBot.create(:rating, score: 10, user: user)
+    FactoryBot.create(:rating, score: 20, user: user)
+
+    expect(user.ratings.count).to eq(2)
+    expect(user.average_rating).to eq(15.0)
+  end
+end
+```
+
+Testi siis luo kaksi reittausta, toisen pistemäärä 10 ja toisen 20, jotka liitetään _let_-komennossa tehtaan avulla luodulle käyttäjälle:
+
+```ruby
+FactoryBot.create(:rating, score: 10, user: user)
+FactoryBot.create(:rating, score: 20, user: user)
+```
+
+Saman tehtaan avulla on siis mahdollista luoda useita olioita. Esimerkiksi seuraava
+
+```ruby
+FactoryBot.create(:brewery)
+FactoryBot.create(:brewery)
+FactoryBot.create(:brewery)
+```
+
+nyt luotaisiin kolme _eri_ panimo-olioa, jotka ovat kaikki samansisältöistä. Myös tehtaalta <code>user</code> voitaisiin pyytää kahta eri olioa. 
+
+```ruby
+FactoryBot.create(:user)
+FactoryBot.create(:user)
+```
+
+Tämä kuitenkin aiheuttaisi poikkeuksen, sillä <code>User</code>-olioiden validointi edellyttää, että username on yksikäsitteinen ja tehdas luo oletusarvoisesti aina "Pekka"-nimisen käyttäjän.
+
+Seuraava kuitenkin olisi ok, eli luotaisiin kaksi erinimistä käyttäjää, oletusarvoisen nimen saava _Pekka_ ja _Vilma_
+
+```ruby
+FactoryBot.create(:user)
+FactoryBot.create(:user, username: 'Vilma')
+```
 
 ## Käyttäjän lempiolut, -panimo ja -oluttyyli
 
@@ -651,10 +735,10 @@ Toteutetaan seuraavaksi test driven -tyylillä (tai behaviour driven niinkuin rs
 Oikeaoppisessa TDD:ssä ei tehdä yhtään koodia ennen kuin minimaalinen testi sen pakottaa. Tehdäänkin ensin testi, jonka avulla vaaditaan että <code>User</code>-olioilla on metodi <code>favorite_beer</code>:
 
 ```ruby
-  it "has method for determining the favorite_beer" do
-    user = FactoryGirl.create(:user)
-    expect(user).to respond_to(:favorite_beer)
-  end
+it "has method for determining the favorite_beer" do
+  user = FactoryBot.create(:user)
+  expect(user).to respond_to(:favorite_beer)
+end
 ```
 
 Testi ei mene läpi, eli lisätään luokalle User metodin runko:
@@ -671,10 +755,10 @@ end
 Testi menee nyt läpi. Lisätään seuraavaksi testi, joka varmistaa, että ilman reittauksia ei käyttäjllä ole mieliolutta, eli että metodi palauttaa nil:
 
 ```ruby
-  it "without ratings does not have a favorite beer" do
-    user = FactoryGirl.create(:user)
-    expect(user.favorite_beer).to eq(nil)
-  end
+it "without ratings does not have a favorite beer" do
+  user = FactoryBot.create(:user)
+  expect(user.favorite_beer).to eq(nil)
+end
 ```
 
 Testi menee läpi sillä Rubyssa metodit palauttavat oletusarvoisesti nil.
@@ -682,58 +766,41 @@ Testi menee läpi sillä Rubyssa metodit palauttavat oletusarvoisesti nil.
 Refaktoroidaan testiä hieman lisäämällä juuri kirjoitetulle kahdelle testille oma <code>describe</code>-lohko
 
 ```ruby
-  describe "favorite beer" do
-    let(:user){FactoryGirl.create(:user) }
+describe "favorite beer" do
+  let(:user){ FactoryBot.create(:user) }
 
-    it "has method for determining one" do
-      expect(user).to respond_to(:favorite_beer)
-    end
-
-    it "without ratings does not have one" do
-      expect(user.favorite_beer).to eq(nil)
-    end
+  it "has method for determining one" do
+    expect(user).to respond_to(:favorite_beer)
   end
+
+  it "without ratings does not have one" do
+    expect(user.favorite_beer).to eq(nil)
+  end
+end
 ```
 
-Lisätään sitten testi, joka varmistaa että jos reittauksia on vain yksi, osaa metodi palauttaa reitatun oluen. Testiä varten siis tarvitsemme reittausolion lisäksi panimo-olion, johon reittaus liittyy. Laajennetaan ensin hieman fikstuureja, lisätään seuraavat:
+Lisätään sitten testi, joka varmistaa että jos reittauksia on vain yksi, osaa metodi palauttaa reitatun oluen. 
 
 ```ruby
-  factory :brewery do
-    name "anonymous"
-    year 1900
-  end
+it "is the only rated if only one rating" do
+  beer = FactoryBot.create(:beer)
+  rating = FactoryBot.create(:rating, score: 20, beer: beer, user: user)
 
-  factory :beer do
-    name "anonymous"
-    brewery
-    style "Lager"
-  end
+  # jatkuu...
+end
 ```
 
-Koodi <code>create(:brewery)</code> luo panimon, jonka nimi on 'anonymous' ja perustamisvuosi 1900. Vastaavasti <code>create(:beer)</code> luo oluen, jonka tyyli on 'Lager' ja nimi 'anonymous' ja oluelle luodaan panimo, johon olut liittyy. Jos määrittelylohkossa ei olisi brewery:ä, tulisi oluen panimon arvoksi <code>nil</code> eli olut ei liittyisi mihinkään panimoon. Aiemmin määritelty <code>create(:rating)</code> luo reittausolion, jolle asetetaan scoreksi 10, mutta reittausta ei liitetä automaattisesti olueeseen eikä käyttäjään.
-
-Voimme nyt luoda testissä FactoryGirlin avulla oluen (johon automaattisesti liittyy panimo) sekä reittauksen joka liittyy luotuun olueeseen ja käyttäjään:
-
-```ruby
-    it "is the only rated if only one rating" do
-      beer = FactoryGirl.create(:beer)
-      rating = FactoryGirl.create(:rating, beer:beer, user:user)
-
-      # jatkuu...
-    end
-```
-
-Alussa siis luodaan olut, sen jälkeen reittaus. Reittauksen <code>create</code>-metodille annetaan parametreiksi olut- ja käyttäjäoliot (joista molemmat on luotu FactoryGirlillä), joihin reittaus liitetään.
+Alussa siis luodaan olut, sen jälkeen reittaus. Reittauksen <code>create</code>-metodille annetaan parametreiksi pistemäärä sekä olut- ja käyttäjäoliot (joista molemmat on luotu FactoryBotillä), joihin reittaus liitetään.
 
 Luotu reittaus siis liittyy käyttäjään ja on käyttäjän ainoa reittaus. Testi siis lopulta odottaa, että reittaukseen liittyvä olut on käyttäjän lempiolut:
 
 ```ruby
-    it "is the only rated if only one rating" do
-      beer = FactoryGirl.create(:beer)
-      rating = FactoryGirl.create(:rating, beer:beer, user:user)
+it "is the only rated if only one rating" do
+  beer = FactoryBot.create(:beer)
+  rating = FactoryBot.create(:rating, score: 20, beer: beer, user: user)
 
-      expect(user.favorite_beer).to eq(beer)
-    end
+  expect(user.favorite_beer).to eq(beer)
+end
 ```
 
 Testi ei mene läpi, sillä metodimme ei vielä tee mitään ja sen paluuarvo on siis aina <code>nil</code>.
@@ -741,7 +808,7 @@ Testi ei mene läpi, sillä metodimme ei vielä tee mitään ja sen paluuarvo on
 Tehdään [TDD:n hengen mukaan](http://codebetter.com/darrellnorton/2004/05/10/notes-from-test-driven-development-by-example-kent-beck/) ensin "huijattu ratkaisu", eli ei vielä yritetäkään tehdä lopullista toimivaa versiota:
 
 ```ruby
-class User <ApplicationRecord
+class User < ApplicationRecord
   # ...
 
   def favorite_beer
@@ -754,16 +821,16 @@ end
 Tehdään vielä testi, joka pakottaa meidät kunnollisen toteutuksen tekemiseen [(ks. triangulation)](http://codebetter.com/darrellnorton/2004/05/10/notes-from-test-driven-development-by-example-kent-beck/):
 
 ```ruby
-    it "is the one with highest rating if several rated" do
-      beer1 = FactoryGirl.create(:beer)
-      beer2 = FactoryGirl.create(:beer)
-      beer3 = FactoryGirl.create(:beer)
-      rating1 = FactoryGirl.create(:rating, beer:beer1, user:user)
-      rating2 = FactoryGirl.create(:rating, score:25,  beer:beer2, user:user)
-      rating3 = FactoryGirl.create(:rating, score:9, beer:beer3, user:user)
+it "is the one with highest rating if several rated" do
+  beer1 = FactoryBot.create(:beer)
+  beer2 = FactoryBot.create(:beer)
+  beer3 = FactoryBot.create(:beer)
+  rating1 = FactoryBot.create(:rating, score: 20, beer: beer1, user: user)
+  rating2 = FactoryBot.create(:rating, score: 25,  beer: beer2, user: user)
+  rating3 = FactoryBot.create(:rating, score: 9, beer: beer3, user: user)
 
-      expect(user.favorite_beer).to eq(beer2)
-    end
+  expect(user.favorite_beer).to eq(beer2)
+end
 ```
 
 Ensin luodaan kolme olutta ja sen jälkeen oluisiin sekä user-olioon liittyvät reittaukset. Ensimmäinen reittaus saa reittauksiin määritellyn oletuspisteytyksen eli 10 pistettä. Toiseen ja kolmanteen reittaukseen score annetaan parametrina.
@@ -784,7 +851,7 @@ eli ensin järjestetään reittaukset scoren perusteella, otetaan reittauksista 
 Koska järjestäminen perustui suoraan reittauksen attribuuttiin <code>score</code> oltaisiin metodin viimeinen rivi voitu kirjottaa myös hieman kompaktimmassa muodossa
 
 ```ruby
-    ratings.sort_by(&:score).last.beer
+ratings.sort_by(&:score).last.beer
 ```
 
 Miten metodi itseasiassa toimiikaan? Suoritetaan operaatio konsolista:
@@ -792,8 +859,8 @@ Miten metodi itseasiassa toimiikaan? Suoritetaan operaatio konsolista:
 ```ruby
 > u = User.first
 > u.ratings.sort_by(&:score).last.beer
-  Rating Load (0.2ms)  SELECT "ratings".* FROM "ratings" WHERE "ratings"."user_id" = ?  [["user_id", 1]]
-  Beer Load (0.1ms)  SELECT "beers".* FROM "beers" WHERE "beers"."id" = ? ORDER BY "beers"."id" ASC LIMIT 1  [["id", 1]]
+  Rating Load (1.4ms)  SELECT "ratings".* FROM "ratings" WHERE "ratings"."user_id" = ?  [["user_id", 1]]
+  Beer Load (0.4ms)  SELECT  "beers".* FROM "beers" WHERE "beers"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
 ```
 
 Seurauksena on 2 SQL-kyselyä, joista ensimmäinen
@@ -807,10 +874,10 @@ hakee kaikki käyttäjään liittyvät reittaukset tietokannasta. Reittausten j�
 Tutkimalla dokumentaatiota (http://guides.rubyonrails.org/active_record_querying.html#ordering ja http://guides.rubyonrails.org/active_record_querying.html#limit-and-offset) päädymme seuraavaan ratkaisuun:
 
 ```ruby
-  def favorite_beer
-    return nil if ratings.empty?
-    ratings.order(score: :desc).limit(1).first.beer
-  end
+def favorite_beer
+  return nil if ratings.empty?
+  ratings.order(score: :desc).limit(1).first.beer
+end
 ```
 
 Voimme konsolista käsin tarkastaa operaation tuloksena olevan SQL-kyselyn (huomaa, että metodi <code>to_sql</code>):
@@ -824,26 +891,26 @@ Suorituskyvyn optimoinnissa kannattaa kuitenkin pitää maltti mukana ja sovellu
 
 ## Testien apumetodit
 
-Huomaamme, että testissä tarvittavien oluiden rakentamisen tekevä koodi on hieman ikävä. Voisimme konfiguroida FactoryGirliin oluita, joihin liittyy reittauksia. Päätämme kuitenkin tehdä testitiedoston puolelle reittauksellisen oluen luovan apumetodin <code>create_beer_with_rating</code>:
+Huomaamme, että testissä tarvittavien oluiden rakentamisen tekevä koodi on hieman ikävä. Voisimme konfiguroida FactoryBotiin oluita, joihin liittyy reittauksia. Päätämme kuitenkin tehdä testitiedoston puolelle reittauksellisen oluen luovan apumetodin <code>create_beer_with_rating</code>:
 
 ```ruby
-    def create_beer_with_rating(user, score)
-      beer = FactoryGirl.create(:beer)
-      FactoryGirl.create(:rating, score:score, beer:beer, user:user)
-      beer
-    end
+def create_beer_with_rating(user, score)
+  beer = FactoryBot.create(:beer)
+  FactoryBot.create(:rating, score:score, beer:beer, user:user)
+  beer
+end
 ```
 
 Apumetodia käyttämällä saamme siistityksi testiä
 
 ```ruby
-    it "is the one with highest rating if several rated" do
-      create_beer_with_rating(user, 10)
-      best = create_beer_with_rating(user, 25)
-      create_beer_with_rating(user, 7)
+it "is the one with highest rating if several rated" do
+  create_beer_with_rating(user, 10)
+  best = create_beer_with_rating(user, 25)
+  create_beer_with_rating(user, 7)
 
-      expect(user.favorite_beer).to eq(best)
-    end
+  expect(user.favorite_beer).to eq(best)
+end
 ```
 
 Apumetodeja siis voi (ja kannattaa) määritellä rspec-tiedostoihin. Jos apumetodia tarvitaan ainoastaan yhdessä testitiedostossa, voi sen sijoittaa esim. tiedoston loppuun.
@@ -876,7 +943,7 @@ RSpec.describe User, type: :model do
   # ..
 
   describe "favorite beer" do
-    let(:user){FactoryGirl.create(:user) }
+    let(:user){FactoryBot.create(:user) }
 
     it "has method for determining one" do
       expect(user).to respond_to(:favorite_beer)
@@ -909,15 +976,15 @@ def create_beers_with_ratings(user, *scores)
 end
 
 def create_beer_with_rating(user, score)
-  beer = FactoryGirl.create(:beer)
-  FactoryGirl.create(:rating, score:score,  beer:beer, user:user)
+  beer = FactoryBot.create(:beer)
+  FactoryBot.create(:rating, score:score,  beer:beer, user:user)
   beer
 end
 ```
 
-### FactoryGirl-troubleshooting
+### FactoryBot-troubleshooting
 
-Kannattaa huomata, että jos määrittelet FactoryGirl-gemin testiympäristön lisäksi kehitysympäristöön, eli
+Kannattaa huomata, että jos määrittelet FactoryBot-gemin testiympäristön lisäksi kehitysympäristöön, eli
 
 ```ruby
 group :development, :test do
@@ -948,7 +1015,7 @@ oletusarvoisen tehtaan sijainti ja sisältö on seuraava:
 mbp-18:ratebeer_temppi mluukkai$ cat spec/factories/bars.rb
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :bar do
     name "MyString"
   end
@@ -965,7 +1032,7 @@ Oletetaan että testaisimme luokkaa <code>Beer</code> seuraavasti:
 
 ```ruby
   describe "when one beer exists" do
-    beer = FactoryGirl.create(:beer)
+    beer = FactoryBot.create(:beer)
 
     it "is valid" do
       expect(beer).to be_valid
@@ -977,19 +1044,19 @@ Oletetaan että testaisimme luokkaa <code>Beer</code> seuraavasti:
   end
 ```
 
-testin luoma <code>Beer</code>-olio menisi nyt pysyvästi testitietokantaan, sillä komento <code>FactoryGirl.create(:beer)</code>  ei ole minkään testin sisällä, eikä sitä siis suoriteta peruttavan transaktion aikana!
+testin luoma <code>Beer</code>-olio menisi nyt pysyvästi testitietokantaan, sillä komento <code>FactoryBot.create(:beer)</code>  ei ole minkään testin sisällä, eikä sitä siis suoriteta peruttavan transaktion aikana!
 
 Testien ulkopuolelle, ei siis tule sijoittaa olioita luovaa koodia (poislukien testeistä kutsuttavat metodit). Olioiden luomisen on tapahduttava testikontekstissa, eli joko metodin <code>it</code> sisällä:
 
 ```ruby
   describe "when one beer exists" do
     it "is valid" do
-      beer = FactoryGirl.create(:beer)
+      beer = FactoryBot.create(:beer)
       expect(beer).to be_valid
     end
 
     it "has the default style" do
-      beer = FactoryGirl.create(:beer)
+      beer = FactoryBot.create(:beer)
       expect(beer.style).to eq("Lager")
     end
   end
@@ -999,7 +1066,7 @@ komennon <code>let</code> tai <code>let!</code> sisällä:
 
 ```ruby
   describe "when one beer exists" do
-    let(:beer){FactoryGirl.create(:beer)}
+    let(:beer){FactoryBot.create(:beer)}
 
     it "is valid" do
       expect(beer).to be_valid
@@ -1020,8 +1087,8 @@ Validoinneissa määritellyt uniikkiusehdot saattavat joskus tuottaa yllätyksi�
 ```ruby
 describe "the application" do
   it "does something with two users" do
-    user1 = FactoryGirl.create(:user)
-    user2 = FactoryGirl.create(:user)
+    user1 = FactoryBot.create(:user)
+    user2 = FactoryBot.create(:user)
 
   # ...
   end
@@ -1031,12 +1098,12 @@ end
 aiheuttaisi virheilmoituksen
 
 ```ruby
-     Failure/Error: user2 = FactoryGirl.create(:user)
+     Failure/Error: user2 = FactoryBot.create(:user)
      ActiveRecord::RecordInvalid:
        Validation failed: Username has already been taken
 ```
 
-sillä FactoryGirl yrittää nyt luoda kaksi käyttäjäolioa määritelmän
+sillä FactoryBot yrittää nyt luoda kaksi käyttäjäolioa määritelmän
 
 ```ruby
   factory :user do
@@ -1051,14 +1118,14 @@ perusteella, eli molemmille tulisi usernameksi 'Pekka'. Ongelma ratkeaisi antama
 ```ruby
 describe "the application" do
   it "does something with two users" do
-    user1 = FactoryGirl.create(:user)
-    user2 = FactoryGirl.create(:user, username:"Arto")
+    user1 = FactoryBot.create(:user)
+    user2 = FactoryBot.create(:user, username:"Arto")
 
   # ...
   end
 end
 ```
-Toinen vaihtoehto olisi määritellä FactoryGirlin käyttämät usernamet ns. sekvenssien avulla, ks.
+Toinen vaihtoehto olisi määritellä FactoryBotin käyttämät usernamet ns. sekvenssien avulla, ks.
 https://github.com/thoughtbot/factory_girl/blob/master/GETTING_STARTED.md#sequences
 
 Joskus validoinnin aiheuttama ongelma voi piillä syvemmällä.
@@ -1078,8 +1145,8 @@ jos testissä luotaisiin nyt kaksi olutta
 ```ruby
 describe "the application" do
   it "does something with two beers" do
-    beer1 = FactoryGirl.create(:beer)
-    beer2 = FactoryGirl.create(:beer)
+    beer1 = FactoryBot.create(:beer)
+    beer2 = FactoryBot.create(:beer)
 
   # ...
   end
@@ -1089,7 +1156,7 @@ end
 olisi seurauksena virheilmoitus
 
 ```ruby
-     Failure/Error: beer2 = FactoryGirl.create(:beer)
+     Failure/Error: beer2 = FactoryBot.create(:beer)
      ActiveRecord::RecordInvalid:
        Validation failed: Name has already been taken
 ```
@@ -1204,7 +1271,7 @@ Lisätään testi, joka testaa tilannetta, jossa tietokannassa on 3 panimoa:
   it "lists the existing breweries and their total number" do
     breweries = ["Koff", "Karjala", "Schlenkerla"]
     breweries.each do |brewery_name|
-      FactoryGirl.create(:brewery, name: brewery_name)
+      FactoryBot.create(:brewery, name: brewery_name)
     end
 
     visit breweries_path
@@ -1224,7 +1291,7 @@ Lisätään vielä testi, joka tarkastaa, että panimoiden sivulta pääsee link
     breweries = ["Koff", "Karjala", "Schlenkerla"]
     year = 1896
     breweries.each do |brewery_name|
-      FactoryGirl.create(:brewery, name: brewery_name, year: year += 1)
+      FactoryBot.create(:brewery, name: brewery_name, year: year += 1)
     end
 
     visit breweries_path
@@ -1258,7 +1325,7 @@ describe "Breweries page" do
       @breweries = ["Koff", "Karjala", "Schlenkerla"]
       year = 1896
       @breweries.each do |brewery_name|
-        FactoryGirl.create(:brewery, name: brewery_name, year: year += 1)
+        FactoryBot.create(:brewery, name: brewery_name, year: year += 1)
       end
 
       visit breweries_path
@@ -1293,7 +1360,7 @@ require 'rails_helper'
 
 describe "User" do
   before :each do
-    FactoryGirl.create :user
+    FactoryBot.create :user
   end
 
   describe "who has signed up" do
@@ -1312,7 +1379,7 @@ end
 
 Testi demonstroi lomakkeen kanssa käytävää interaktiota, komento <code>fill_in</code> etsii lomakkeesta id-kentän perusteella tekstikenttää, jolle se syöttää parametrina annetun arvon. <code>click_button</code> toimii kuten arvata saattaa, eli painaa sivulta etsittävää painiketta.
 
-Huomaa, että testissä on <code>before :each</code>-lohko, joka luo ennen jokaista testiä FactoryGirliä käyttäen User-olion. Ilman olion luomista kirjautuminen ei onnistuisi, sillä tietokanta on jokaiseen testin suoritukseen lähdettäessä tyhjä.
+Huomaa, että testissä on <code>before :each</code>-lohko, joka luo ennen jokaista testiä FactoryBotiä käyttäen User-olion. Ilman olion luomista kirjautuminen ei onnistuisi, sillä tietokanta on jokaiseen testin suoritukseen lähdettäessä tyhjä.
 
 Capybaran dokumentaation kohdasta the DSL ks. https://github.com/jnicklas/capybara#the-dsl löytyy lisää esimerkkejä mm. sivulla olevien elementtien etsimiseen ja esim. lomakkeiden käyttämiseen.
 
@@ -1374,10 +1441,10 @@ Tehdään vielä testi oluen reittaamiselle. Tehdään testiä varten oma tiedos
 require 'rails_helper'
 
 describe "Rating" do
-  let!(:brewery) { FactoryGirl.create :brewery, name:"Koff" }
-  let!(:beer1) { FactoryGirl.create :beer, name:"iso 3", brewery:brewery }
-  let!(:beer2) { FactoryGirl.create :beer, name:"Karhu", brewery:brewery }
-  let!(:user) { FactoryGirl.create :user }
+  let!(:brewery) { FactoryBot.create :brewery, name:"Koff" }
+  let!(:beer1) { FactoryBot.create :beer, name:"iso 3", brewery:brewery }
+  let!(:beer2) { FactoryBot.create :beer, name:"Karhu", brewery:brewery }
+  let!(:user) { FactoryBot.create :user }
 
   before :each do
     visit signin_path
@@ -1433,10 +1500,10 @@ require 'rails_helper'
 include Helpers
 
 describe "Rating" do
-  let!(:brewery) { FactoryGirl.create :brewery, name:"Koff" }
-  let!(:beer1) { FactoryGirl.create :beer, name:"iso 3", brewery:brewery }
-  let!(:beer2) { FactoryGirl.create :beer, name:"Karhu", brewery:brewery }
-  let!(:user) { FactoryGirl.create :user }
+  let!(:brewery) { FactoryBot.create :brewery, name:"Koff" }
+  let!(:beer1) { FactoryBot.create :beer, name:"iso 3", brewery:brewery }
+  let!(:beer2) { FactoryBot.create :beer, name:"Karhu", brewery:brewery }
+  let!(:user) { FactoryBot.create :user }
 
   before :each do
     sign_in(username:"Pekka", password:"Foobar1")
@@ -1452,7 +1519,7 @@ include Helpers
 
 describe "User" do
   before :each do
-    FactoryGirl.create :user
+    FactoryBot.create :user
   end
 
   describe "who has signed up" do
@@ -1499,7 +1566,7 @@ Kirjautumisen toteutuksen siirtäminen apumetodiin siis kasvattaa myös testien 
 >
 > Tee testi joka varmistaa, että tietokannassa olevat reittaukset ja niiden lukumäärä näytetään sivulla _ratings_. Jos lukumäärää ei toteutuksessani näytetä, korjaa puute.
 >
-> **Vihje**: voit tehdä testin esim. siten, että luot aluksi FactoryGirlillä reittauksia tietokantaan. Tämän jälkeen voit testata capybaralla sivun ratings sisältöä.
+> **Vihje**: voit tehdä testin esim. siten, että luot aluksi FactoryBotillä reittauksia tietokantaan. Tämän jälkeen voit testata capybaralla sivun ratings sisältöä.
 >
 > Muista ongelmatilanteissa komento <code>save_and_open_page</code>!
 
