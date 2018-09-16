@@ -1630,18 +1630,18 @@ Githubissa olevat Rails-projektit on helppo asettaa Travisin tarkkailtavaksi.
 >language: ruby
 >
 >rvm:
->  - 2.5.1
+> - 2.5.1
 >
 >script:
->  - bundle exec rails db:migrate --trace
->  - RAILS_ENV=test bundle exec rails db:migrate --trace
->  - bundle exec rails db:test:prepare
->  - bundle exec rspec -fd spec/
+> - bundle exec rails db:migrate 
+> - bundle exec rspec -fd spec
 >```
+> 
+> Huomaa, että travis on erittäin tarkka konfiguraation kirjoitusmuodon suhteen, jopa väärään paikkaan sijoitetut välilyönnit rikkovat konfiguraation. 
+> 
+> Klikkaa sitten Travisin sivulta linkkiä "sign in with github" ja anna tunnuksesi.
 >
->Klikkaa sitten Travisin sivulta linkkiä "sign in with github" ja anna tunnuksesi.
->
->Mene oikeassa ylänurkassa olevan nimesi kohdalle ja valitse "settings". Kytke avautuvan näkymän "Repositories"-välilehdestä ratebeer-repositoriosi jatkuva integraatio päälle.
+> Mene oikeassa ylänurkassa olevan nimesi kohdalle ja valitse "settings". Kytke avautuvan näkymän "Repositories"-välilehdestä ratebeer-repositoriosi jatkuva integraatio päälle.
 >
 >Kun seuraavan kerran pushaat koodia githubiin, suorittaa Travis automaattisesti buildausskriptin, joka siis määrittelee testit suoritettaviksi. Saat sähköpostitse tiedotuksen jos buildin status muuttuu.
 >
@@ -1667,15 +1667,15 @@ Eriyisesti Web-sovellusten yhteydessä jatkuva deployaaminen saattaa olla hyvink
 >
 > ### Tämän ja seuraavan tehtävän tekeminen ei ole välttämätöntä viikon jatkamisen kannalta. Voit tehdä tämän tehtävän myös viikon muiden tehtävien jälkeen.
 >
-> Toteuta sovelluksellesi jatkuva deployaaminen Herokuun Travis-CI:n avulla. Konfiguroi myös migraatiot suoritettavaksi depolymentin yhteydessä
+> Toteuta sovelluksellesi jatkuva deployaaminen Herokuun Travisin avulla. Konfiguroi myös migraatiot suoritettavaksi depolymentin yhteydessä
 >
 > Ks. ohjeita seuraavista
 http://about.travis-ci.org/docs/user/deployment/heroku/
 ja http://about.travis-ci.org/blog/2013-07-09-introducing-continuous-deployment-to-heroku/
 >
-> **HUOM** on erittäin suositeltavaa että teet konfiguroinnin [travisin komentorivityökalun](http://blog.travis-ci.com/2013-01-14-new-client/) avulla! Huomaa, että asennuksen jälkeen joudut uudelleenkäynnistämään konsolin.
+> **HUOM** on erittäin suositeltavaa että teet konfiguroinnin [travisin komentorivityökalun](https://github.com/travis-ci/travis.rb#installation) avulla!
 >
-> **HUOM2:**  Travisin ja Herokun yhteistoiminnallisuudessa on ilmennyt aika-ajoin ongelmia. Tutki tarkkaan virheilmoituksia ja jos et keksi mikä on vikana, kokeile deployaamista jonkin ajan (esim. muutaman tunnin) kuluttua uudelleen. Älä siis juutu tähän kohtaan!
+> **HUOM2:**  Travisin ja Herokun yhteistoiminnallisuudessa on ilmennyt aika-ajoin ongelmia. Tutki tarkkaan Travisin buildiin tulevia virheilmoituksia ja jos et keksi mikä on vikana, kokeile deployaamista jonkin ajan (esim. muutaman tunnin) kuluttua uudelleen. Älä siis juutu tähän kohtaan!
 
 ## Koodin laatumetriikat
 
