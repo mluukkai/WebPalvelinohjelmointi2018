@@ -1451,7 +1451,7 @@ end
 
 Testi rakentaa käyttämänsä panimon, kaksi olutta ja käyttäjän metodin <code>let!</code> aiemmin käyttämämme metodin <code>let</code> sijaan. Näin toimitaan siksi että huutomerkitön versio ei suorita operaatiota välittömästi vaan vasta siinä vaiheessa kun koodi viittaa olioon eksplisiittisesti. Olioon <code>beer1</code> viitataan koodissa vasta lopun tarkastuksissa, eli jos olisimme luoneet sen metodilla <code>let</code> olisi reittauksen luomisvaiheessa tullut virhe, sillä olut ei olisi vielä ollut kannassa, eikä vastaavaa select-elementtiä olisi löytynyt.
 
-Testin <code>before</code>-lohkossa on koodi, jonka avulla käyttäjä kirjautuu järjestelmään. On todennäköistä, että samaa koodilohkoa tarvitaan useissa eri testitiedostoissa. Useassa eri paikassa tarvittava testikoodi kannattaa eristää omaksi apumetodikseen ja sijoittaa [moduuliin](https://relishapp.com/rspec/rspec-core/docs/helper-methods/define-helper-methods-in-a-module), jonka kaikki sitä tarvitsevat testitiedostot voivat sisällyttää itseensä. Luodaan moduli <code>Helper</code>hakemistoon _spec_ sijoitettavaan tiedostoon _helpers.rb_ ja siirretään kirjautumisesta vastaava koodi sinne:
+Testin <code>before</code>-lohkossa on koodi, jonka avulla käyttäjä kirjautuu järjestelmään. On todennäköistä, että samaa koodilohkoa tarvitaan useissa eri testitiedostoissa. Useassa eri paikassa tarvittava testikoodi kannattaa eristää omaksi apumetodikseen ja sijoittaa [moduuliin](https://relishapp.com/rspec/rspec-core/docs/helper-methods/define-helper-methods-in-a-module), jonka kaikki sitä tarvitsevat testitiedostot voivat sisällyttää itseensä. Luodaan moduli <code>Helpers</code>hakemistoon _spec_ sijoitettavaan tiedostoon _helpers.rb_ ja siirretään kirjautumisesta vastaava koodi sinne:
 
 ```ruby
 module Helpers
@@ -1532,14 +1532,19 @@ end
 
 Kirjautumisen toteutuksen siirtäminen apumetodiin siis kasvattaa myös testien luettavuutta, ja jos kirjautumissivun toiminnallisuus myöhemmin muuttuu, on testien ylläpito helppoa, koska muutoksia ei tarvita kuin yhteen kohtaan.
 
+Saattaa olla järkevää siirtää myös aiemmin tiedostoon _user_sper.rb_ määrittelemämme apumetodit <code>create_beer_with_rating</code> ja <code>create_beers_with_many_ratings</code> moduuliin _Helpers_, erityisesti jos jatkossa tulee tilanteita, joissa samaa toiminnallisuutta tarvitaan muissakin testeissä.
+
 > ## Tehtävä 5
 >
-> Tee testi, joka varmistaa, että järjestelmään voidaan lisätä www-sivun kautta olut, jos oluen nimikenttä saa validin arvon (eli se on epätyhjä). Tee myös testi, joka varmistaa, että selain näyttää asiaan kuuluvan virheilmoituksen jos oluen nimi ei ole validi, ja että tälläisessä tapauksessa tietokantaan ei talletu mitään.
+> Tee testi, joka varmistaa, että järjestelmään voidaan lisätä www-sivun kautta olut, jos oluen nimikenttä saa validin arvon (eli se on epätyhjä). 
+> 
+> Tee myös testi, joka varmistaa, että selain näyttää asiaan kuuluvan virheilmoituksen jos oluen nimi ei ole validi, ja että tälläisessä tapauksessa tietokantaan ei talletu mitään.
 >
-> **HUOM:** ohjelmassasi on ehkä bugi tilanteessa, jossa yritetään luoda epävalidin nimen omaava olut. Kokeile toiminnallisuutta selaimesta. Syynä tälle on selitetty viikon alussa, kohdassa https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko4.md#muutama-huomio. Korjaa vika koodistasi.
+> Huomaa, että testin on luotava sovellukseen ainakin yksi panimo, jotta oluiden luominen olisi mahdollista.
+>
+> **HUOM:** ohjelmassasi saattaa olla bugi tilanteessa, jossa yritetään luoda epävalidin nimen omaava olut. Kokeile toiminnallisuutta selaimesta. Syynä tälle on selitetty viikon alussa, kohdassa https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko4.md#muutama-huomio. Korjaa vika koodistasi.
 >
 > Muista ongelmatilanteissa komento <code>save_and_open_page</code>!
-
 
 > ## Tehtävä 6
 >
@@ -1548,7 +1553,6 @@ Kirjautumisen toteutuksen siirtäminen apumetodiin siis kasvattaa myös testien 
 > **Vihje**: voit tehdä testin esim. siten, että luot aluksi FactoryBotillä reittauksia tietokantaan. Tämän jälkeen voit testata capybaralla sivun ratings sisältöä.
 >
 > Muista ongelmatilanteissa komento <code>save_and_open_page</code>!
-
 
 > ## Tehtävä 7
 >
@@ -1560,7 +1564,9 @@ Kirjautumisen toteutuksen siirtäminen apumetodiin siis kasvattaa myös testien 
 >
 >  Tee testi, joka varmistaa että käyttäjän poistaessa oma reittauksensa, se poistuu tietokannasta.
 >
-> Jos sivulla on useita linkkejä joilla on sama nimi, ei <code>click_link</code> toimi. Joudut tälläisissä tilanteissa yksilöimään mikä linkeistä valitaan, ks. http://rubydoc.info/github/jnicklas/capybara/master/Capybara/Node/Finders ja esim. [tämä](http://stackoverflow.com/questions/6733427/how-to-click-on-the-second-link-with-the-same-text-using-capybara-in-rails-3)
+> Jos sivulla on useita linkkejä joilla on sama nimi, ei <code>click_link</code> toimi. Joudut tälläisissä tilanteissa yksilöimään mikä linkeistä valitaan, ja se ei ole välttämättä ihan helppoa. Apua löytyy [capybaran dokumentaatiosta](http://rubydoc.info/github/jnicklas/capybara/master/Capybara/Node/Finders)  ja  [täältä](http://stackoverflow.com/questions/6733427/how-to-click-on-the-second-link-with-the-same-text-using-capybara-in-rails-3)
+>
+> Vaikka ratkaisu onkin lyhyt, ei tehtävä ole välttämättä helpoimmasta päästä. Jos jäät jumiin, kannattanee tehdä viikon muut tehtävät ensin tai/ja kysyä apua pajassa/Telegramissa.
 
 
 > ## Tehtävä 9
