@@ -1622,7 +1622,7 @@ Githubissa olevat Rails-projektit on helppo asettaa Travisin tarkkailtavaksi.
 
 > ## Tehtävä 11
 >
-> ### Tämän ja seuraavan tehtävän tekeminen ei ole välttämätöntä viikon jatkamisen kannalta. Voit tehdä tämän tehtävän myös viikon muiden tehtävien jälkeen.
+> ### Tämän ja parin seuraavan tehtävän tekeminen ei ole välttämätöntä viikon jatkamisen kannalta. Voit tehdä tämän tehtävän myös viikon muiden tehtävien jälkeen.
 >
 > Tee repositorion juureen Travisia varten konfiguraatiotiedosto _.travis.yml_ jolla on seuraava sisältö:
 >
@@ -1665,7 +1665,7 @@ Eriyisesti Web-sovellusten yhteydessä jatkuva deployaaminen saattaa olla hyvink
 
 > ## Tehtävä 12
 >
-> ### Tämän ja seuraavan tehtävän tekeminen ei ole välttämätöntä viikon jatkamisen kannalta. Voit tehdä tämän tehtävän myös viikon muiden tehtävien jälkeen.
+> ### Tämän ja seuraavan tehtävän tekeminen ei ole välttämätöntä viikon jatkamisen kannalta. Voit tehdä tämän tehtävän myös viikon muiden tehtävien jälkeen. 
 >
 > Toteuta sovelluksellesi jatkuva deployaaminen Herokuun Travisin avulla. Konfiguroi myös migraatiot suoritettavaksi depolymentin yhteydessä
 >
@@ -1675,7 +1675,7 @@ ja http://about.travis-ci.org/blog/2013-07-09-introducing-continuous-deployment-
 >
 > **HUOM** on erittäin suositeltavaa että teet konfiguroinnin [travisin komentorivityökalun](https://github.com/travis-ci/travis.rb#installation) avulla!
 >
-> **HUOM2:**  Travisin ja Herokun yhteistoiminnallisuudessa on ilmennyt aika-ajoin ongelmia. Tutki tarkkaan Travisin buildiin tulevia virheilmoituksia ja jos et keksi mikä on vikana, kokeile deployaamista jonkin ajan (esim. muutaman tunnin) kuluttua uudelleen. Älä siis juutu tähän kohtaan!
+> **HUOM2:**  Travisin ja Herokun yhteistoiminnallisuudessa on ilmennyt aika-ajoin ongelmia. Tutki tarkkaan Travisin buildiin tulevia virheilmoituksia ja jos et keksi mikä on vikana, kokeile deployaamista jonkin ajan (esim. muutaman tunnin) kuluttua uudelleen. Älä siis juutu tähän tehtävään!
 
 ## Koodin laatumetriikat
 
@@ -1683,26 +1683,21 @@ Testauskattavuuden lisäksi myös koodin laatua kannattaa valvoa. SaaS-palveluna
 
 > ## Tehtävä 13
 >
-> ### Tämän ja seuraavan tehtävän tekeminen ei ole välttämätöntä viikon jatkamisen kannalta. Voit tehdä tämän tehtävän myös viikon muiden tehtävien jälkeen.
+> ### Tämän tehtävän tekeminen ei ole välttämätöntä viikon jatkamisen kannalta. Voit tehdä tämän tehtävän myös viikon muiden tehtävien jälkeen.
 >
->Codeclimate on ilmainen opensource-projekteille. Rekisteröi projektisi sivulta https://codeclimate.com/pricing löytyvän hieman huomaamattoman linkin "Add an OS repo" avulla.
+> Codeclimate on ilmainen opensource-projekteille. Kirjaudu sovelukseen ositteessa https://codeclimate.com/login/github/join ja lisää projektisi "Open source"-osista.
 >
->Codeclimate valittelee hiukan koodissa olevasta samanlaisuudesta. Kyseessä on kuitenkin Rails scaffoldingin
-luoma hieman ruma koodi, joten jätämme sen paikalleen.
+>Codeclimate valittelee todennäköisesti koodissa olevasta samanlaisuudesta. Kyseessä on kuitenkin Rails scaffoldingin luoma hieman ruma koodi, joten sen voi jättää paikalleen.
 >
->Linkitä myös laatumetriikkaraportti repositorion README-tiedostoon:
+> Linkitä myös laatumetriikkaraportti repositorion README-tiedostoon:
 >
->```ruby
->[![Code Climate](https://codeclimate.com/github/mluukkai/ratebeer-public.png)](https://codeclimate.com/github/mluukkai/ratebeer-public)
->```
+> Löydät linkin raporttiin seuraavasti
 >
+> ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w4-4c.png)
+> 
 > Nyt myös codeclimate aiheuttaa sovelluskehittäjälle sopivasti painetta pitää koodi koko ajan hyvälaatuisena!
->
-> Huomaa, että linkin loppuosa on sama kun projektisi Github-repositorion, edellinen siis liittyy Github-repoon https://github.com/mluukkai/ratebeer-public
 
-Codeclimaten tekemän staattisen analyysin lisäksi Rails-sovelluskehityksessä kannaa noudattaa yhtenäistä koodaustyyliä. Rails-yhteisön kehittelemä tyyliopas löytyy osoitteesta  https://github.com/bbatsov/rails-style-guide
-
-Sovelluskehittäjän elämää helpottavien pilvipalveluiden määrä kasvaa kovaa vauhtia. Simplecov:in sijaan tai lisäksi testauskattavuuden raportoinnin voi delegoida Coveralls https://coveralls.io/ -nimiselle pilvipalvelulle.
+Sovelluskehittäjän elämää helpottavien pilvipalveluiden määrä kasvaa kovaa vauhtia. Simplecov:in sijaan tai lisäksi testauskattavuuden raportoinnin voi delegoida Coveralls https://coveralls.io/ -nimiselle pilvipalvelulle. Jätämme sen kuitenkin tälläkertaa tekemättä.
 
 ## Kirjautuneiden toiminnot
 
