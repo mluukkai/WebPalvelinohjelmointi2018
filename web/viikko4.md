@@ -1148,6 +1148,8 @@ end
 
 Nyt jokainen peräkkäisten tehtaan <code>FactoryBot.create(:user)</code> kutsujen luomien olioiden usernamet olisivat _Pekka1_, _Pekka2_, _Pekka3_ ...
 
+**Älä kuitenkaan muuta** tehdasta tähän muotoon, muuten osa viikon testeistä ei toimi!
+
 ## testit ja debuggeri
 
 Toivottavasti olet jo tässä vaiheessa kurssia rutinoitunut [debuggerin](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko2.md#debuggeri) käyttäjä. Koska testitkin ovat normaalia ruby-koodia, ovat myös _byebug_ ja _binding.pry_ käytettävissä sekä testikoodissa että testattavassa koodissa. Testausympäristön tietokannan tila saattaa joskus olla yllättävä, kuten edellä olevista esimerkeistä näimme. Ongelmatilanteissa kannattaa ehdottomasti pysäyttää testikoodi debuggerilla ja tutkia vastaako testattavien olioiden tila oletettua.
@@ -1188,28 +1190,23 @@ Metodien <code>favorite_brewery</code> ja <code>favorite_style</code> tarvitsema
 
 ## Capybara
 
-Siirrymme seuraavaksi järjestelmätason testaukseen. Kirjoitamme siis automatisoituja testejä, jotka käyttävät sovellusta normaalin käyttäjän tapaan selaimen kautta. De facto -tapa Rails-sovellusten selaintason testaamiseen on Capybaran https://github.com/jnicklas/capybara käyttö. Itse testit kirjoitetaan edelleen Rspecillä, capybara tarjoaa siis  rspec-testien käyttöön selaimen simuloinnin.
+Siirrymme seuraavaksi järjestelmätason testaukseen. Kirjoitamme siis automatisoituja testejä, jotka käyttävät sovellusta normaalin käyttäjän tapaan selaimen kautta. De facto -tapa Rails-sovellusten selaintason testaamiseen on Capybaran https://github.com/jnicklas/capybara käyttö. Itse testit kirjoitetaan edelleen Rspecillä, capybara tarjoaa siis rspec-testien käyttöön selaimen simuloinnin.
 
-Lisätään Gemfileen (test-scopeen) gemit 'capybara' ja 'launchy' eli test-scopen pitäisi näyttää seuraavalta:
+Capybara on oletusarvoisesti määriteltynä projektissa. Lisätään Gemfileen (test-scopeen) apukirjasto [launchy](https://github.com/copiousfreetime/launchy) eli test-scopen pitäisi näyttää seuraavalta:
 
 ```ruby
 group :test do
-  gem 'factory_girl_rails'
-  gem 'capybara'
+  # Adds support for Capybara system testing and selenium driver
+  gem 'capybara', '>= 2.15'
+  gem 'selenium-webdriver'
+  # Easy installation and use of chromedriver to run system tests with Chrome
+  gem 'chromedriver-helper'
+  gem 'factory_bot_rails'
   gem 'launchy'
 end
 ```
 
-Jotta gemit saadaan käyttöön, suoritetaan tuttu komento <code>bundle install</code>. Laitoksen koneilla saattaa komennon suorittamisessa kulua melko kauan, jopa 15 minuuttia.
-
-**HUOM** jos bundle install ei toimi laitoksen koneella suorita ensin seuraava:
-
-    gem install nokogiri -- --with-xml2-include=/usr/include/libxml2/libxml/ --with-xml2-lib=/usr/lib  --with-xslt-include=/usr/include/libxslt --with-xslt-lib=/usr/lib
-
-
-Tiedoston  spec/rails_helper.rb-tiedoston yläosaan on myös lisättävä rivi
-
-    require 'capybara/rspec'
+Jotta gem saadaan käyttöön, suoritetaan tuttu komento <code>bundle install</code>. 
 
 Nyt olemme valmiina ensimmäiseen selaintason testiin.
 
@@ -1239,50 +1236,48 @@ Toinen vaihoehto on lisätä testiin komento <code>save_and_open_page</code>, jo
 
 Määrittely on voimassa vain siinä shellissä jossa teet sen. Jos haluat määrittelystä pysyvän, lisää se tiedostoon ~/.bashrc
 
-**HUOM:** komento save_and_open_page ei valitettavasti toimi jos suoritat rails-sovellusta virtuaalikoneella.
-
 Suorita nyt testi tuttuun tapaan komennolla <code>rspec spec</code>. Jos haluat ajaa ainoastaan nyt määritellyn testin, muista että voit rajata suoritettavat testit antamalla komennon esim. muodossa
 
     rspec spec/features/breweries_page_spec.rb
 
-Testi ei todennäköisesti mene läpi. Selvitä mistä vika johtuu ja korjaa testi tai sivulla oleva teksti. Komennon <code>save_and_open_page</code> käyttö on suositeltavaa!
+**Testi ei todennäköisesti mene läpi.** Selvitä mistä vika johtuu ja korjaa testi tai sivulla oleva teksti. Komennon <code>save_and_open_page</code> käyttö on suositeltavaa!
 
 Lisätään testi, joka testaa tilannetta, jossa tietokannassa on 3 panimoa:
 
 ```ruby
-  it "lists the existing breweries and their total number" do
-    breweries = ["Koff", "Karjala", "Schlenkerla"]
-    breweries.each do |brewery_name|
-      FactoryBot.create(:brewery, name: brewery_name)
-    end
-
-    visit breweries_path
-
-    expect(page).to have_content "Number of breweries: #{breweries.count}"
-
-    breweries.each do |brewery_name|
-      expect(page).to have_content brewery_name
-    end
+it "lists the existing breweries and their total number" do
+  breweries = ["Koff", "Karjala", "Schlenkerla"]
+  breweries.each do |brewery_name|
+    FactoryBot.create(:brewery, name: brewery_name)
   end
+
+  visit breweries_path
+
+  expect(page).to have_content "Number of breweries: #{breweries.count}"
+
+  breweries.each do |brewery_name|
+    expect(page).to have_content brewery_name
+  end
+end
 ```
 
 Lisätään vielä testi, joka tarkastaa, että panimoiden sivulta pääsee linkkiä klikkaamalla yksittäisen panimon sivulle. Hyödynnämme tässä capybaran metodia <code>click_link</code>, jonka avulla on mahdollista klikata sivulla olevaa linkkiä:
 
 ```ruby
-  it "allows user to navigate to page of a Brewery" do
-    breweries = ["Koff", "Karjala", "Schlenkerla"]
-    year = 1896
-    breweries.each do |brewery_name|
-      FactoryBot.create(:brewery, name: brewery_name, year: year += 1)
-    end
-
-    visit breweries_path
-
-    click_link "Koff"
-
-    expect(page).to have_content "Koff"
-    expect(page).to have_content "Established at 1897"
+it "allows user to navigate to page of a Brewery" do
+  breweries = ["Koff", "Karjala", "Schlenkerla"]
+  year = 1896
+  breweries.each do |brewery_name|
+    FactoryBot.create(:brewery, name: brewery_name, year: year += 1)
   end
+
+  visit breweries_path
+
+  click_link "Koff"
+
+  expect(page).to have_content "Koff"
+  expect(page).to have_content "Established at 1897"
+end
 ```
 
 Testi menee läpi olettaen että sivulla käytetty kirjoitusasu on sama kuin testissä. Ongelmatilanteissa testiin kannattaa lisätä komento <code>save_and_open_page</code> ja varmistaa visuaalisesti testin avaaman sivun sisältö.
@@ -1304,6 +1299,7 @@ describe "Breweries page" do
 
   describe "when breweries exists" do
     before :each do
+      # jotta muuttuja näkyisi it-lohkoissa, tulee sen nimen alkaa @-merkillä
       @breweries = ["Koff", "Karjala", "Schlenkerla"]
       year = 1896
       @breweries.each do |brewery_name|
@@ -1331,11 +1327,13 @@ describe "Breweries page" do
 end
 ```
 
-Huomaa, että describe-lohkon sisällä oleva <code>before :each</code> suoritetaan kertaalleen ennen jokaista describen alla määriteltyä testiä ja **jokainen testi alkaa tilanteesta, missä tietokanta on tyhjä**.
+Huomaa, että describe-lohkon sisällä oleva <code>before :each</code> suoritetaan kertaalleen ennen jokaista describen alla määriteltyä testiä ja **jokainen testi alkaa tilanteesta, missä tietokanta on tyhjä**. 
+
+Kannattaa myös huomata, että jos <code>before :each</code> -lohkossa määriteltyihin muuttujiin on viitattava yksittäisistä testeistä, eli _it_-lohkoista, tulee muuttujien nimen alkaa @-merkillä.
 
 ## Käyttäjän toiminnallisuuden testaaminen
 
-Siirrytään käyttäjän toiminnallisuuteen, luodaan tätä varten tiedosto _features/users_page_spec.rb_. Aloitetaan testillä, joka varmistaa, että käyttäjä pystyy kirjautumaan järjestelmään:
+Siirrytään käyttäjän toiminnallisuuteen, luodaan tätä varten tiedosto _spec/features/users_page_spec.rb_. Aloitetaan testillä, joka varmistaa, että käyttäjä pystyy kirjautumaan järjestelmään:
 
 ```ruby
 require 'rails_helper'
@@ -1392,16 +1390,16 @@ Käyttäjätason testein voidaan esim. varmistua, että sivuilla näkyy sama til
 Myös sivujen kautta tehtävät lisäykset ja poistot kannattaa testata. Esim. seuraavassa testataan, että uuden käyttäjän rekisteröityminen lisää järjestelmän käyttäjien lukumäärää yhdellä:
 
 ```ruby
-  it "when signed up with good credentials, is added to the system" do
-    visit signup_path
-    fill_in('user_username', with:'Brian')
-    fill_in('user_password', with:'Secret55')
-    fill_in('user_password_confirmation', with:'Secret55')
+it "when signed up with good credentials, is added to the system" do
+  visit signup_path
+  fill_in('user_username', with:'Brian')
+  fill_in('user_password', with:'Secret55')
+  fill_in('user_password_confirmation', with:'Secret55')
 
-    expect{
-      click_button('Create User')
-    }.to change{User.count}.by(1)
-  end
+  expect{
+    click_button('Create User')
+  }.to change{User.count}.by(1)
+end
 ```
 
 Huomaa, että lomakkeen kentät määriteltiin <code>fill_in</code>-metodeissa hieman eri tavalla kuin kirjautumislomakkeessa. Kenttien id:t voi ja kannattaa aina tarkastaa katsomalla sivun lähdekoodia selaimen _view page source_ -toiminnolla.
@@ -1411,7 +1409,7 @@ Testi siis odottaa, että _Create user_ -painikkeen klikkaaminen muuttaa tietoka
 Pienenä detaljina kannattaa huomioida, että metodille <code>expect</code> voi antaa parametrin kahdella eri tavalla.
 Jos metodilla testaa jotain arvoa, annetaan testattava arvo suluissa esim <code>expect(current_path).to eq(signin_path)</code>. Jos sensijaan testataan jonkin operaation (esim. edellä <code>click_button('Create User')</code>) vaikutusta jonkun sovelluksen olion (<code>User.count</code>) arvoon, välitetään suoritettava operaatio koodilohkona <code>expect</code>ille.
 
-Lue aiheesta lisää Rspecin dokumentaatiosta https://www.relishapp.com/rspec/rspec-expectations/v/2-14/docs/built-in-matchers
+Lue aiheesta lisää Rspecin dokumentaatiosta https://relishapp.com/rspec/rspec-expectations/docs/built-in-matchers
 
 Edellinen testi siis testasi, että selaimen tasolla tehty operaatio luo olion tietokantaan. Onko vielä tehtävä erikseen testi, joka testaa että luodulla käyttäjätunnuksella voi kirjautua järjestelmään? Kenties, edellinen testihän ei ota kantaa siihen tallentuiko käyttäjäolio tietokantaan oikein.
 
@@ -1453,8 +1451,7 @@ end
 
 Testi rakentaa käyttämänsä panimon, kaksi olutta ja käyttäjän metodin <code>let!</code> aiemmin käyttämämme metodin <code>let</code> sijaan. Näin toimitaan siksi että huutomerkitön versio ei suorita operaatiota välittömästi vaan vasta siinä vaiheessa kun koodi viittaa olioon eksplisiittisesti. Olioon <code>beer1</code> viitataan koodissa vasta lopun tarkastuksissa, eli jos olisimme luoneet sen metodilla <code>let</code> olisi reittauksen luomisvaiheessa tullut virhe, sillä olut ei olisi vielä ollut kannassa, eikä vastaavaa select-elementtiä olisi löytynyt.
 
-
-Testin <code>before</code>-lohkossa on koodi, jonka avulla käyttäjä kirjautuu järjestelmään. On todennäköistä, että samaa koodilohkoa tarvitaan useissa eri testitiedostoissa. Useassa eri paikassa tarvittava testikoodi kannattaa eristää omaksi apumetodikseen ja sijoittaa moduuliin, jonka kaikki sitä tarvitsevat testitiedostot voivat sisällyttää itseensä. Luodaan moduli <code>Helper</code>hakemistoon _spec_ sijoitettavaan tiedostoon _helpers.rb_ ja siirretään kirjautumisesta vastaava koodi sinne:
+Testin <code>before</code>-lohkossa on koodi, jonka avulla käyttäjä kirjautuu järjestelmään. On todennäköistä, että samaa koodilohkoa tarvitaan useissa eri testitiedostoissa. Useassa eri paikassa tarvittava testikoodi kannattaa eristää omaksi apumetodikseen ja sijoittaa [moduuliin](https://relishapp.com/rspec/rspec-core/docs/helper-methods/define-helper-methods-in-a-module), jonka kaikki sitä tarvitsevat testitiedostot voivat sisällyttää itseensä. Luodaan moduli <code>Helper</code>hakemistoon _spec_ sijoitettavaan tiedostoon _helpers.rb_ ja siirretään kirjautumisesta vastaava koodi sinne:
 
 ```ruby
 module Helpers
@@ -1506,14 +1503,14 @@ describe "User" do
 
   describe "who has signed up" do
     it "can signin with right credentials" do
-      sign_in(username:"Pekka", password:"Foobar1")
+      sign_in(username: "Pekka", password: "Foobar1")
 
       expect(page).to have_content 'Welcome back!'
       expect(page).to have_content 'Pekka'
     end
 
     it "is redirected back to signin form if wrong credentials given" do
-      sign_in(username:"Pekka", password:"wrong")
+      sign_in(username: "Pekka", password: "wrong")
 
       expect(current_path).to eq(signin_path)
       expect(page).to have_content 'username and password do not match'
@@ -1522,9 +1519,9 @@ describe "User" do
 
   it "when signed up with good credentials, is added to the system" do
     visit signup_path
-    fill_in('user_username', with:'Brian')
-    fill_in('user_password', with:'Secret55')
-    fill_in('user_password_confirmation', with:'Secret55')
+    fill_in('user_username', with: 'Brian')
+    fill_in('user_password', with: 'Secret55')
+    fill_in('user_password_confirmation', with: 'Secret55')
 
     expect{
       click_button('Create User')
@@ -1569,128 +1566,6 @@ Kirjautumisen toteutuksen siirtäminen apumetodiin siis kasvattaa myös testien 
 > ## Tehtävä 9
 >
 > Jos teit tehtävät 3-4, laajenna käyttäjän sivua siten, että siellä näytetään käyttäjän lempioluttyyli sekä lempipanimo. Tee ominaisuudelle myös capybara-testit. Monimutkaista laskentaa testeissä ei kannata testata, sillä yksikkötestit varmistavat toiminnallisuuden jo riittävissä määrin.
-
-## RSpecin syntaksin uudet tuulet
-
-Kuten kirjoittaessamme ensimmäistä testiä totesimme, on Rspecissä useita tapoja saman asian ilmaisemiseen. Tehdään nyt muutama yksikkötesti Brewery-modelille. Aloitetaan generoimalla testipohja komennolla
-
-    rails generate rspec:model brewery
-
-Kirjoitetaan ensin "vanhahtavalla", nyt jo deprekoidulla <code>should</code>-syntaksilla (ks. https://github.com/rspec/rspec-expectations/blob/master/Should.md) testi, joka varmistaa että <code>create</code> asettaa panimon nimen ja perustamisvuoden oikein, ja että olio tallettuu kantaan:
-
-```ruby
-require 'rails_helper'
-
-RSpec.describe Brewery, type: :model do
-  it "has the name and year set correctly and is saved to database" do
-    brewery = Brewery.create name:"Schlenkerla", year:1674
-
-    brewery.name.should == "Schlenkerla"
-    brewery.year.should == 1674
-    brewery.valid?.should == true
-  end
-end
-```
-
-Viimeinen ehto, eli onko panimo validi ja tallentunut kantaan on ilmaistu kömpelösti. Koska panimon metodi <code>valid?</code> palauttaa totuusarvon, voimme ilmaista asian myös seuraavasti (ks http://rubydoc.info/gems/rspec-expectations/RSpec/Matchers):
-
-```ruby
-  it "has the name and year set correctly and is saved to database" do
-    brewery = Brewery.create name:"Schlenkerla", year:1674
-
-    brewery.name.should == "Schlenkerla"
-    brewery.year.should == 1674
-    brewery.should be_valid
-  end
-```
-
-Käytettäessä <code>be_something</code> predikaattimatcheria, rspec olettaa, että oliolla on totuusarvoinen metodi nimeltään <code>something?</code>, eli kyse on konventioiden avulla aikaansaadusta "magiasta".
-
-Ilmaisu <code>brewery.should be_valid</code> on lähempänä luonnollista kieltä, joten se on ehdottomasti suositeltavampi. Testi, joka testaa että panimoa ei voida tallettaa ilman nimeä voidaan tehdä seuraavasti käyttäen shouldin negaatiota eli metodia <code>should_not</code>:
-
-```ruby
-  it "without a name is not valid" do
-    brewery = Brewery.create  year:1674
-
-    brewery.should_not be_valid
-  end
-```
-
-Myös muoto <code>brewery.should be_invalid</code> toimisi täsmälleen samoin.
-
-Käytimme yllä shouldin sijaan <code>expect</code>-syntaksia (ks. http://rubydoc.info/gems/rspec-expectations/) joka on vallannut alaa shouldilta (vuonna 2010 Rspecin kehittäjien kirjoittamassa kirjassa http://pragprog.com/book/achbd/the-rspec-book käytetään vielä lähes yksinomaan shouldia!). Testimme expectillä olisi seuraava:
-
-```ruby
-  it "has the name and year set correctly and is saved to database" do
-    brewery = Brewery.create name:"Schlenkerla", year:1674
-
-    expect(brewery.name).to eq("Schlenkerla")
-    expect(brewery.year).to eq(1674)
-    expect(brewery).to be_valid
-  end
-
-  it "without a name is not valid" do
-    brewery = Brewery.create  year:1674
-
-    expect(brewery).not_to be_valid
-  end
-```
-
-Voisimme kirjoittaa rivin <code>expect(brewery.year).to eq(1674)</code> myös muodossa <code>expect(brewery.year).to be(1674)</code> sen sijaan <code>expect(brewery.name).to be("Schlenkerla")</code> ei toimisi, virheilmoitus antaakin vihjeen mistä on kysymys:
-
-```ruby
-  1) Brewery has the name and year set correctly and is saved to database
-     Failure/Error: expect(brewery.name).to be("Schlenkerla")
-
-       expected #<String:44715020> => "Schlenkerla"
-            got #<String:47598800> => "Schlenkerla"
-
-       Compared using equal?, which compares object identity,
-       but expected and actual are not the same object. Use
-       `expect(actual).to eq(expected)` if you don't care about
-       object identity in this example.
-```
-
-Eli <code>be</code> vaatii että kysessä ovat samat oliot, pelkkä olioiden samansisältöisyys ei riitä, kokonaislukuolioita, joiden suuruus on 1674 on Rubyssä vaan yksi, sen takia be toimii vuoden yhteydessä, sen sijaan merkkijonoja joiden sisältö on "Schlenkerla" voi olla mielivaltaisen paljon, eli merkkijonoja vertailtaessa on käytettävä matcheria <code>eq</code>.
-
-Testiä on mahdollisuus vielä hioa käyttämällä Rspec 2:n (https://www.relishapp.com/rspec/rspec-core/v/2-11/docs) mukanaan tuomaa syntaksia. Jokaisessa testimme ehdossa _testauksen kohde_ on sama, eli muuttujaan <code>brewery</code> talletettu olio. Uusi <code>subject</code> syntaksi mahdollistaakin sen, että testauksen kohde määritellään vain kerran, ja sen jälkeen siihen ei ole tarvetta viitata eksplisiittisesti. Seuraavassa testi uudelleenmuotoiltuna uutta syntaksia käyttäen:
-
-```ruby
-  describe "when initialized with name Schlenkerla and year 1674" do
-    subject{ Brewery.create name: "Schlenkerla", year: 1674 }
-
-    it { should be_valid }
-    its(:name) { should eq("Schlenkerla") }
-    its(:year) { should eq(1674) }
-  end
-```
-
-Testi on entistä kompaktimpi ja luettavuudeltaan erittäin sujuva. Mikä parasta, myös dokumenttiformaatissa generoitu testiraportti on hyvin luonteva:
-
-```ruby
-$ rspec spec/models/brewery_spec.rb -fd
-
-Brewery
-  without a name is not valid
-  when initialized with name Schlenkerla and year 1674
-    should be valid
-    name
-      should eq "Schlenkerla"
-    year
-      should eq 1674
-
-Finished in 0.03309 seconds
-```
-
-**Huom:** <code>its</code>-syntaksi ei ole Rspecin versiosta 3 lähtien enää rspec-coressa ja toimiakseen se vaatii seuraavan gemin asentamsen:
-
-    gem 'rspec-its'
-
-Lisää subject-syntaktista osoitteessa
-https://www.relishapp.com/rspec/rspec-core/v/2-11/docs/subject
-
-Neuvoja hyvän Rspecin kirjoittamiseen antaa myös sivu
-http://betterspecs.org/
 
 ## Testauskattavuus
 

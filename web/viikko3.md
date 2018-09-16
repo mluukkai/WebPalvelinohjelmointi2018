@@ -429,7 +429,7 @@ def create
   session[:last_rating] = "#{rating.beer.name} #{rating.score} points"
 
   redirect_to ratings_path
-  end
+end
 ```
 
 jotta edellinen reittaus saadaan näkyviin kaikille sivuille, lisätään application layoutiin (eli tiedostoon app/views/layouts/application.html.erb) seuraava:
@@ -716,19 +716,17 @@ Reittauksen poisto vie nyt kaikkien reittausten sivulle. Luontevinta olisi, ett�
 def destroy
   rating = Rating.find(params[:id])
   rating.delete
-  redirect_to :back
+  redirect_to user_path(current_user)
 end
 ```
-
-Eli kuten arvata saattaa, <code>redirect_to :back</code> aiheuttaa uudelleenohjauksen takaisin siihen osoitteeseen, jolta HTTP DELETE -pyynnön aiheuttama linkin klikkaus suoritettiin.
 
 Uusien reittausten luominen www-sivulta ei siis tällä hetkellä toimi, koska reittaukseen ei tällä hetkellä liitetä kirjautuneena olevaa käyttäjää. Muokataan siis  reittauskontrolleria siten, että kirjautuneena oleva käyttäjä linkitetään luotavaan reittaukseen:
 
 ```ruby
 def create
-  # huomaa että ensimmäinenkin rivi muuttuu hieman!
-  rating = Rating.create params.require(:rating).permit(:score, :beer_id)
-  current_user.ratings << rating
+  rating = Rating.new params.require(:rating).permit(:score, :beer_id)
+  rating.user = current_user
+  rating.save
   redirect_to current_user
 end
 ```
@@ -736,7 +734,7 @@ end
 Huomaa, että <code>current_user</code> on luokkaan <code>ApplicationController</code> äsken lisäämämme metodi, joka palauttaa kirjautuneena olevan käyttäjän eli suorittaa koodin:
 
 ```ruby
-  User.find(session[:user_id])
+User.find(session[:user_id])
 ```
 
 Reittauksen luomisen jälkeen kontrolleri on laitettu uudelleenohjaamaan selain kirjautuneena olevan käyttäjän sivulle.
@@ -847,7 +845,6 @@ end
 
 Scaffoldin generoima kontrolleri näyttää hieman monimutkaisemmalta:
 
-
 ```ruby
 def create
   @user = User.new(user_params)
@@ -912,9 +909,9 @@ Muutetaan ensin reittaus-kontrollerin metodia <code>create</code> siten, että v
 ```ruby
 def create
   @rating = Rating.new params.require(:rating).permit(:score, :beer_id)
+  @rating.user = current_user
 
   if @rating.save
-    current_user.ratings << @rating
     redirect_to user_path current_user
   else
     @beers = Beer.all
@@ -1275,7 +1272,7 @@ def create
     session[:user_id] = user.id
     redirect_to user_path(user), notice: "Welcome back!"
   else
-    redirect_to :back, notice: "Username and/or password mismatch"
+    redirect_to signin_path, notice: "Username and/or password mismatch"
   end
 end
 ```
@@ -1322,11 +1319,11 @@ Tällä hetkellä kuka tahansa voi poistaa kenen tahansa reittauksia. Muutetaan 
 def destroy
   rating = Rating.find params[:id]
   rating.delete if current_user == rating.user
-  redirect_to :back
+  redirect_to user_path(current_user)
 end
 ```
 
-eli tehdään poisto-operaatio ainoastaan, jos ```current_user``` on sama kuin reittaukseen liittyvä käyttäjä.
+eli tehdään poisto-operaatio ainoastaan, jos ```current_user``` on sama kuin reittaukseen liittyvä käyttäjä. 
 
 Reittauksen poistolinkkiä ei oikeastaan ole edes syytä näyttää muuta kuin kirjaantuneen käyttäjän omalla sivulla. Eli muutetaan käyttäjän show-sivua seuraavasti:
 
