@@ -561,7 +561,7 @@ https://github.com/thoughtbot/factory_bot_rails
 Lisätään Gemfileen seuraava
 
 ```ruby
-group :development, :test do
+group :test do
   gem 'factory_bot_rails'
 end
 ```
@@ -593,27 +593,27 @@ FactoryBotin tehdasmetodin _create_ kutsuminen luo olion automaattisesti testaus
 Muutetaan nyt testimme käyttämään _user_-olioiden luomiseen FactoryBotiä:
 
 ```ruby
-  describe "with a proper password" do
-    let(:user) { FactoryBot.create(:user) }
-    let(:test_brewery) { Brewery.new name: "test", year: 2000 }
-    let(:test_beer) { Beer.create name: "testbeer", style: "teststyle", brewery: test_brewery }
+describe "with a proper password" do
+  let(:user) { FactoryBot.create(:user) }
+  let(:test_brewery) { Brewery.new name: "test", year: 2000 }
+  let(:test_beer) { Beer.create name: "testbeer", style: "teststyle", brewery: test_brewery }
 
-    it "is saved" do
-      expect(user).to be_valid
-      expect(User.count).to eq(1)
-    end
-
-    it "and with two ratings, has the correct average rating" do
-      rating = Rating.new score: 10, beer: test_beer
-      rating2 = Rating.new score: 20, beer: test_beer
-
-      user.ratings << rating
-      user.ratings << rating2
-
-      expect(user.ratings.count).to eq(2)
-      expect(user.average_rating).to eq(15.0)
-    end
+  it "is saved" do
+    expect(user).to be_valid
+    expect(User.count).to eq(1)
   end
+
+  it "and with two ratings, has the correct average rating" do
+    rating = Rating.new score: 10, beer: test_beer
+    rating2 = Rating.new score: 20, beer: test_beer
+
+    user.ratings << rating
+    user.ratings << rating2
+
+    expect(user.ratings.count).to eq(2)
+    expect(user.average_rating).to eq(15.0)
+  end
+end
 ```
 
 Muutos aiempaan on vielä melko pieni. Laajennetaan fixtureita vielä siten, että voimme luoda niiden avulla myös testien käyttämät _rating_-oliot. Muutetaan tiedostoa spec/factories.rb seuraavasti
@@ -891,12 +891,12 @@ Suorituskyvyn optimoinnissa kannattaa kuitenkin pitää maltti mukana ja sovellu
 
 ## Testien apumetodit
 
-Huomaamme, että testissä tarvittavien oluiden rakentamisen tekevä koodi on hieman ikävä. Voisimme konfiguroida FactoryBotiin oluita, joihin liittyy reittauksia. Päätämme kuitenkin tehdä testitiedoston puolelle reittauksellisen oluen luovan apumetodin <code>create_beer_with_rating</code>:
+Huomaamme, että testissä tarvittavien oluiden rakentamisen tekevä koodi on hieman ikävä. Voisimme konfiguroida FactoryBotiin oluita, joihin liittyy reittauksia. Päätämme kuitenkin tehdä testitiedostoon reittauksellisen oluen luovan apumetodin <code>create_beer_with_rating</code>:
 
 ```ruby
-def create_beer_with_rating(user, score)
+def create_beer_with_rating(object, score)
   beer = FactoryBot.create(:beer)
-  FactoryBot.create(:rating, score:score, beer:beer, user:user)
+  FactoryBot.create(:rating, beer: beer, score: score, user: object[:user] )
   beer
 end
 ```
@@ -905,22 +905,34 @@ Apumetodia käyttämällä saamme siistityksi testiä
 
 ```ruby
 it "is the one with highest rating if several rated" do
-  create_beer_with_rating(user, 10)
-  best = create_beer_with_rating(user, 25)
-  create_beer_with_rating(user, 7)
+  create_beer_with_rating({ user: user }, 10 )
+  best = create_beer_with_rating({ user: user }, 25 )
+  create_beer_with_rating({ user: user}, 7 )
 
   expect(user.favorite_beer).to eq(best)
+end    
+```
+
+Apumetodin ensimmäinen, reittauksen tehneen käyttäjän välittäminen tapahtuu nyt hieman erikoisella tavalla ruby-hashin avaimen arvona. Olisimme voineet määritellä, että käyttäjä välitetään normaalina parametrina, samoin kuin reittauksen pistemäärä:
+
+```ruby
+def create_beer_with_rating(user, score)
+  beer = FactoryBot.create(:beer)
+  FactoryBot.create(:rating, beer: beer, score: score, user: user )
+  beer
 end
 ```
+
+Käyttämämme tapa on kuitenkin tässä tapauksessa joustavampi, sillä se mahdollistaa tehtävissä 3 ja 4 tarvittavan metodin <code>create_beer_with_rating</code> laajennuksen siten, että aiemmin tehty testikoodi ei hajoa.
 
 Apumetodeja siis voi (ja kannattaa) määritellä rspec-tiedostoihin. Jos apumetodia tarvitaan ainoastaan yhdessä testitiedostossa, voi sen sijoittaa esim. tiedoston loppuun.
 
 Parannetaan vielä edellistä hiukan määrittelemällä toinenkin metodi <code>create_beers_with_ratings</code>, jonka avulla on mahdollista luoda useita reitattuja oluita. Metodi saa reittaukset taulukon tapaan käyttäytyvän vaihtuvamittaisen parametrilistan (ks. http://www.ruby-doc.org/docs/ProgrammingRuby/html/tut_methods.html, kohta "Variable-Length Argument Lists") avulla:
 
 ```ruby
-def create_beers_with_ratings(user, *scores)
+def create_beers_with_ratings(object, *scores)
   scores.each do |score|
-    create_beer_with_rating(user, score)
+    create_beer_with_rating(object, score)
   end
 end
 ```
@@ -928,7 +940,7 @@ end
 Kutsuttaessa metodia esim. seuraavasti
 
 ```ruby
-    create_beers_with_ratings(user, 10, 15, 9)
+create_beers_with_ratings( {user: user}, 10, 15, 9)
 ```
 
 tulee parametrin <code>scores</code> arvoksi kokoelma, jossa ovat luvut 10, 15 ja 9. Metodi luo (metodin <code>create_beer_with_rating</code> avulla) kolme olutta, joihin kuhunkin parametrina annetulla käyttäjällä on reittaus ja reittauksien pistemääriksi tulevat parametrin <code>scores</code> luvut.
@@ -960,25 +972,25 @@ RSpec.describe User, type: :model do
     end
 
     it "is the one with highest rating if several rated" do
-      create_beers_with_ratings(user, 10, 20, 15, 7, 9)
-      best = create_beer_with_rating(user, 25)
+      create_beers_with_ratings({user: user}, 10, 20, 15, 7, 9)
+      best = create_beer_with_rating({ user: user }, 25 )
 
       expect(user.favorite_beer).to eq(best)
-    end
+    end  
   end
 
 end # describe User
 
-def create_beers_with_ratings(user, *scores)
-  scores.each do |score|
-    create_beer_with_rating user, score
-  end
+def create_beer_with_rating(object, score)
+  beer = FactoryBot.create(:beer)
+  FactoryBot.create(:rating, beer: beer, score: score, user: object[:user] )
+  beer
 end
 
-def create_beer_with_rating(user, score)
-  beer = FactoryBot.create(:beer)
-  FactoryBot.create(:rating, score:score,  beer:beer, user:user)
-  beer
+def create_beers_with_ratings(object, *scores)
+  scores.each do |score|
+    create_beer_with_rating(object, score)
+  end
 end
 ```
 
