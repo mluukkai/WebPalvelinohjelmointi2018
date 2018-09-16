@@ -1594,17 +1594,17 @@ Sitten ajetaan testit (ongelmatilanteessa ks. ylempi huomautus)
 
 ```ruby
 $ rspec spec
-.....................................
+..................................
 
-Finished in 1.52 seconds (files took 1.93 seconds to load)
-37 examples, 0 failures
+Finished in 1.25 seconds (files took 1.95 seconds to load)
+34 examples, 0 failures
 
-Coverage report generated for RSpec to /Users/mluukkai/kurssirepot/ratebeer/coverage. 156 / 357 LOC (43.7%) covered.
+Coverage report generated for RSpec to /Users/mluukkai/opetus/ratebeer/coverage. 161 / 333 LOC (48.35%) covered.
 ```
 
-Testien rivikattavuus on siis 43.7 prosenttia. Tarkempi raportti on nähtävissä avaamalla selaimella tiedosto coverage/index.html. Kuten kuva paljastaa, on suuria osia ohjelmasta, erityisesti kontrollereista vielä erittäin huonosti testattu:
+Testien rivikattavuus on siis 48.35 prosenttia. Tarkempi raportti on nähtävissä avaamalla selaimella tiedosto coverage/index.html. Kuten kuva paljastaa, on suuria osia ohjelmasta, erityisesti kontrollereista vielä erittäin huonosti testattu:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w4-1.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w4-1.png)
 
 Suurikaan rivikattavuus ei tietysti vielä takaa että testit testaavat järkeviä asioita. Helposti mitattavana metriikkana se on kuitenkin parempi kuin ei mitään ja näyttää ainakin ilmeisimmät puutteet testeissä.
 
@@ -1624,13 +1624,13 @@ Githubissa olevat Rails-projektit on helppo asettaa Travisin tarkkailtavaksi.
 >
 > ### Tämän ja seuraavan tehtävän tekeminen ei ole välttämätöntä viikon jatkamisen kannalta. Voit tehdä tämän tehtävän myös viikon muiden tehtävien jälkeen.
 >
-> Tee repositorion juureen Travisia varten konfiguraatiotiedosto .travis.yml (HUOM! Kohtaan ```rvm:``` aseta käyttämäsi rubyn versio.) jolla on seuraava sisältö:
+> Tee repositorion juureen Travisia varten konfiguraatiotiedosto _.travis.yml_ jolla on seuraava sisältö:
 >
 >```ruby
 >language: ruby
 >
 >rvm:
->  - 2.3.0
+>  - 2.5.1
 >
 >script:
 >  - bundle exec rails db:migrate --trace
@@ -1641,16 +1641,18 @@ Githubissa olevat Rails-projektit on helppo asettaa Travisin tarkkailtavaksi.
 >
 >Klikkaa sitten Travisin sivulta linkkiä "sign in with github" ja anna tunnuksesi.
 >
->Mene oikeassa ylänurkassa olevan nimesi kohdalle ja valitse "accounts". Kytke avautuvasta näkymästä ratebeer-repositoriosi jatkuva integraatio päälle.
+>Mene oikeassa ylänurkassa olevan nimesi kohdalle ja valitse "settings". Kytke avautuvan näkymän "Repositories"-välilehdestä ratebeer-repositoriosi jatkuva integraatio päälle.
 >
 >Kun seuraavan kerran pushaat koodia githubiin, suorittaa Travis automaattisesti buildausskriptin, joka siis määrittelee testit suoritettaviksi. Saat sähköpostitse tiedotuksen jos buildin status muuttuu.
 >
->Lisää repositoriosi README.md-tiedostoon (**huom:** tiedoston päätteen on oltava md!) linkki sovelluksen TravisCI-sivulle:
->
->```ruby
->[![Build Status](https://travis-ci.org/mluukkai/ratebeer-public.png)](https://travis-ci.org/mluukkai/ratebeer-public)
->```
-> Huomaa, että linkin loppuosa on sama kun projektisi Github-repositorion, edellinen siis liittyy Github-repoon https://github.com/mluukkai/ratebeer-public
+>Lisää repositoriosi README.md-tiedostoon (**huom:** tiedoston päätteen on oltava md!) linkki sovelluksen Travis-statukseen. 
+> 
+> Saat linkin klikkaamalla projektisi Travis-näkymässä olevaa buildin tilaa kertovaa symbolia
+> ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w4-5.png)
+> 
+> ja valitsemalla tyyliksi Markdown
+> 
+> ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w4-4.png)
 >
 >Näin kaikki asianosaiset näkevät sovelluksen tilan ja todennäköisyys ettei sovelluksen testejä rikota kasvaa!
 
