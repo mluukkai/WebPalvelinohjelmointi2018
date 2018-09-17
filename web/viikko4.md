@@ -1152,7 +1152,7 @@ Nyt jokainen peräkkäisten tehtaan <code>FactoryBot.create(:user)</code> kutsuj
 
 ## testit ja debuggeri
 
-Toivottavasti olet jo tässä vaiheessa kurssia rutinoitunut [debuggerin](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko2.md#debuggeri) käyttäjä. Koska testitkin ovat normaalia ruby-koodia, ovat myös _byebug_ ja _binding.pry_ käytettävissä sekä testikoodissa että testattavassa koodissa. Testausympäristön tietokannan tila saattaa joskus olla yllättävä, kuten edellä olevista esimerkeistä näimme. Ongelmatilanteissa kannattaa ehdottomasti pysäyttää testikoodi debuggerilla ja tutkia vastaako testattavien olioiden tila oletettua.
+Toivottavasti olet jo tässä vaiheessa kurssia rutinoitunut [debuggerin](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#debuggeri) käyttäjä. Koska testitkin ovat normaalia ruby-koodia, ovat myös _byebug_ ja _binding.pry_ käytettävissä sekä testikoodissa että testattavassa koodissa. Testausympäristön tietokannan tila saattaa joskus olla yllättävä, kuten edellä olevista esimerkeistä näimme. Ongelmatilanteissa kannattaa ehdottomasti pysäyttää testikoodi debuggerilla ja tutkia vastaako testattavien olioiden tila oletettua.
 
 ## yksittäisten testien suorittaminen
 
@@ -1701,7 +1701,7 @@ Sovelluskehittäjän elämää helpottavien pilvipalveluiden määrä kasvaa kov
 
 ## Kirjautuneiden toiminnot
 
-Jätetään testien teko hetkeksi ja palataan muutamaan aiempaan teemaan. Viikolla 2 rajoitimme http basic -autentikaation avulla sovellustamme siten, että ainoastaan admin-salasanan syöttämällä oli mahdollista  poistaa panimoita. [Viikolla](3 https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko3.md#vain-omien-reittausten-poisto) rajoitimme sovelluksen toiminnallisuutta siten, että reittausten poistaminen ei ole mahdollista kuin reittauksen tehneelle käyttäjälle. Sen sijaan esim.  olutkerhojen ja oluiden luominen, poistaminen ja editionti on tällä hetkellä mahdollista jopa ilman kirjautumista.
+Jätetään testien teko hetkeksi ja palataan muutamaan aiempaan teemaan. Viikolla 2 rajoitimme http basic -autentikaation avulla sovellustamme siten, että ainoastaan admin-salasanan syöttämällä oli mahdollista  poistaa panimoita. [Viikolla 3](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko3.md#vain-omien-reittausten-poisto) rajoitimme sovelluksen toiminnallisuutta siten, että reittausten poistaminen ei ole mahdollista kuin reittauksen tehneelle käyttäjälle. Sen sijaan esim.  olutkerhojen ja oluiden luominen, poistaminen ja editionti on tällä hetkellä mahdollista jopa ilman kirjautumista.
 
 Luovutaan http basic -autentikoinnin käytöstä ja muutetaan sovellusta siten, että oluita, panimoita ja olutkerhoja voivat luoda, muokata ja poistaa ainoastaan kirjautuneet käyttäjät.
 
@@ -1752,14 +1752,14 @@ Päätetään ohjata rajoitettua toimenpidettä yrittävä kirjautumaton käytt�
 Määritellään luokkaan <code>ApplicationController</code>  seuraava metodi:
 
 ```ruby
-  def ensure_that_signed_in
-    redirect_to signin_path, notice:'you should be signed in' if current_user.nil?
-  end
+def ensure_that_signed_in
+  redirect_to signin_path, notice: 'you should be signed in' if current_user.nil?
+end
 ```
 
 Eli jos metodia kutsuttaessa käyttäjä ei ole kirjautunut, suoritetaan uudelleenohjaus kirjautumissivulle. Koska metodi on sijoitettu luokkaan <code>ApplicationController</code> jonka kaikki kontrollerit perivät, on se kaikkien kontrollereiden käytössä.
 
-Lisätään metodi esifiltteriksi (ks. http://guides.rubyonrails.org/action_controller_overview.html#filters ja https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko2.md#yksinkertainen-suojaus) olut- ja panimo- ja olutkerhokontrollerille kaikille metodeille paitsi index:ille ja show:lle:
+Lisätään metodi esifiltteriksi (ks. http://guides.rubyonrails.org/action_controller_overview.html#filters ja https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#yksinkertainen-suojaus) olut- ja panimo- ja olutkerhokontrollerille kaikille metodeille paitsi index:ille ja show:lle:
 
 ```ruby
 class BeersController < ApplicationController
@@ -1777,7 +1777,7 @@ Kokeile selaimella, että muutokset toimivat, eli että kirjautumaton käyttäj�
 >
 > Estä esifiltterien avulla kirjautumattomilta käyttäjiltä panimoiden ja olutseurojen suhteen muut toiminnot paitsi kaikkien listaus ja yksittäisen resurssin tietojen tarkastelu (eli metodit <code>show</code> ja <code>index</code>)
 >
-> Kun olet varmistanut että toiminnallisuus on kunnossa, voit halutessasi poistaa näkymistä ylimääräiset luomis-, poisto- ja editointilinkit kirjautumattomilta käyttäjiltä
+> Kun olet varmistanut että toiminnallisuus on kunnossa, poista näkymistä ylimääräiset luomis-, poisto- ja editointilinkit kirjautumattomilta käyttäjiltä
 
 > ## Tehtävä 15
 >
@@ -1787,16 +1787,16 @@ Kokeile selaimella, että muutokset toimivat, eli että kirjautumaton käyttäj�
 
 Voit halutessasi tehdä hienosäätöä sovelluksen näkymiin, esim. poistaa resurssien poisto- ja editointilinkit listaussivulta:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w4-2.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w4-2.png)
 
 ja lisätä poistolinkki yksittäisen resurssin sivulle:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w4-3.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w4-3.png)
 
 nämä muutokset eivät ole välttämättömiä ja tulevat viikotkaan eivät muutoksiin nojaa.
 
 ## Tehtävien palautus
 
-Commitoi kaikki tekemäsi muutokset ja pushaa koodi Githubiin. Deployaa myös uusin versio Herokuun.
+Commitoi kaikki tekemäsi muutokset ja pushaa koodi Githubiin. Deployaa myös uusin versio Herokuun. Muista myös testata rubocopilla, että koodisi noudattaa edelleen määriteltyjä tyylisääntöjä. 
 
 Tehtävät kirjataan palautetuksi osoitteeseen https://studies.cs.helsinki.fi/courses/#/rails2018
