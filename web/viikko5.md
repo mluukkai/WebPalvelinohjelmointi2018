@@ -606,30 +606,22 @@ end
 Testi alkaa heti mielenkiintoisella komennolla:
 
 ```ruby
-    allow(BeermappingApi).to receive(:places_in).with("kumpula").and_return(
-      [ Place.new( name:"Oljenkorsi", id: 1 ) ]
-    )
+allow(BeermappingApi).to receive(:places_in).with("kumpula").and_return(
+  [ Place.new( name:"Oljenkorsi", id: 1 ) ]
+)
 ```
 
 Komento "kovakoodaa" luokan <code>BeermappingApi</code> metodin <code>places_in</code> vastaukseksi määritellyn yhden Place-olion sisältävän taulukon, jos metodia kutsutaan parametrilla "kumpula".
 
 Kun nyt testissä tehdään HTTP-pyyntö places-kontrollerille, ja kontrolleri kutsuu API:n metodia <code>places_in</code>, metodin todellisen koodin suorittamisen sijaan places-kontrollerille palautetaankin kovakoodattu vastaus.
 
-Jos törmäät testejä suorittaessasi virheeseen
-
-```ruby
-mluukkai@melkki$ rspec spec/features/places_spec.rb
-/Users/mluukkai/.rbenv/versions/2.0.0-p247/lib/ruby/gems/2.0.0/gems/activerecord-4.0.2/lib/active_record/migration.rb:379:in `check_pending!': Migrations are pending; run 'bin/rake db:migrate RAILS_ENV=test' to resolve this issue. (ActiveRecord::PendingMigrationError)
-…
-```
-
-Syynä tälle on se, että testiympäristössä ei ole suoritettu kaikkia tietokantamigraatioita. Ongelma korjaantuu komennolla <code>rake db:test:prepare</code>. Jos törmäät johonkin gemien versioihin liittyvään virheeseen (näin kävi itselläni kertaalleen), suorita <code>bundle update</code>.
-
 > ## Tehtävä 2
 >
 > Laajenna testiä kattamaan seuraavat tapaukset:
 > * jos API palauttaa useita olutpaikkoja, kaikki näistä näytetään sivulla
 > * jos API ei löydä paikkakunnalta yhtään olutpaikkaa (eli paluuarvo on tyhjä taulukko), sivulla näytetään ilmoitus "No locations in _etsitty paikka_"
+>
+> Viikon 3 luku [kirjautumisen hienosaäätöä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko3.md#kirjautumisen-hienos%C3%A4%C3%A4t%C3%B6%C3%A4) antaa vihjeitä toista kohtaa varte.
 
 Siirrytään sitten luokan <code>BeermappingApi</code> testaamiseen. Luokka siis tekee HTTP GET -pyynnön HTTParty-kirjaston avulla Beermapping-palveluun. Voisimme edellisen esimerkin tapaan stubata HTTPartyn get-metodin. Tämän on kuitenkin hieman ikävää, sillä metodi palauttaa <code>HTTPartyResponse</code>-olion ja sellaisen muodostaminen stubauksen yhteydessä käsin ei välttämättä ole kovin mukavaa.
 
@@ -639,8 +631,8 @@ Otetaan gem käyttöön lisäämällä Gemfilen **test-scopeen** rivi <code>gem 
 
 ```ruby
 group :test do
-    # ...
-    gem 'webmock'
+  # ...
+  gem 'webmock'
 end
 ```
 
@@ -674,8 +666,8 @@ Tarvitsemme siis testiämme varten sopivan "kovakoodatun" datan, joka kuvaa Beer
 Eräs tapa testisyötteen generointiin on kysyä se rajapinnalta itseltään, eli tehdään komentoriviltä <code>curl</code>-komennolla HTTP GET -pyyntö:
 
 ```ruby
-mluukkai@melkki$ curl http://beermapping.com/webservice/loccity/731955affc547174161dbd6f97b46538/espoo
-<?xml version='1.0' encoding='utf-8' ?><bmp_locations><location><id>12411</id><name>Gallows Bird</name><status>Brewery</status><reviewlink>http://beermapping.com/maps/reviews/reviews.php?locid=12411</reviewlink><proxylink>http://beermapping.com/maps/proxymaps.php?locid=12411&amp;d=5</proxylink><blogmap>http://beermapping.com/maps/blogproxy.php?locid=12411&amp;d=1&amp;type=norm</blogmap><street>Merituulentie 30</street><city>Espoo</city><state></state><zip>02200</zip><country>Finland</country><phone>+358 9 412 3253</phone><overall>91.66665</overall><imagecount>0</imagecount></location></bmp_locations>
+mluukkai@melkki$ curl http://beermapping.com/webservice/loccity/731955affc547174161dbd6f97b46538/turku
+<?xml version='1.0' encoding='utf-8' ?><bmp_locations><location><id>18856</id><name>Panimoravintola Koulu</name><status>Brewpub</status><reviewlink>https://beermapping.com/location/18856</reviewlink><proxylink>http://beermapping.com/maps/proxymaps.php?locid=18856&amp;d=5</proxylink><blogmap>http://beermapping.com/maps/blogproxy.php?locid=18856&amp;d=1&amp;type=norm</blogmap><street>Eerikinkatu 18</street><city>Turku</city><state></state><zip>20100</zip><country>Finland</country><phone>(02) 274 5757</phone><overall>0</overall><imagecount>0</imagecount></location></bmp_locations>
 ```
 
 Nyt voimme copypastata HTTP-pyynnön palauttaman XML-muodossa olevan tiedon testiimme. Jotta saamme XML:n varmasti oikein sijoitetuksi merkkijonoon, käytämme hieman erikoista syntaksia
@@ -690,12 +682,12 @@ describe "BeermappingApi" do
   it "When HTTP GET returns one entry, it is parsed and returned" do
 
     canned_answer = <<-END_OF_STRING
-<?xml version='1.0' encoding='utf-8' ?><bmp_locations><location><id>12411</id><name>Gallows Bird</name><status>Brewery</status><reviewlink>http://beermapping.com/maps/reviews/reviews.php?locid=12411</reviewlink><proxylink>http://beermapping.com/maps/proxymaps.php?locid=12411&amp;d=5</proxylink><blogmap>http://beermapping.com/maps/blogproxy.php?locid=12411&amp;d=1&amp;type=norm</blogmap><street>Merituulentie 30</street><city>Espoo</city><state></state><zip>02200</zip><country>Finland</country><phone>+358 9 412 3253</phone><overall>91.66665</overall><imagecount>0</imagecount></location></bmp_locations>
+<?xml version='1.0' encoding='utf-8' ?><bmp_locations><location><id>18856</id><name>Panimoravintola Koulu</name><status>Brewpub</status><reviewlink>https://beermapping.com/location/18856</reviewlink><proxylink>http://beermapping.com/maps/proxymaps.php?locid=18856&amp;d=5</proxylink><blogmap>http://beermapping.com/maps/blogproxy.php?locid=18856&amp;d=1&amp;type=norm</blogmap><street>Eerikinkatu 18</street><city>Turku</city><state></state><zip>20100</zip><country>Finland</country><phone>(02) 274 5757</phone><overall>0</overall><imagecount>0</imagecount></location></bmp_locations>
     END_OF_STRING
 
     stub_request(:get, /.*espoo/).to_return(body: canned_answer, headers: { 'Content-Type' => "text/xml" })
 
-    places = BeermappingApi.places_in("espoo")
+    places = BeermappingApi.places_in("turku")
 
     expect(places.size).to eq(1)
     place = places.first
