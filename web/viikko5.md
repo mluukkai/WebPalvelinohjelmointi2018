@@ -1113,6 +1113,9 @@ eli tällä kertaa routeissa määriteltiin, että panimon id:hen viitataan <cod
 
 Tehtävän jälkeen sovelluksesi voi näyttää esim. seuraavalta:
 
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w5-2.png)
+
+
 ## Oluen reittaus suoraan oluen sivulta
 
 Tällä hetkellä reittaukset luodaan erilliseltä sivulta, jolta reitattava olut valitaan erillisestä valikosta. Olisi luontevampaa, jos reittauksen voisi tehdä myös suoraan kunkin oluen sivulta.
@@ -1131,18 +1134,29 @@ Eli siltä varalta, että oluelle tehdään reittaus, luodaan näykymätemplatea
 Näkymätemplatea /views/beers/show.html.erb muutetaan seuraavasti:
 
 ```erb
-<h2> <%= @beer %> </h2>
+<p id="notice"><%= notice %></p>
+
+<h2>
+  <%= @beer.name %>
+</h2>
 
 <p>
   <strong>Style:</strong>
   <%= @beer.style %>
 </p>
 
-<% if @beer.ratings.empty? %>
-  <p>beer has not yet been rated!</p>
-<% else %>
-  <p>has been rated <%= @beer.ratings.count %> times, average score <%= @beer.average_rating %></p>
-<% end %>
+<p>
+  <strong>Brewery:</strong>
+  <%= @beer.brewery.name %>
+</p>
+
+<p>
+  <% if @beer.ratings.empty? %>
+    beer has not yet been rated!
+  <% else %>
+    Has <%= pluralize(@beer.ratings.count, 'rating') %>, average <%= @beer.average_rating %>
+  <% end %>
+</p>
 
 <% if current_user %>
   <h4>give a rating:</h4>
@@ -1152,8 +1166,8 @@ Näkymätemplatea /views/beers/show.html.erb muutetaan seuraavasti:
     score: <%= f.number_field :score %>
     <%= f.submit %>
   <% end %>
-  
-  <%= link_to 'Edit', edit_beer_path(@beer) %>
+
+  <%= link_to 'Edit', edit_beer_path(@beer) %> 
   <%= link_to 'Destroy', @beer, method: :delete, data: { confirm: 'Are you sure?' } %>
 <% end %>
 ```
@@ -1164,15 +1178,15 @@ Koska lomake on luotu <code>form_for</code>-helperillä, tapahtuu sen lähettäm
 
 Ratkaisussa on pieni ongelma. Jos reittauksessa yritetään antaa epävalidi pistemäärä:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w5-3.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w5-4.png)
 
 renderöi kontrolleri (eli reittauskontrollerin metodi <code>create</code>) oluen näkymän sijaan uuden reittauksen luomislomakkeen:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w5-4.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w5-3.png)
 
 Ongelman voisi kiertää katsomalla mistä osoitteesta create-metodiin on tultu ja renderöidä sitten oikea sivu riippuen tulo-osoitteesta. Emme kuitenkaan tee nyt tätä muutosta.
 
-Korjaamme ensin erään vielä vakavamman ongelman. Edellistä kahta kuvaa tarkastelemalla huomaamme että jos reittauksen (joka yritetään antaa oluelle _Huvila Pale Ale_) validointi epäonnistuu, ei tehty oluen valinta ole enää tallessa (valittuna on _iso 3_).
+Korjaamme ensin erään vielä vakavamman ongelman. Edellistä kahta kuvaa tarkastelemalla huomaamme että jos reittauksen (joka yritetään antaa oluelle _Weihenstephaner Hefeweizen_) validointi epäonnistuu, ei tehty oluen valinta ole enää tallessa (valittuna on _iso 3_).
 
 Ongelman syynä on se, että pudotusvalikon vaihtoehdot generoivalle metodille <code>options_from_collection_for_select</code> ei ole kerrottu mikä vaihtoehdoista tulisi valita oletusarvoisesti, ja tälläisessä tilanteessa valituksi tulee kokoelman ensimmäinen olio. Oletusarvoinen valinta kerrotaan antamalla metodille neljäs parametri:
 
@@ -1186,22 +1200,22 @@ Eli muutetaan näkymätemplate app/views/ratings/new.html.erb seuraavaan muotoon
 <h2>Create new rating</h2>
 
 <%= form_for(@rating) do |f| %>
-    <% if @rating.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(@rating.errors.count, "error") %> prohibited rating from being saved:</h2>
+  <% if @rating.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@rating.errors.count, "error") %> prohibited rating from being saved:</h2>
 
-          <ul>
-            <% @rating.errors.full_messages.each do |msg| %>
-                <li><%= msg %></li>
-            <% end %>
-          </ul>
-        </div>
-    <% end %>
+      <ul>
+        <% @rating.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
 
-    <%= f.select :beer_id, options_from_collection_for_select(@beers, :id, :to_s, selected: @rating.beer_id) %>
-    score: <%= f.number_field :score %>
+  <%= f.select :beer_id, options_from_collection_for_select(@beers, :id, :to_s, selected: @rating.beer_id) %>
+  score: <%= f.number_field :score %>
 
-    <%= f.submit %>
+  <%= f.submit %>
 <% end %>
 ```
 
@@ -1214,10 +1228,10 @@ Sama ongelma itse asiassa vaivaa muutamia sovelluksemme lomakkeita, kokeile esim
 > Kannattaa noudattaa samaa toteutusperiaatetta kuin oluen sivulta tapahtuvassa reittaamisessa, eli lisää olutseuran sivulle lomake, jonka avulla voidaan luoda uusi <code>Membership</code>-olio, joka liittyy olutseuraan ja kirjautuneena olevaan käyttäjään. Lomakkeeseen ei tarvita muuta kuin 'submit'-painike:
 >
 >```erb
->  <%= form_for(@membership) do |f| %>
->     <%= f.hidden_field :beer_club_id %>
->     <%= f.submit value:"join the club" %>
->  <% end %>
+><%= form_for(@membership) do |f| %>
+>  <%= f.hidden_field :beer_club_id %>
+>  <%= f.submit value:"join the club" %>
+><% end %>
 >```
 
 Hienosäädetään olutseuraan liittymistä
@@ -1228,7 +1242,7 @@ Hienosäädetään olutseuraan liittymistä
 >
 > Muokkaa koodiasi siten (membership-kontrollerin sopivaa metodia), että olutseuraan liittymisen jälkeen selain ohjautuu olutseuran sivulle ja sivu näyttää allaolevan kuvan mukaisen ilmoituksen uuden käyttäjän liittymisestä.
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w5-5.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w5-5.png)
 
 > ## Tehtävä 9
 >
