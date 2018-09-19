@@ -1117,7 +1117,7 @@ Koska sama käyttäjä voi tehdä useita reittauksia samasta oluesta, näkyy kä
 >
 ```
 
-Olisi mahdollista myös määritellä, että oluen <code>raters</code> palauttaisi oletusarvoisesti vain kertaalleen yksittäisen käyttäjän. Tämä onnistuisi asettamalla <code>has_many</code>-määreelle __scope__, joka rajoittaa niiden olioiden joukkoa, jotka näytetään assosiaatioon liittyviksi:
+Om myös mahdollista määritellä, että oluen <code>raters</code> palauttaa oletusarvoisesti vain kertaalleen yksittäisen käyttäjän. Tämä onnistuisi asettamalla <code>has_many</code>-määreelle [rajoite](https://guides.rubyonrails.org/association_basics.html#scopes-for-has-many) _distinct_, joka rajoittaa niiden olioiden joukkoa, jotka näytetään assosiaatioon liittyviksi siten että samaa olioa ei näytetä kahteen kertaan:
 
 ```ruby
 class Beer < ApplicationRecord
@@ -1129,7 +1129,7 @@ class Beer < ApplicationRecord
 end
 ```
 
-Lisää asiaa yhteyksien määrittelemisestä normaaleissa ja hieman monimutkaisemmissa tapauksissa löytyy sivulta http://guides.rubyonrails.org/association_basics.html
+Lisää asiaa yhteyksien määrittelemisestä normaaleissa ja hieman monimutkaisemmissa tapauksissa löytyy sivulta https://guides.rubyonrails.org/association_basics.html
 
 Huom: Railsissa on myös toinen tapa many to many -yhteyksien luomiseen <code>has_and_belongs_to_many</code> ks. http://guides.rubyonrails.org/association_basics.html#the-has-and-belongs-to-many-association jonka käyttö saattaa tulla kyseeseen jos liitostaulua ei tarvita mihinkään muuhun kuin yhteyden muodostamiseen.
 
