@@ -738,9 +738,9 @@ Tällä hetkellä sovelluksemme toimii siten, että se tekee kyselyn beermapping
 
 Rails tarjoaa avain-arvopari-periaatteella toimivan hyvin helppokäyttöisen cachen eli välimuistin sovelluksen käyttöön. 
 
-**Huom:** Jos käytät Railsin versiota 5, suorita komentorivillä cachen development-tilassa aktivoiva komento <code>rails dev:cache</code> ja muuta tiedostosta _config/development.rb_
+Välimuisti on oletusarvoisesti poissa päältä. Saat sen päälle suorittamalla komentoriviltä komennon <code>rails dev:cache</code> 
 
-rivi
+Muuta myös tiedostosta _config/development.rb_ rivi
 
 ```ruby
 config.cache_store = :memory_store
@@ -752,10 +752,9 @@ muotoon
 config.cache_store = :file_store, 'tmp/cache_store'
 ```
 
-sekä uudelleenkäynnistä konsoli ja sovellus. Railsin version 4 käyttäjillä kaiken pitäisi toimia ilman lisäkonfiguraatioita.
+sekä uudelleenkäynnistä konsoli ja sovellus. 
 
-
-Kokeillaan konsolista:
+Cacheen päästään käsiksi muuttujaan <code>Rails.cache</code> talletetun olion kautta. Kokeillaan konsolista:
 
 ```ruby
 > Rails.cache.write "avain", "arvo"
@@ -771,20 +770,6 @@ Kokeillaan konsolista:
 ```
 
 Cacheen voi tallettaa melkein mitä vaan. Ja rajapinta on todella yksinkertainen, ks. http://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html
-
-Metodien <code>read</code> ja <code>write</code> lisäksi Railsin cache tarjoaa joihinkin tilanteisiin todella hyvin sopivan metodin <code>fetch</code>. Metodille annetaan välimuistista haettavan avaimen lisäksi koodilohko, joka suoritetaan ja talletetaan avaimen arvoksi _jos_ avaimella ei ole jo talletettuna arvoa ennestään.
-
-Esim. komento <code>Rails.cache.fetch("first_user") { User.first }</code> hakee välimuistista avaimella *first_user* talletutun olion. Jos avaimelle ei ole vielä talletettu arvoa, suortetaan komento <code>User.first</code>, ja talletetaan sen palauttama olio avaimen arvoksi. Seuraavassa esimerkki:
-
-
-```ruby
-> Rails.cache.fetch("first_user") { User.first }
-  User Load (0.7ms)  SELECT  "users".* FROM "users"   ORDER BY "users"."id" ASC LIMIT 1
- => #<User id: 1, username: "mluukkai", created_at: "2017-01-24 14:20:10", updated_at: "2017-01-24 18:37:23", password_digest: "$2a$10$A6KEp02KHLMrpEkij9zcKu/wOjD4h4lsgC1drWwIy2O...">
-> Rails.cache.fetch("first_user") { User.first }
- => #<User id: 1, username: "mluukkai", created_at: "2017-01-24 14:20:10", updated_at: "2017-01-24 18:37:23", password_digest: "$2a$10$A6KEp02KHLMrpEkij9zcKu/wOjD4h4lsgC1drWwIy2O...">
->
-```
 
 Ensimmäinen metodikutsu siis aiheuttaa tietokantahaun ja tallettaa olion välimuistiin. Seuraava kutsu saa avainta vastaavan olion suoraan välimuistista.
 
@@ -806,12 +791,16 @@ Viritellään luokkaa <code>BeermappingApi</code> siten, että se tallettaa teht
 class BeermappingApi
   def self.places_in(city)
     city = city.downcase
-    Rails.cache.fetch(city) { fetch_places_in(city) }
+
+    places = Rails.cache.read(city) 
+    return places if places
+
+    places = get_places_in(city)
+    Rails.cache.write(city, places)
+    places
   end
 
-  private
-
-  def self.fetch_places_in(city)
+  def self.get_places_in(city)
     url = "http://beermapping.com/webservice/loccity/#{key}/"
 
     response = HTTParty.get "#{url}#{ERB::Util.url_encode(city)}"
@@ -831,8 +820,7 @@ class BeermappingApi
 end
 ```
 
-Avaimena käytetään pienillä kirjaimilla kirjoitettua kaupungin nimeä.
-Käytössä on nyt metodi <code>fetch</code>, joka palauttaa välimuistissa olevat tiedot kaupungin olutravintoloista _jos_ ne löytyvät jo välimuistista. Jos välimuistissa ei vielä ole kapungin ravintoloiden tietoja, suoritetaan toisena parametrina oleva koodi <code>fetch_places_in(city)</code> joka hakee tiedot ja tallettaa ne välimuistiin.
+Avaimena käytetään pienillä kirjaimilla kirjoitettua kaupungin nimeä. Koodi on melki suoraviivainen, jos avainta vastaavat olutpaikat löytyvät cachesta (eli arvo ei ole nil), palautetaan ne. Jos taas cachessa ei ole kaupungin olutpaikkoja, haetaan ne metodilla <code>get_places_in(city)</code> talletetaan cacheen ja palautetaan metodin kutsujalle.
 
 Jos teemme nyt haun kaksi kertaa peräkkäin esim. New Yorkin oluista, huomaamme, että toisella kerralla vastaus tulee huomattavasti nopeammin.
 
@@ -853,6 +841,23 @@ Konsolista käsin on myös mahdollista tarvittaessa poistaa tietylle avaimelle t
  => nil
 >
 ```
+
+Voisimme yksinkertaistaa koodia hieman käyttämällä Rails.cachen metodia [fetch](https://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html#method-i-fetch)
+
+```ruby
+class BeermappingApi
+  def self.places_in(city)
+    city = city.downcase
+    Rails.cache.fetch(city) { get_places_in(city) }
+  end
+
+  def get_places_in(city)
+    # ...
+  end
+end
+```
+
+Fetch toimii siten, että jos välimuiststa löytyy dataa sen parametrina olevalla avaimella, palauttaa metodi välimuistissa olevan datan. Jos välimuistissa ei ole avainta vastaavaa dataa, suoritetaan komennon mukana oleva koodilohko ja talletetaan koodilohkon paluuarvo välimuitiin. Myös itse komento _fetch_ palauttaa lohkon saaman arvon. 
 
 ## Vanhentunut data
 
@@ -909,8 +914,12 @@ describe "BeermappingApi" do
 
   describe "in case of cache hit" do
 
-    before :each do
+    # this is executed only once before all the tests in describe
+    before :all do
+      # clear cache just in case...
       Rails.cache.clear
+      # ensure that data found in cache
+      BeermappingApi.places_in("espoo")
     end
 
     it "When one entry in cache, it is returned" do
@@ -919,9 +928,6 @@ describe "BeermappingApi" do
       END_OF_STRING
 
       stub_request(:get, /.*espoo/).to_return(body: canned_answer, headers: {'Content-Type' => "text/xml"})
-
-      # ensure that data found in cache
-      BeermappingApi.places_in("espoo")
 
       places = BeermappingApi.places_in("espoo")
 
@@ -934,7 +940,9 @@ describe "BeermappingApi" do
 end
 ```
 
-Ensimmäisessä <code>describe</code>-lohkossa oleva <code>before each</code>-lohko tyhjentää välimuistin ennen testien suorittamista, eli kun itse testi tekee metodikutsun <code>BeermappingApi.places_in</code>, haetaan olutpaikkojen tiedot HTTP-pyynnöllä. Toisessa <code>describe</code>-lohkossa taas testeissä kutsutaan metodia <code>BeermappingApi.places_in</code> kaksi kertaa. Ensimmäinen kutsu varmistaa, että haettavan paikan tiedot talletetaan välimuistiin. Toisen kutsun tulos tulee välimuistista ja tulosta testataan testikoodissa.
+Ensimmäisessä <code>describe</code>-lohkossa oleva <code>before :each</code>-lohko tyhjentää välimuistin ennen testien suorittamista, eli kun itse testi tekee metodikutsun <code>BeermappingApi.places_in</code>, haetaan olutpaikkojen tiedot HTTP-pyynnöllä. 
+
+Toisessa <code>describe</code>-lohkossa taas käytetään <code>before :all</code>-lohkoa, joka suoritetaan kertaalleen ennen describessä olevia testejä. Alustuslohko tyhjentää ensin cachen kaiken varalta ja sen jälkeen "lämmittää" cachen kutsumalla operaatiota, joka varmistaa että _espoon_ baarit tallettuvat välimustiin ennen varsinaisten tesien sourittamista.
 
 Testi sisältää nyt paljon toisteisuutta ja kaipaisi refaktorointia, mutta menemme kuitenkin eteenpäin.
 
@@ -948,7 +956,7 @@ Jos et tee muutosta, cachea käyttävät testit eivät toimi Travisissa, sillä 
 
 ## Sovelluskohtaisen datan tallentaminen
 
-Koodissamme API-key on nyt kirjoitettu sovelluksen koodiin. Tämä ei tietenkään ole järkevää. Railsissa on useita mahdollisuuksia konfiguraatiotiedon tallentamiseen, ks. esim. http://quickleft.com/blog/simple-rails-app-configuration-settings
+Koodissamme API-key on nyt kirjoitettu sovelluksen koodiin. Tämä ei tietenkään ole ollenkaan järkevää. Railsissa on useita mahdollisuuksia konfiguraatiotiedon tallentamiseen, ks. esim. http://quickleft.com/blog/simple-rails-app-configuration-settings
 
 Ehkä paras vaihtoehto suhteellisen yksinkertaisen sovelluskohtaisen datan tallettamiseen ovat ympäristömuuttujat. Esimerkki seuraavassa:
 
@@ -1000,7 +1008,7 @@ Ympäristömuuttujille on helppo asettaa arvo myös Herokussa, ks.
 https://devcenter.heroku.com/articles/config-vars
 
 **HUOM** Jos haluat pitää Traviksen toimintakunnossa, joudut määrittelemään ympäristömuuttujan Travis-konfiguraatioon ks.
-[http://docs.travis-ci.com/user/environment-variables/](http://docs.travis-ci.com/user/environment-variables/)
+http://docs.travis-ci.com/user/environment-variables/
 
 ## Lisäselvennys kontrollerin toiminnasta
 
@@ -1009,20 +1017,19 @@ Muutamien osalla on ollut havaittavissa hienoista epäselvyyttä kontrollereiden
 Tarkastellaan panimon kontorolleria. Yksittäisen panimon näyttämisestä vastaava kontrollerimetodi ei sisällä mitään koodia:
 
 ```ruby
-  def show
-  end
+def show
+end
 ```
 
 oletusarvoisesti renderöityvä näkymätemplate app/views/breweries/show.html.erb kuitenkin viittaa muuttujaan <code>@brewery</code>:
 
 ```ruby
-    <h2><%= @brewery.name %>
-    </h2>
+<h2><%= @brewery.name %></h2>
 
-    <p>
-      <em>Established year:</em>
-      <%= @brewery.year %>
-    </p>
+<p>
+  <em>Established year:</em>
+  <%= @brewery.year %>
+</p>
 ```
 
 eli miten muuttuja saa arvonsa? Arvo asetetaan kontrollerissa _esifiltteriksi_ määritellyssä metodissa <code>set_brewery</code>.
@@ -1048,7 +1055,7 @@ joka lataa panimo-olion muistista ja tallettaa sen näkymää varten muuttujaan.
 
 Kuten koodista on pääteltävissä, kontrolleri pääsee käsiksi panimon id:hen <code>params</code>-hashin kautta. Mihin tämä perustuu?
 
-Kun katsomme sovelluksen routeja joko komennolla <code>rake routes</code> tai selaimesta (menemällä mihin tahansa epävalidiin osoitteeseen), huomaamme, että yksittäiseen panimoon liittyvä routetieto on seuraava
+Kun katsomme sovelluksen routeja joko komennolla <code>rails routes</code> tai selaimesta (menemällä mihin tahansa epävalidiin osoitteeseen), huomaamme, että yksittäiseen panimoon liittyvä routetieto on seuraava
 
 ```ruby
 brewery_path	 GET	 /breweries/:id(.:format)	 breweries#show
@@ -1059,7 +1066,7 @@ eli yksittäisen panimon URL on muotoa _breweries/42_ missä lopussa oleva luku 
 Voisimme määritellä 'parametrillisen' polun myös käsin. Jos lisäisimme routes.rb:hen seuraavan
 
 ```ruby
-   get 'panimo/:id', to: 'breweries#show'
+get 'panimo/:id', to: 'breweries#show'
 ```
 
 pääsisi yksittäisen panimon sivulle osoitteesta http://localhost:3000/panimo/42. Osoitteen käsittelisi edelleen kontrollerin metodi <code>show</code>, joka pääsisi käsiksi id:hen tuttuun tapaan <code>params</code>-hashin kautta.
@@ -1067,16 +1074,16 @@ pääsisi yksittäisen panimon sivulle osoitteesta http://localhost:3000/panimo/
 Jos taas päättäisimme käyttää jotain muuta kontrollerimetodia, ja määrittelisimme reitin seuraavasti
 
 ```ruby
-   get 'panimo/:panimo_id', to: 'breweries#nayta'
+get 'panimo/:panimo_id', to: 'breweries#nayta'
 ```
 
 kontrollerimetodi voisi olla esim. seuraava:
 
 ```ruby
-   def nayta
-     @brewery = Brewery.find(params[:panimo_id])
-     render :index
-   end
+def nayta
+  @brewery = Brewery.find(params[:panimo_id])
+  render :index
+end
 ```
 
 eli tällä kertaa routeissa määriteltiin, että panimon id:hen viitataan <code>params</code>-hashin avaimella <code>:panimo_id</code>.
@@ -1090,7 +1097,7 @@ eli tällä kertaa routeissa määriteltiin, että panimon id:hen viitataan <cod
 >* ravintolan urliksi kannattaa vailta Rails-konvention mukainen places/:id, routes.rb voi näyttää esim. seuraavalta:
 >
 >```ruby
-> resources :places, only:[:index, :show]
+> resources :places, only: [:index, :show]
 > # mikä generoi samat polut kuin seuraavat kaksi
 > # get 'places', to:'places#index'
 > # get 'places/:id', to:'places#show'
@@ -1098,21 +1105,13 @@ eli tällä kertaa routeissa määriteltiin, että panimon id:hen viitataan <cod
 > post 'places', to:'places#search'
 > ```
 >
->* HUOM: ravintolan tiedot löytyvät hieman epäsuorasti cachesta siinä vaiheessa kun ravintolan sivulle ollaan menossa. Jotta pääset tietoihin käsiksi on ravintolan id:n lisäksi "muistettava" kaupunki, josta ravintolaa etsittiin, tai edelliseksi tehdyn search-operaation tulos. Yksi tapa muistamiseen on käyttää sessiota, ks. https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko3.md#k%C3%A4ytt%C3%A4j%C3%A4-ja-sessio
+>* HUOM: ravintolan tiedot löytyvät hieman epäsuorasti cachesta siinä vaiheessa kun ravintolan sivulle ollaan menossa. Jotta pääset tietoihin käsiksi on ravintolan id:n lisäksi "muistettava" kaupunki, josta ravintolaa etsittiin, tai edelliseksi tehdyn search-operaation tulos. Yksi tapa muistamiseen on käyttää sessiota, ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko3.md#k%C3%A4ytt%C3%A4j%C3%A4-ja-sessio
 >
 > Toinen tapa toiminnallisuuden toteuttamiseen on sivulla http://beermapping.com/api/reference/ oleva "Locquery Service"
 >
 > Kokeile hajottaako ravointoloiden sivun lisääminen mitään olemassaolevaa testiä. Jos, niin voit yrittää korjata testit. Välttämätöntä se ei kuitenkaan tässä vaiheessa ole.
->
-> ## Bonustehtävä
-> 
-> Sisällytä sivulle ravintolan sijaintia kuvaava kartta. Helpoin tapa lienee [iframen](http://www.w3schools.com/tags/tag_iframe.asp)  käyttä.
-> Itse kartan generointi onnistuu helposti Googlen kartta-apin avulla, ks. [sivun](https://developers.google.com/maps/documentation/embed/) kohta "Demos and sample code" hieman alempaa sivulta. Joudut rekisteröimään itsellesi karttaa varten Googlen api-avaimen. Käsittele sitä ohjelmassasi järkevästi, ts. älä kovakoodaa avainta koodin joukkoon vaan käytä ympäristömuuttujaa.
 
 Tehtävän jälkeen sovelluksesi voi näyttää esim. seuraavalta:
-
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w5-2b.png)
-
 
 ## Oluen reittaus suoraan oluen sivulta
 
@@ -1121,14 +1120,13 @@ Tällä hetkellä reittaukset luodaan erilliseltä sivulta, jolta reitattava olu
 Vaihtoehtoisia toteutustapoja on useita. Tutkitaan seuraavassa ehkä helpointa ratkaisua. Käytetään <code>form_for</code>-helperiä, eli luodaan lomake pohjalla olevaa olia hyödyntäen. **BeersControllerin** metodiin show tarvitaan pieni muutos:
 
 ```ruby
-  def show
-    @rating = Rating.new
-    @rating.beer = @beer
-  end
+def show
+  @rating = Rating.new
+  @rating.beer = @beer
+end
 ```
 
 Eli siltä varalta, että oluelle tehdään reittaus, luodaan näykymätemplatea varten reittausolio, joka on jo liitetty tarkasteltavaan olioon. Reittausolio on luotu new:llä eli sitä ei siis ole talletettu kantaan, huomaa, että ennen metodin <code>show</code> suorittamista on suoritettu esifiltterin avulla määritelty komento, joka hakee kannasta tarkasteltavan oluen: <code>@beer = Beer.find(params[:id])</code>
-
 
 Näkymätemplatea /views/beers/show.html.erb muutetaan seuraavasti:
 
@@ -1179,7 +1177,7 @@ Korjaamme ensin erään vielä vakavamman ongelman. Edellistä kahta kuvaa tarka
 Ongelman syynä on se, että pudotusvalikon vaihtoehdot generoivalle metodille <code>options_from_collection_for_select</code> ei ole kerrottu mikä vaihtoehdoista tulisi valita oletusarvoisesti, ja tälläisessä tilanteessa valituksi tulee kokoelman ensimmäinen olio. Oletusarvoinen valinta kerrotaan antamalla metodille neljäs parametri:
 
 ```erb
-    options_from_collection_for_select(@beers, :id, :to_s, selected: @rating.beer_id) %>
+options_from_collection_for_select(@beers, :id, :to_s, selected: @rating.beer_id) %>
 ```
 
 Eli muutetaan näkymätemplate app/views/ratings/new.html.erb seuraavaan muotoon:
@@ -1263,7 +1261,6 @@ Erottaessa seurasta tehdään uudelleenohjaus käyttäjän sivulle ja näytetä�
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w5-5b.png)
 
-
 ## Migraatioista
 
 Olemme käyttäneet Railsin migraatioita jo ensimmäisestä viikosta alkaen. On aika syventyä aihepiiriin hieman tarkemmin.
@@ -1307,7 +1304,6 @@ Olemme käyttäneet Railsin migraatioita jo ensimmäisestä viikosta alkaen. On 
 > **HUOM1** Jos et tee myös datan migraatiota migraatiotiedostojen avulla, tämä tehtävä todennäköisesti hajottaa Travisin. Voit merkitä tehtävän siitä huolimatta. Travisia ei ole pakko pitää toimintakunnossa kurssin seuraavilla viikoilla. Toki on syytä potea hieman huonoa omaatuntoa, jos Travis-build rikkoutuu.
 >
 > **HUOM2:** varmista, että _uusien oluiden luominen toimii_ vielä laajennuksen jälkeen! Joudut muuttamaan muutamaakin kohtaa, näistä vaikein huomata lienee olutkontrollerin apumetodi <code>beer_params</code>.
-
 
 Tehtävän jälkeen oluttyylin sivu voi näyttää esim. seuraavalta
 
