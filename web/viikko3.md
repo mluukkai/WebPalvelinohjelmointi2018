@@ -1123,7 +1123,7 @@ Olisi mahdollista myös määritellä, että oluen <code>raters</code> palauttai
 class Beer < ApplicationRecord
   #...
 
-  has_many :raters, -> { uniq }, through: :ratings, source: :user
+  has_many :raters, -> { distinct }, through: :ratings, source: :user
 
   #...
 end
