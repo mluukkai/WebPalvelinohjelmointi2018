@@ -1117,7 +1117,7 @@ Koska sama käyttäjä voi tehdä useita reittauksia samasta oluesta, näkyy kä
 >
 ```
 
-Om myös mahdollista määritellä, että oluen <code>raters</code> palauttaa oletusarvoisesti vain kertaalleen yksittäisen käyttäjän. Tämä onnistuisi asettamalla <code>has_many</code>-määreelle [rajoite](https://guides.rubyonrails.org/association_basics.html#scopes-for-has-many) _distinct_, joka rajoittaa niiden olioiden joukkoa, jotka näytetään assosiaatioon liittyviksi siten että samaa olioa ei näytetä kahteen kertaan:
+On myös mahdollista määritellä, että oluen <code>raters</code> palauttaa oletusarvoisesti vain kertaalleen yksittäisen käyttäjän. Tämä onnistuisi asettamalla <code>has_many</code>-määreelle [rajoite](https://guides.rubyonrails.org/association_basics.html#scopes-for-has-many) _distinct_, joka rajoittaa niiden olioiden joukkoa, jotka näytetään assosiaatioon liittyviksi siten, että samaa oliota ei näytetä kahteen kertaan:
 
 ```ruby
 class Beer < ApplicationRecord
@@ -1214,7 +1214,7 @@ LoadError: cannot load such file -- bcrypt
 from /Users/mluukkai/.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/bootsnap-1.3.1/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:32:in `require'
 </pre>
 
-Jos näin käy, sulje konsoli, anna komentoriviltä komento _sprint stop_ ja käynnistä konsoli uudelleen.
+Jos näin käy, sulje konsoli, anna komentoriviltä komento _spring stop_ ja käynnistä konsoli uudelleen.
 
 Talletetaan käyttäjälle salasana:
 
