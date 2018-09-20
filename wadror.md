@@ -7,6 +7,7 @@
   * [viikko 2](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md) deadline su 16.9. klo 23.59
   * [viikko 3](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko3.md) tehtävien deadline su 23.9. klo 23.59
   * [viikko 4](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko4.md) tehtävien deadline su 30.9. klo 23.59  
+  * [viikko 5](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko5.md) tehtävien deadline su 7.10. klo 23.59  
 * [tehtäväkirjanpito](https://studies.cs.helsinki.fi/courses/#/rails2018) 
 * paja tiistaina 12-14 BK107, torstaina 14-16 BK107 ja perjantaina 12-14 B221
 * kurssin [telegram](https://telegram.org)-kanava <https://t.me/rorwepa>
@@ -62,6 +63,8 @@ Kurssin ainoa luento pidetään tiistaina 4.9. klo 12-14 salissa CK112
 * [viikko 2](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md) tehtävien deadline su 16.9. klo 23.59
 * [viikko 3](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko3.md) tehtävien deadline su 23.9. klo 23.59
 * [viikko 4](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko4.md) tehtävien deadline su 30.9. klo 23.59  
+* [viikko 5](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko5.md) tehtävien deadline su 7.10. klo 23.59  
+
 ## Linkkejä
 
 [Railsin asentaminen](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/railsin_asentaminen.md)
