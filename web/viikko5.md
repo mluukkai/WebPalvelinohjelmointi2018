@@ -392,7 +392,7 @@ index.html.erb:n paranneltu koodi seuraavassa:
   <table>
     <thead>
       <% Place.rendered_fields.each do |field| %>
-        <td><%= field %></td>
+        <th><%= field %></th>
       <% end %>
     </thead>
     <% @places.each do |place| %>
@@ -953,16 +953,16 @@ Koodissamme API-key on nyt kirjoitettu sovelluksen koodiin. Tämä ei tietenkä�
 
 Ehkä paras vaihtoehto suhteellisen yksinkertaisen sovelluskohtaisen datan tallettamiseen ovat ympäristömuuttujat. Esimerkki seuraavassa:
 
-Asetetaan ensin komentoriviltä ympäristömuuttujalle <code>APIKEY</code>
+Asetetaan ensin komentoriviltä ympäristömuuttujalle <code>BEERMAPPING_APIKEY</code>
 
 ```ruby
-mluukkai@melkki$ export APIKEY="731955affc547174161dbd6f97b46538"
+mluukkai@melkki$ export BEERMAPPING_APIKEY="731955affc547174161dbd6f97b46538"
 ```
 
 Rails-sovellus pääsee ympäristömuuttujiin käsiksi hash-tyyppisen muuttujan <code>ENV</code> kautta:
 
 ```ruby
-> ENV['APIKEY']
+> ENV['BEERMAPPING_APIKEY']
  => "731955affc547174161dbd6f97b46538"
 >
 ```
@@ -974,8 +974,8 @@ class BeermappingApi
   # ...
 
   def self.key
-    raise "APIKEY env variable not defined" if ENV['APIKEY'].nil?
-    ENV['APIKEY']
+    raise "BEERMAPPING_APIKEY env variable not defined" if ENV['BEERMAPPING_APIKEY'].nil?
+    ENV['BEERMAPPING_APIKEY']
   end
 end
 ```
@@ -985,14 +985,14 @@ Koodiin on myös lisätty suoritettavaksi poikkeus tilanteessa, jossa apiavainta
 Ympäristömuuttujan arvon tulee siis olla määritelty jos käytät olutravintoloiden hakutoimintoa. Saat määriteltyä ympäristömuuttujan käynnistämällä sovelluksen seuraavasti:
 
 ```ruby
-mluukkai@melkki$ export APIKEY="731955affc547174161dbd6f97b46538"
+mluukkai@melkki$ export BEERMAPPING_APIKEY="731955affc547174161dbd6f97b46538"
 mluukkai@melkki$ rails s
 ```
 
 tai määrittelemällä ympäristömuuttujan käynnistyskomennon yhteydessä:
 
 ```ruby
-mluukkai@melkki$ APIKEY="731955affc547174161dbd6f97b46538" rails s
+mluukkai@melkki$ BEERMAPPING_APIKEY="731955affc547174161dbd6f97b46538" rails s
 ```
 
 Voit myös määritellä ympäristömuuttujan arvon (export-komennolla) komentotulkin käynnistyksen yhteydessä suoritettavassa tiedostossa (.zshrc, .bashrc tai .profile komentotulkista riippuen).
@@ -1101,6 +1101,33 @@ eli tällä kertaa routeissa määriteltiin, että panimon id:hen viitataan <cod
 >* HUOM: ravintolan tiedot löytyvät hieman epäsuorasti cachesta siinä vaiheessa kun ravintolan sivulle ollaan menossa. Jotta pääset tietoihin käsiksi on ravintolan id:n lisäksi "muistettava" kaupunki, josta ravintolaa etsittiin, tai edelliseksi tehdyn search-operaation tulos. Yksi tapa muistamiseen on käyttää sessiota, ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko3.md#k%C3%A4ytt%C3%A4j%C3%A4-ja-sessio
 >
 > Toinen tapa toiminnallisuuden toteuttamiseen on sivulla http://beermapping.com/api/reference/ oleva "Locquery Service"
+>
+> *HUOM* jos sinulla on vaikeuksia tehdä ravinotalan nimestä klikattava linkki, voit muuttaa taulukon _send_-metodia käyttävästä versiosta seuraavaan "karvalakkimalliin":
+>
+><table>
+>  <thead>
+>    <th>id</th>
+>    <th>name</th>
+>    <th>status</th>
+>    <th>street</th>
+>    <th>city</th> 
+>    <th>zip</th> 
+>    <th>country</th> 
+>    <th>overall</th>               
+>  </thead>
+>  <% @places.each do |place| %>
+>    <tr>
+>      <td><%= place.id %></td>
+>      <td><%= place.name %></td>
+>      <td><%= place.status %></td>
+>      <td><%= place.street %></td>
+>      <td><%= place.city %></td> 
+>      <td><%= place.zip %></td> 
+>      <td><%= place.country %></td> 
+>      <td><%= place.overall %></td>        
+>    </tr>
+>  <% end %>
+></table>
 >
 > Kokeile hajottaako ravointoloiden sivun lisääminen mitään olemassaolevaa testiä. Jos, niin voit yrittää korjata testit. Välttämätöntä se ei kuitenkaan tässä vaiheessa ole.
 
