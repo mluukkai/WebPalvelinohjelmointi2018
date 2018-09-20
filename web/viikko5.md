@@ -913,13 +913,8 @@ describe "BeermappingApi" do
   end
 
   describe "in case of cache hit" do
-
-    # this is executed only once before all the tests in describe
-    before :all do
-      # clear cache just in case...
+    before :each do
       Rails.cache.clear
-      # ensure that data found in cache
-      BeermappingApi.places_in("espoo")
     end
 
     it "When one entry in cache, it is returned" do
@@ -938,11 +933,9 @@ describe "BeermappingApi" do
     end
   end
 end
-```
+``` 
 
-Ensimmäisessä <code>describe</code>-lohkossa oleva <code>before :each</code>-lohko tyhjentää välimuistin ennen testien suorittamista, eli kun itse testi tekee metodikutsun <code>BeermappingApi.places_in</code>, haetaan olutpaikkojen tiedot HTTP-pyynnöllä. 
-
-Toisessa <code>describe</code>-lohkossa taas käytetään <code>before :all</code>-lohkoa, joka suoritetaan kertaalleen ennen describessä olevia testejä. Alustuslohko tyhjentää ensin cachen kaiken varalta ja sen jälkeen "lämmittää" cachen kutsumalla operaatiota, joka varmistaa että _espoon_ baarit tallettuvat välimustiin ennen varsinaisten tesien sourittamista.
+Ensimmäisessä <code>describe</code>-lohkossa oleva <code>before :each</code>-lohko tyhjentää välimuistin ennen testien suorittamista, eli kun itse testi tekee metodikutsun <code>BeermappingApi.places_in</code>, haetaan olutpaikkojen tiedot HTTP-pyynnöllä.  Toisessa describe-lohkossa taas testeissä kutsutaan metodia  <code>BeermappingApi.places_in</code> kaksi kertaa. Ensimmäinen kutsu varmistaa, että haettavan paikan tiedot talletetaan välimuistiin. Toisen kutsun tulos tulee välimuistista ja tulosta testataan testikoodissa. 
 
 Testi sisältää nyt paljon toisteisuutta ja kaipaisi refaktorointia, mutta menemme kuitenkin eteenpäin.
 
@@ -1331,6 +1324,9 @@ Hyvä lista oluttyyleistä kuvauksineen löytyy osoitteesta http://beeradvocate.
 > Tyylien tallettaminen tietokantaan hajottaa suuren osan testeistä. Ajantasaista testit. Huomaa, että myös FactoryBotin tehtaisiin on tehtävä muutoksia.
 >
 > Vaikka hajonneita testejä on suuri määrä, älä mene paniikkiin. Selvitä ongelmat testi testiltä, yksittäinen ongelma kertautuu monteen paikkaan ja testien ajantasaistaminen ei ole loppujenlopuksi kovin vaikeaa.
+>
+> *HUOM* voit poistaa railsin automaattisesti generoimat testit, esim. testin _spec/views/styles/index.html.erb_spec.rb_
+
 
 ## Olutsää
 
