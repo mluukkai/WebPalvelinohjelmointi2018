@@ -650,7 +650,7 @@ Ratkaisu ei kuitenkaan tällaisenaan toimi. Yhteyden takia _ratings_-tietokantat
 Hakemistoon _db/migrate_ ilmestyy tiedosto, jonka sisältö on seuraava
 
 ```ruby
-class AddUserIdToRatings < ActiveRecord::Migration
+class AddUserIdToRatings < ActiveRecord::Migration[5.2]
   def change
   end
 end
@@ -661,7 +661,7 @@ Huomaa, että hakemistossa on jo omat migraatiotiedostot kaikkia luotuja tietoka
 Tällä kertaa tarvittava migraatio on yksinkertainen:
 
 ```ruby
-class AddUserIdToRatings < ActiveRecord::Migration
+class AddUserIdToRatings < ActiveRecord::Migration[5.2]
   def change
     add_column :ratings, :user_id, :integer
   end

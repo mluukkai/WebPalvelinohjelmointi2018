@@ -1253,10 +1253,10 @@ Hienosäädetään olutseuraan liittymistä
 > Vihje: eroamistoiminnallisuuden voi toteuttaa liittymistoiminnalisuuden tapaan olutseuran sivulle sijoitettavalla lomakkeella. Lomakkeen käyttämäksi HTTP-metodiksi tulee määritellä delete:
 >
 >```erb
->    <%= form_for(@membership, method: "delete") do |f| %>
->       <%= f.hidden_field :beer_club_id %>
->       <%= f.submit value: "end the membership" %>
->    <% end %>
+><%= form_for(@membership, method: "delete") do |f| %>
+>  <%= f.hidden_field :beer_club_id %>
+>  <%= f.submit value: "end the membership" %>
+><% end %>
 >```
 >
 > **HUOM:** saatat saada virheilmoituksen <code>No route matches [DELETE] "/memberships"</code>
@@ -1291,7 +1291,7 @@ Olemme käyttäneet Railsin migraatioita jo ensimmäisestä viikosta alkaen. On 
 >
 > Muutoksen jälkeen oluen ja tyylin suhteen tulee olla seuraava
 
-![kuva](http://yuml.me/30b291af)
+![kuva](http://yuml.me/c5a711bb.png)
 
 > Huomaa, oluella nyt oleva attribuutti <code>style</code> tulee poistaa, jotta ei synnyt ristiriitaa assosiaation ansiosta generoitavan aksessorin ja vanhan kentän välille.
 >
@@ -1301,11 +1301,10 @@ Olemme käyttäneet Railsin migraatioita jo ensimmäisestä viikosta alkaen. On 
 > * tee tauluun rivi jokaista _beers_-taulusta löytyvää erinimistä tyyliä kohti (tämä onnistuu konsolista käsin)
 > * uudelleennimeä _beers_-taulun sarake style esim. _old_style_:ksi (tämä siis migraation avulla)
 > * liitä konsolista käsin oluet _style_-olioihin käyttäen hyväksi oluilla vielä olevaa old_style-saraketta
+>   * tyylikkäämpää on tehdä myös tämä askel migraatiossa
 > * tuhoa oluiden taulusta migraation avulla _old_style_
 >
 > **Huomaa, että Heroku-instanssin ajantasaistaminen kannattaa tehdä samalla!**
->
-> Vielä hienompaa on tehdä kaikki edelliset askeleet yksittäisen migraation sisällä.
 >
 > Vihje: voit harjoitella datamigraation tekemistä siten, että kopioit ennen migraation aloittamista tietokannan eli tiedoston _db/development.sqlite3_ ja jos migraatiossa menee jokin pieleen, voit palauttaa tilanteen ennalleen kopion avulla. Myös debuggeri (byebug tai bindings.pry) saattaa osoittautua hyödylliseksi migraation kehittelemisessä.
 >
@@ -1315,19 +1314,21 @@ Olemme käyttäneet Railsin migraatioita jo ensimmäisestä viikosta alkaen. On 
 >
 > Tyylien sivulle kannattaa lisätä lista kaikista tyylin oluista.
 >
-> **HUOM1** Jos et tee myös datan migraatiota migraatiotiedostojen avulla, tämä tehtävä todennäköisesti hajottaa Travisin. Voit merkitä tehtävän siitä huolimatta. Travisia ei ole pakko pitää toimintakunnossa kurssin seuraavilla viikoilla. Toki on syytä potea hieman huonoa omaatuntoa, jos Travis-build rikkoutuu.
+> **HUOM1** Jos lisäät luokalle _Beer_ määreen <code>belongs_to :style</code> et enää pääse käsiksi _style_-nimiseen merkkijonomuotoiseen attribuuttiin pistenotaatiolla _beer.style_, vaan joudut muotoa _beer['style']_
 >
-> **HUOM2:** varmista, että _uusien oluiden luominen toimii_ vielä laajennuksen jälkeen! Joudut muuttamaan muutamaakin kohtaa, näistä vaikein huomata lienee olutkontrollerin apumetodi <code>beer_params</code>.
+> **HUOM2** Jos et tee myös datan migraatiota migraatiotiedostojen avulla, tämä tehtävä todennäköisesti hajottaa Travisin. Voit merkitä tehtävän siitä huolimatta. Travisia ei ole pakko pitää toimintakunnossa kurssin seuraavilla viikoilla. Toki on syytä potea hieman huonoa omaatuntoa, jos Travis-build rikkoutuu.
+>
+> **HUOM3** varmista, että _uusien oluiden luominen toimii_ vielä laajennuksen jälkeen! Joudut muuttamaan muutamaakin kohtaa, näistä vaikein huomata lienee olutkontrollerin apumetodi <code>beer_params</code>.
 
 Tehtävän jälkeen oluttyylin sivu voi näyttää esim. seuraavalta
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w5-6.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w5-6.png)
 
 Hyvä lista oluttyyleistä kuvauksineen löytyy osoitteesta http://beeradvocate.com/beer/style/
 
 > ## Tehtävä 14
 >
-> Tyylien tallettaminen tietokantaan hajottaa suuren osan  testeistä. Ajantasaista testit. Huomaa, että myös FactoryGirlin tehtaisiin on tehtävä muutoksia.
+> Tyylien tallettaminen tietokantaan hajottaa suuren osan testeistä. Ajantasaista testit. Huomaa, että myös FactoryBotin tehtaisiin on tehtävä muutoksia.
 >
 > Vaikka hajonneita testejä on suuri määrä, älä mene paniikkiin. Selvitä ongelmat testi testiltä, yksittäinen ongelma kertautuu monteen paikkaan ja testien ajantasaistaminen ei ole loppujenlopuksi kovin vaikeaa.
 
