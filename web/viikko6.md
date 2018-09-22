@@ -828,22 +828,23 @@ Lisäsimme hetki sitten panimoille tiedon niiden aktiivisuudesta ja mahdollisuud
 Tehdään tiedostoon routes.rb seuraava muutos panimon osalta:
 
 ```ruby
-  resources :breweries do
-    post 'toggle_activity', on: :member
-  end
+resources :breweries do
+  post 'toggle_activity', on: :member
+end
 ```
 
-Kun nyt teemme komennon <code>rake routes</code> huomaamme panimolle ilmestyneen uuden reitin:
+Kun nyt teemme komennon <code>rails routes</code> huomaamme panimolle ilmestyneen uuden reitin:
 
 ```ruby
-toggle_activity_brewery POST   /breweries/:id/toggle_activity(.:format) breweries#toggle_activity
-              breweries GET    /breweries(.:format)                     breweries#index
-                        POST   /breweries(.:format)                     breweries#create
-            new_brewery GET    /breweries/new(.:format)                 breweries#new
-           edit_brewery GET    /breweries/:id/edit(.:format)            breweries#edit
-                brewery GET    /breweries/:id(.:format)                 breweries#show
-                        PUT    /breweries/:id(.:format)                 breweries#update
-                        DELETE /breweries/:id(.:format)                 breweries#destroy
+  toggle_activity_brewery POST   /breweries/:id/toggle_activity(.:format)                                                 breweries#toggle_activity
+                breweries GET    /breweries(.:format)                                                                     breweries#index
+                          POST   /breweries(.:format)                                                                     breweries#create
+              new_brewery GET    /breweries/new(.:format)                                                                 breweries#new
+             edit_brewery GET    /breweries/:id/edit(.:format)                                                            breweries#edit
+                  brewery GET    /breweries/:id(.:format)                                                                 breweries#show
+                          PATCH  /breweries/:id(.:format)                                                                 breweries#update
+                          PUT    /breweries/:id(.:format)                                                                 breweries#update
+                          DELETE /breweries/:id(.:format)                                                                 breweries#destroy
 ```
 
 Päätämme lisätä aktiivisuusstatuksen muutostoiminnon yksittäisen panimon sivulle. Eli lisätään panimon sivulle app/views/breweries/show.html.erb seuraava:
@@ -855,14 +856,14 @@ Päätämme lisätä aktiivisuusstatuksen muutostoiminnon yksittäisen panimon s
 Kun nyt klikkaamme painiketta, tekee selain HTTP POST -pyynnön osoitteeseen /breweries/:id/toggle_activity, missä :id on sen panimon id, jolla linkkiä klikattiin. Railsin reititysmekanismi yrittää kutsua breweries-kontrollerin metodia <code>toggle_activity</code> jota ei ole, joten seurauksena on virheilmoitus. Metodi voidaan toteuttaa esim. seuraavasti:
 
 ```ruby
-  def toggle_activity
-    brewery = Brewery.find(params[:id])
-    brewery.update_attribute :active, (not brewery.active)
+def toggle_activity
+  brewery = Brewery.find(params[:id])
+  brewery.update_attribute :active, (not brewery.active)
 
-    new_status = brewery.active? ? "active" : "retired"
+  new_status = brewery.active? ? "active" : "retired"
 
-    redirect_to :back, notice:"brewery activity status changed to #{new_status}"
-  end
+  redirect_to brewery, notice:"brewery activity status changed to #{new_status}"
+end
 ```
 
 Tominnallisuuden toteuttaminen oli varsin helppoa, mutta onko reitin <code>toggle_activity</code> lisääminen järkevää? RESTful-ideologian mukaan puhdasoppisempaa olisi ollut hoitaa asia lomakkeen avulla, eli polkuun breweries/:id kohdistuneella PUT-pyynnöllä. Jokatapauksessa tulee välttää tilanteita, joissa resurssin tilaa muutettaisiin GET-pyynnöllä, ja tästä syystä määrittelimmekin polun toggle_activity ainoastaan POST-pyynnöille.
@@ -898,7 +899,7 @@ http://guides.rubyonrails.org/routing.html#adding-more-restful-actions
 >
 > Validointien suorittamisen voi ohittaa myös tallentamalla olion komennolla <code>u.save(validate: false)</code>
 >
-> **HUOM:** toteutuksessa kannattanee hyödyntää [esifiltteriä](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko4.md#kirjautuneiden-toiminnot)
+> **HUOM:** toteutuksessa kannattanee hyödyntää [esifiltteriä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko4.md#kirjautuneiden-toiminnot)
 
 > ## Tehtävä 11-12 (kahden tehtävän arvoinen)
 >
