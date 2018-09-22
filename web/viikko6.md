@@ -903,27 +903,25 @@ http://guides.rubyonrails.org/routing.html#adding-more-restful-actions
 
 > ## Tehtävä 11-12 (kahden tehtävän arvoinen)
 >
-> Toteuta toiminnallisuus, jonka avulla administraattorit voivat jäädyttää jonkin käyttäjätunnuksen. Jäädyttäminen voi tapahtua esim. napilla, jonka vain administraattorit näkevät käyttäjän sivulla. Jäädytetyn tunnuksen omaava käyttäjä ei saa päästä kirjautumaan järjestelmään. Yrittäessään kirjautumista, sovellus huomauttaa käyttäjälle että hänen tunnus on jäädytetty ja kehoittaa ottamaan yhteyttä ylläpitäjiin. Administraattorien tulee pystyä palauttamaan jäädytetty käyttäjätunnus ennalleen.
->
-> **HUOM:** älä määrittele Userille attribuuttia, jonka nimi <code>frozen</code>, kyseessä on kielletty attribuutin nimi! Eli jos hoidat asian Userille liitettävän attribuutin avulla, anna sille nimeksi joku muu, esim. _blocked_.
+> Toteuta toiminnallisuus, jonka avulla administraattorit voivat sulkea jonkin käyttäjätunnuksen. Sulkeminen voi tapahtua esim. napilla, jonka vain administraattorit näkevät käyttäjän sivulla. Suljetun tunnuksen omaava käyttäjä ei saa päästä kirjautumaan järjestelmään. Yrittäessään kirjautumista, sovellus huomauttaa käyttäjälle että hänen tunnus on suljettu ja kehoittaa ottamaan yhteyttä ylläpitäjiin. Administraattorien tulee pystyä palauttamaan suljettu käyttäjätunnus ennalleen.
 >
 > Voit toiteuttaa toiminnallisuuden esim. allaolevien vihjaamaan kuvien tapaan
 
-Administraattori voi jäädyttää käyttäjätunnuksen käyttäjän sivulta
+Administraattori voi sulkea käyttäjätunnuksen käyttäjän sivulta
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-1c.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-1c.png)
 
-Administraattori näkee käyttäjien näkymästä jäädytetyt käyttäjätunnukset
+Administraattori näkee käyttäjien näkymästä suljetut käyttäjätunnukset
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-1b.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-1b.png)
 
-Jos käyttjätunnus on jäädytetty kirjautuminen ei onnistu
+Jos käyttjätunnus on suljettu, kirjautuminen ei onnistu
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-1a.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-1a.png)
 
-Administraattori voi uudelleenaktivoida jäädytetyn käyttäjätunnuksen käyttäjän sivulta
+Administraattori voi uudelleenaktivoida suljetun käyttäjätunnuksen käyttäjän sivulta
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-1d.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-1d.png)
 
 ## Monimutkaisempi pääsynhallinta
 
