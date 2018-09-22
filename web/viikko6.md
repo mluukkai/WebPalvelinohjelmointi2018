@@ -974,223 +974,204 @@ suoritetaan javascript-koodi sivun renderöinnion yhteydessä:
 
 Lisätietoa http://www.railsdispatch.com/posts/security ja http://railscasts.com/episodes/204-xss-protection-in-rails-3
 
-## Metaohjelmointia: mielipanimoiden ja tyylin refaktorointi
+## Mielipanimoiden ja tyylin refaktorointi
 
 Tällä viikolla ei ole enää enempää tehtäviä. Riittää että luet tästä eteenpäin olevan materiaalin. Seuraavan viikon materiaali ei riipu millään tavalla tämän viikon päättävästä refaktoroinnista.
 
-Viikon 4 [tehtävissä 3 ja 4](ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko4.md#teht%C3%A4v%C3%A4-3)  toteutettiin metodit henkilön suosikkipanimon ja oluttyylin selvittämiseen. Seuraavassa on eräs (mallivastaus poikkeaa tästä hieman sillä se hyödyntää kokoelmien metodia *group_by*) melko suoraviivainen ratkaisu metodien <code>favorite_style</code> ja <code>favorite_brewery</code> toteuttamiseen:
+Viikon 4 [tehtävissä 3 ja 4](ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko4.md#teht%C3%A4v%C3%A4-3)  toteutettiin metodit henkilön suosikkipanimon ja oluttyylin selvittämiseen. Seuraavassa on eräs melko suoraviivainen ratkaisu metodien <code>favorite_style</code> ja <code>favorite_brewery</code> toteuttamiseen:
 
 ```ruby
 class User
   # ...
-  def favorite_brewery
-    return nil if ratings.empty?
-
-    rated = ratings.map{ |r| r.beer.brewery }.uniq
-    rated.sort_by { |brewery| -rating_of_brewery(brewery) }.first
-  end
-
-  def rating_of_brewery(brewery)
-    ratings_of = ratings.select{ |r| r.beer.brewery==brewery }
-    ratings_of.map(&:score).inject(&:+) / ratings_of.count.to_f
-  end
-
   def favorite_style
     return nil if ratings.empty?
 
-    rated = ratings.map{ |r| r.beer.style }.uniq
-    rated.sort_by { |style| -rating_of_style(style) }.first
+    style_ratings = ratings.group_by{ |r| r.beer.style }
+    averages = style_ratings.map do |style, ratings|
+      { style: style, score: average_of(ratings) }
+    end
+
+    averages.max_by{ |r| r[:score] }[:style]
   end
 
-  def rating_of_style(style)
-    ratings_of = ratings.select{ |r| r.beer.style==style }
-    ratings_of.map(&:score).inject(&:+) / ratings_of.count.to_f
+  def favorite_brewery
+    return nil if ratings.empty?
+
+    brewery_ratings = ratings.group_by{ |r| r.beer.brewery }
+    averages = brewery_ratings.map do |brewery, ratings|
+      { brewery: brewery, score: average_of(ratings) }
+    end
+
+    averages.max_by{ |r| r[:score] }[:brewery]
   end
 
-end
+  def average_of(ratings)
+    ratings.sum(&:score).to_f / ratings.count
+  end  
+end  
 ```
 
 Tutkitaan mielipanimon selvittävää metodia:
 
 ```ruby
-  def favorite_brewery
-    return nil if ratings.empty?
+def favorite_brewery
+  return nil if ratings.empty?
 
-    rated = ratings.map{ |r| r.beer.brewery }.uniq
-    rated.sort_by { |brewery| -rating_of_brewery(brewery) }.first
+  brewery_ratings = ratings.group_by{ |r| r.beer.brewery }
+  averages = brewery_ratings.map do |brewery, ratings|
+    { brewery: brewery, score: average_of(ratings) }
   end
+
+  averages.max_by{ |r| r[:score] }[:brewery]
+end
 ```
 
-Erikoistapauksen (ei yhtään reittausta) tarkastamisen jälkeen metodi  selvittää minkä panimoiden oluita käyttäjä on reitannut:
+Erikoistapauksen (ei yhtään reittausta) tarkastamisen jälkeen metodi ryhmittelee [group_by](https://ruby-doc.org/core-2.5.1/Enumerable.html#method-i-group_by)-metodin avulla ratingit niihin liittyvän panimo mukaan:
 
 ```ruby
-  rated = ratings.map{ |r| r.beer.brewery }.uniq
+brewery_ratings = ratings.group_by{ |r| r.beer.brewery }
 ```
 
-Komento siis palauttaa listan käyttäjän tekemiin reittauksiin liittyvistä panimoista, komennon <code>uniq</code> ansiosta sama panimo ei esiinny listalla kuin kerran (jos et tiedä miten komento map toimii, googlaa).
+Operaatio tuottaa _hashin_ jonka avaimina ovat panimot, joita käyttäjä on reitannut ja arvona avainta vastaavan panimon saamat käyttäjän tekemät reittaukset.
 
-Tämän jälkeen metodi järjestää reitattujen panimoiden listan käyttäen järjestämiskriteerinä panimon saamien reittausten keskiarvoa ja palauttaa listan ensimmäisen, eli parhaan keskiarvoreittauksen saaneen panimon.
+Hash näyttää suunilleen seuraavalta
+
+```
+{
+  { name: "koff" }: [ 
+    { score: 10, beer_id: 3, user_id: 1 }, { score: 17, beer_id: 4, user_id: 1 }
+  ],
+  { name: "karjala" }: [ 
+    { score: 20, beer_id: 7, user_id: 1 }, { score: 40, beer_id: 11, user_id: 1 }, { score: 9, beer_id: 8, user_id: 1 }
+  ],  
+  { name: "weihenstephan" }: [ 
+    { score: 44, beer_id: 12, user_id: 1 }
+  ],   
+}
+```
+
+Seuraava komento
 
 ```ruby
-  rated.sort_by { |brewery| -rating_of_brewery(brewery) }.first
+averages = brewery_ratings.map do |brewery, ratings|
+  { brewery: brewery, score: average_of(ratings) }
+end
 ```
 
-Kunkin panimon reittausten keskiarvo lasketaan apumetodilla:
+muodostaa taulukon, minkä alkioina on hashejä, jotka sisältävät panimon ja siihen liittyvien reittausten keskiarvon.
+
+```
+[
+  { 
+    brewery: { name: "koff" },
+    score: 17
+  },
+  { 
+    brewery: { name: "karjala" },
+    score: 21
+  },
+  { 
+    brewery: { name: "weihenstephan" },
+    score: 40
+  }    
+]
+```
+
+Metodin viimeinen rivi valitsee taulukon alkioista sen, jonka _score_ on suurin ja palauttaa alkioon liittyvän panimon:
 
 ```ruby
-  def rating_of_brewery(brewery)
-    ratings_of = ratings.select{ |r| r.beer.brewery==brewery }
-    ratings_of.map(&:score).inject(&:+) / ratings_of.count.to_f
-  end
+averages.max_by{ |r| r[:score] }[:brewery]
 ```
 
-Apumetodi valitsee aluksi käyttäjän tekemistä reittauksista ne, jotka koskevat parametriksi annettua panimoa. Tämän jälkeen lasketaan valittujen reittausten pistemäärien keskiarvo.
+Lempityylin selvittävä metodi on rakenteellisesti täysin samanlainen ja saamme pienellä refaktoroinnilla rakennettua yleistetyn koodin, jonka avulla pystymme selvittämään sekä lempipanimon että tyylin.
 
-Huomaamme, että <code>favorite_style</code> toimii _täsmälleen_ saman periaatteen mukaan ja metodi itse sekä sen käyttämä apumetodi ovatkin oikeastaan copypastea mielipanimon selvittämiseen käytettävästä koodista.
-
-
-Koska ohjelmistossamme on kattavat testit, on copypaste helppo refaktoroida pois. Tutkitaan ensin apumetodeja, jotka laskevat yhden panimon ja yhden tyylin reittausten keskiarvon:
+Muutetaan ensin metodien käyttäjien apumuuttujien ja hash-avainten arvo vastaamaan toisiaan
 
 ```ruby
-  def rating_of_style(style)
-    ratings_of = ratings.select{ |r| r.beer.style==style }
-    ratings_of.map(&:score).inject(&:+) / ratings_of.count.to_f
+def favorite_style
+  return nil if ratings.empty?
+
+  grouped_ratings = ratings.group_by{ |r| r.beer.style }
+  averages = grouped_ratings.map do |group, ratings|
+    { group: group, score: average_of(ratings) }
   end
 
-  def rating_of_brewery(brewery)
-    ratings_of = ratings.select{ |r| r.beer.brewery==brewery }
-    ratings_of.map(&:score).inject(&:+) / ratings_of.count.to_f
+  averages.max_by{ |r| r[:score] }[:group]
+end
+
+def favorite_brewery
+  return nil if ratings.empty?
+
+  grouped_ratings = ratings.group_by{ |r| r.beer.brewery }
+  averages = grouped_ratings.map do |group, ratings|
+    { group: group, score: average_of(ratings) }
   end
+
+  averages.max_by{ |r| r[:score] }[:group]
+end
 ```
 
-Uudelleennimetään metodien parametri:
+Testit menevät edelleen läpi, eli toiminnallisuus ei ole muuttunut. Molemmat metodit ovat nyt lähes samanlaiset, ainoa ero on _group_by_-metodiin liittyvässä koodilohkossa
 
 ```ruby
-  def rating_of_style(item)
-    ratings_of = ratings.select{ |r| r.beer.style==item }
-    ratings_of.map(&:score).inject(&:+) / ratings_of.count.to_f
-  end
-
-  def rating_of_brewery(item)
-    ratings_of = ratings.select{ |r| r.beer.brewery==item }
-    ratings_of.map(&:score).inject(&:+) / ratings_of.count.to_f
-  end
+grouped_ratings = ratings.group_by{ |r| r.beer.style }
+grouped_ratings = ratings.group_by{ |r| r.beer.brewery }
 ```
 
-Huomaamme, että erona metodeissa on ainoastaan <code>select</code>-metodin koodilohkossa reittaukseen liittyvälle olut-oliolle kutsuttava metodi.
-
-Kutsuttava metodi voidaan antaa myös parametrina. Tällöin eksplisiittisen kutsun sijaan metodia kutsutaan olion <code>send</code>-metodin avulla:
+Saamme nämäkin rivin täsmälleen samanlaisiksi kutsumalla metodia epäsuoraan viime viikolta tuttua [send](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko5.md#olion-metodien-kutsuminen-send-metodin-avulla)-metodia hyödyntäen:
 
 ```ruby
-  def rating_of(category, item)
-    ratings_of = ratings.select{ |r| r.beer.send(category)==item }
-    ratings_of.map(&:score).inject(&:+) / ratings_of.count.to_f
+def favorite_style
+  groupped_by = :style
+  return nil if ratings.empty?
+  
+  grouped_ratings = ratings.group_by{ |r| r.beer.send(groupped_by) }
+  averages = grouped_ratings.map do |group, ratings|
+    { group: group, score: average_of(ratings) }
   end
+
+  averages.max_by{ |r| r[:score] }[:group]
+end
+
+def favorite_brewery
+  groupped_by = :brewery
+  return nil if ratings.empty?
+
+  grouped_ratings = ratings.group_by{ |r| r.beer.send(groupped_by) }
+  averages = grouped_ratings.map do |group, ratings|
+    { group: group, score: average_of(ratings) }
+  end
+
+  averages.max_by{ |r| r[:score] }[:group]
+end
 ```
 
-Metodia voidaan nyt käyttää seuraavasti:
+Testien suoritus antaa jälleen varmuuden siitä että toiminnallisuus pysyy muuttumattoman.
+
+Metodit ovat nyt täysin samat lukuunottamatta muutujan _groupped_by_ arvoa. Siirretään yhteinen logikka omaan metodiin
 
 ```ruby
-> u = User.first
-> u.rating_of :brewery , Brewery.find_by(name:"BrewDog")
- => 30.2
-> u.rating_of :style , Style.find_by(name:"American IPA")
- => 36.666666666666664
+def favorite_style
+  favorite(:style)
+end
+
+def favorite_brewery
+  favorite(:brewery)
+end
+
+def favorite(groupped_by)
+  return nil if ratings.empty?
+
+  grouped_ratings = ratings.group_by{ |r| r.beer.send(groupped_by) }
+  averages = grouped_ratings.map do |group, ratings|
+    { group: group, score: average_of(ratings) }
+  end
+
+  averages.max_by{ |r| r[:score] }[:group]
+end
 ```
 
-Eli voimme luopua alkuperäisistä apumetodeista ja käyttää uutta paramterisoitua metodia:
-
-```ruby
-  def favorite_style
-    return nil if ratings.empty?
-
-    rated = ratings.map{ |r| r.beer.style }.uniq
-    rated.sort_by { |style| -rating_of(:style, style) }.first
-  end
-
-  def favorite_brewery
-    return nil if ratings.empty?
-
-    rated = ratings.map{ |r| r.beer.brewery }.uniq
-    rated.sort_by { |brewery| -rating_of(:brewery, brewery) }.first
-  end
-```
-
-Nimetään uudelleen metodien komennossa <code>sort_by</code> käyttämä apumuuttuja:
-
-```ruby
-  def favorite_style
-    return nil if ratings.empty?
-
-    rated = ratings.map{ |r| r.beer.style }.uniq
-    rated.sort_by { |item| -rating_of(:style, item) }.first
-  end
-
-  def favorite_brewery
-    return nil if ratings.empty?
-
-    rated = ratings.map{ |r| r.beer.brewery }.uniq
-    rated.sort_by { |item| -rating_of(:brewery, item) }.first
-  end
-```
-
-Muutetaan <code>map</code>:issa käytettävä metodikutsu muotoon <code>send</code>
-
-```ruby
-  def favorite_style
-    return nil if ratings.empty?
-
-    rated = ratings.map{ |r| r.beer.send(:style) }.uniq
-    rated.sort_by { |item| -rating_of(:style, item) }.first
-  end
-
-  def favorite_brewery
-    return nil if ratings.empty?
-
-    rated = ratings.map{ |r| r.beer.send(:brewery) }.uniq
-    rated.sort_by { |item| -rating_of(:brewery, item) }.first
-  end
-```
-
-Määritellään parametrina oleva metodin nimi muuttujan <code>category</code> avulla:
-
-```ruby
-  def favorite_style
-    category = :style
-    return nil if ratings.empty?
-
-    rated = ratings.map{ |r| r.beer.send(category) }.uniq
-    rated.sort_by { |item| -rating_of(category, item) }.first
-  end
-
-  def favorite_brewery
-    category = :brewery
-    return nil if ratings.empty?
-
-    rated = ratings.map{ |r| r.beer.send(category) }.uniq
-    rated.sort_by { |item| -rating_of(category, item) }.first
-  end
-```
-
-Nyt molempien metodien koodi on täysin sama. Yhteinen osa voidaankin eriyttää omaksi metodiksi:
-
-```ruby
-  def favorite_style
-    favorite :style
-  end
-
-  def favorite_brewery
-    favorite :brewery
-  end
-
-  def favorite(category)
-    return nil if ratings.empty?
-
-    rated = ratings.map{ |r| r.beer.send(category) }.uniq
-    rated.sort_by { |item| -rating_of(category, item) }.first
-  end
-```
-
+Testit menevät edelleen läpi ja copypaste on poissa!
 
 Uuden ratkaisumme etu on copypasten poiston lisäksi se, että jos oluelle määritellään jokun uusi "attribuutti", esim. väri, saamme samalla hinnalla mielivärin selvittävän metodin:
 
@@ -1209,27 +1190,26 @@ Kommentoidaan metodit hetkeksi pois koodistamme.
 Jos oliolle kutsutaan metodia, jota ei ole olemassa (määriteltynä luokassa itsessään, sen yliluokissa eikä missään luokan tai yliluokkien sisällyttämässä moduulissa), esim.
 
 ```ruby
+> u = User.first
 > u.paras_bisse
-NoMethodError: undefined method `paras_bisse' for #<User:0x000001059cb0c0>
-  from /Users/mluukkai/.rvm/gems/ruby-2.2.1/gems/activemodel-4.1.5/lib/active_model/attribute_methods.rb:435:in `method_missing'
-  from /Users/mluukkai/.rvm/gems/ruby-2.2.1/gems/activerecord-4.1.5/lib/active_record/attribute_methods.rb:208:in `method_missing'
-  from /Users/mluukkai/.rvm/gems/ruby-2.2.1/gems/railties-4.1.5/lib/rails/commands/console.rb:90:in `start'
-  from /Users/mluukkai/.rvm/gems/ruby-2.2.1/gems/railties-4.1.5/lib/rails/commands/console.rb:9:in `start'
-  from /Users/mluukkai/.rvm/gems/ruby-2.2.1/gems/railties-4.1.5/lib/rails/commands/commands_tasks.rb:69:in `console'
+NoMethodError: undefined method `paras_bisse' for #<User:0x00007f9b415269d8>
+from /Users/mluukkai/.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/activemodel-5.2.1/lib/active_model/attribute_methods.rb:430:in `method_missing'b:69:in `console'
 >
 ```
 
-on tästä seurauksena se, että Ruby-tulkki kutsuu olion <code>method_missing</code>-metodia parametrinaan tuntemattoman metodin nimi. Rubyssä kaikki luokat perivät <code>Object</code>-luokan, joka määrittelee <code>method_missing</code>-metodin. Luokkien on sitten tarvittaessa mahdollista ylikirjoittaa tämä metodi ja saada näinollen aikaan "metodeja" joita ei ole olemassa, mutta jotka kutsujan kannalta toimivat aivan kuten normaalit metodit.
+on tästä seurauksena se, että Ruby-tulkki kutsuu olion <code>method_missing</code>-metodia parametrinaan tuntemattoman metodin nimi. Rubyssä kaikki luokat perivät <code>Object</code>-luokan, joka määrittelee <code>method_missing</code>-metodin. 
+
+Luokkien on sitten tarvittaessa mahdollista ylikirjoittaa tämä metodi ja saada näinollen aikaan "metodeja" joita ei ole olemassa, mutta jotka kutsujan kannalta toimivat aivan kuten normaalit metodit.
 
 Rails käyttää sisäisesti metodia <code>method_missing</code> moniin tarkoituksiin. Emme voikaan suoraviivaisesti ylikirjoittaa sitä, meidän on muistettava delegoida <code>method_missing</code>-kutsut yliluokalle jollemme halua käsitellä niitä itse.
 
 Määritellään luokalle <code>User</code> kokeeksi seuraavanlainen <code>method_missing</code>:
 
 ```ruby
-  def method_missing(method_name, *args, &block)
-    puts "nonexisting method #{method_name} was called with parameters: #{args}"
-    return super
-  end
+def method_missing(method_name, *args, &block)
+  puts "nonexisting method #{method_name} was called with parameters: #{args}"
+  return super
+end
 ```
 
 kokeillaan:
@@ -1237,24 +1217,21 @@ kokeillaan:
 ```ruby
 > u.paras_bisse
 nonexisting method paras_bisse was called with parameters: []
-NoMethodError: undefined method `paras_bisse' for #<User:0x000001016af8e0>
-  from /Users/mluukkai/.rvm/gems/ruby-2.2.1/gems/activemodel-4.1.5/lib/active_model/attribute_methods.rb:435:in `method_missing'
-  from /Users/mluukkai/.rvm/gems/ruby-2.2.1/gems/activerecord-4.1.5/lib/active_record/attribute_methods.rb:208:in `method_missing'
-  from /Users/mluukkai/kurssirepot/ratebeer/app/models/user.rb:30:in `method_missing'
->
+NoMethodError: undefined method `paras_bisse' for #<User:0x00007f9b41c02ef0>
+from /Users/mluukkai/.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/activemodel-5.2.1/lib/active_model/attribute_methods.rb:430:in `method_missing'
 ```
 
 Eli kuten ylimmältä riviltä huomataan, suoritettiin määrittelemämme <code>method_missing</code>-metodi. Voimmekin ylikirjoittaa method_missingin seuraavasti:
 
 ```ruby
-  def method_missing(method_name, *args, &block)
-    if method_name =~ /^favorite_/
-      category = method_name[9..-1].to_sym
-      self.favorite category
-    else
-      return super
-    end
+def method_missing(method_name, *args, &block)
+  if method_name =~ /^favorite_/
+    category = method_name[9..-1].to_sym
+    self.favorite category
+  else
+    return super
   end
+end
 ```
 
 Nyt kaikki <code>favorite_</code>-alkuiset metodikutsut joita ei tunneta tulkitaan siten, että alaviivan jälkeinen osa eristetään ja kutsutaan oliolle metodia <code>favorite</code>, siten että alaviivan jälkiosa on kategorian määrittelevänä parametrina.
@@ -1273,8 +1250,8 @@ Ikävänä sivuvaikutuksena metodien määrittelystä method_missing:in avulla  
 
 ```ruby
 > u.favorite_movie
-NoMethodError: undefined method `movie' for #<Beer:0x00000105a18690>
-  from /Users/mluukkai/.rvm/gems/ruby-2.2.1/gems/activemodel-4.1.5/lib/active_model/attribute_methods.rb:435:in `method_missing'
+NoMethodError: undefined method `movie' for #<Beer:0x00007f9b408599f8>
+from /Users/mluukkai/.rbenv/versions/2.5.1/lib/ruby/gems/2.5.0/gems/activemodel-5.2.1/lib/active_model/attribute_methods.rb:430:in `method_missing'
 ```
 
 Ruby tarjoaa erilaisia mahdollisuuksia mm. sen määrittelemiseen, mitkä <code>favorite_</code>-alkuiset metodit hyväksyttäisiin. Voisimme esim. toteuttaa seuraavan rubymäisen tavan asian määrittelemiselle:
@@ -1295,11 +1272,9 @@ Poistetaan kuitenkin nyt tässä tekemämme method_missing:iin perustuva toteutu
 
 Jos tässä luvussa esitellyn tyyliset temput kiinnostavat, voit jatkaa esim. seuraavista:
 
-* http://rubymonk.com/learning/books/5-metaprogramming-ruby-ascent
-* http://rubymonk.com/learning/books/2-metaprogramming-ruby
+* http://ruby-metaprogramming.rubylearning.com/
 * https://github.com/sathish316/metaprogramming_koans
 * myös kirja [Eloquent Ruby](http://www.amazon.com/Eloquent-Ruby-Addison-Wesley-Professional-Series/dp/0321584104) käsittelee aihepiiriä varsin hyvin
-
 
 ## Tehtävien palautus
 
