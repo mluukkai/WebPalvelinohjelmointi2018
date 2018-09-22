@@ -401,11 +401,17 @@ Luokka voidaan lisätä myös niihin linkkeihin, jotka halutaan napin painikkeen
 >
 > Apua löydät [navbarin](https://getbootstrap.com/docs/4.0/components/navbar/) ohjeiden _dropdown_-elementtejä sisältävistä esimerkeistä.
 >
-> Ratkaisu ei ole ihan suoraviivainen. Eräs ratkaisu on muodostaa linkit apufunktion _link_to_ sijaan suoraan _a_-tageina seuraavaan tyyliin:
+> Ratkaisu ei ole kaikilta osin ihan suoraviivainen. Eräs mahdollisuus on muodostaa linkit apufunktion _link_to_ sijaan suoraan _a_-tageina seuraavaan tyyliin:
 >
 > ```
 > <a class="dropdown-item" href=<%= new_rating_path %>>rate a beer</a>
 > ```
+>
+> Toinen vaihtoehto on käyttää _link_to_-funktiota ja muokata sen tekemän linkin _class_ halutun kaltaiseksi:
+>
+> ```
+> <%= link_to 'signout', signout_path, { class: "dropdown-item", method: :delete } %>
+> 
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-3.png)
 
