@@ -140,91 +140,208 @@ Määrittelimme viikolla 2 navigointipalkille tyylin lisäämällä hakemistossa
 
 ```css
 .navibar {
-    padding: 10px;
-    background: #EFEFEF;
+  padding: 10px;
+  background: #EFEFEF;
 }
 ```
 
 CSS:ää käyttämällä koko sivuston ulkoasu voitaisiin muotoilla sivuston suunnittelijan haluamalla tavalla, jos silmää ja kykyä muotoiluun löytyy.
 
-Sivuston muotoilunkaan suhteen ei onneksi ole enää tarvetta keksiä pyörää uudelleen. Bootstrap (vanhalta nimeltään Twitter Bootstrap) >http://getbootstrap.com/> on "kehys", joka sisältää suuren määrän web-sivujen ulkoasun muotoiluun tarkoitettuja CSS-tyylitiedostoja ja javascriptiä. Bootstrap onkin noussut nopeasti suureen suosioon web-sivujen ulkoasun muotoilussa.
+Sivuston muotoilunkaan suhteen ei onneksi ole enää tarvetta keksiä pyörää uudelleen. Bootstrap http://getbootstrap.com/ on "kehys", joka sisältää suuren määrän web-sivujen ulkoasun muotoiluun tarkoitettuja CSS-tyylitiedostoja ja javascriptiä. Bootstrap onkin noussut nopeasti suureen suosioon web-sivujen ulkoasun muotoilussa.
 
-Aloitetaan sitten sovelluksemme bootstrappaaminen gemin <https://github.com/twbs/bootstrap-sass>. Lisätään Gemfileen seuraavat:
+Aloitetaan sitten sovelluksemme bootstrappaaminen gemin <https://github.com/twbs/bootstrap-rubygem> avulla. Lisätään Gemfileen seuraavat:
 
 ```ruby
-gem 'bootstrap-sass'
-group :development do
-  gem 'rails_layout'
-end
+gem 'bootstrap', '~> 4.1.3'
+gem 'jquery-rails'
 ```
 
-Otetaan gemit käyttöön komennolla <code>bundle install</code>.
+Asennetaan gemit komennolla <code>bundle install</code>, asennuksen jälkeen sovellus tulee uudelleenkäynnistää.
 
-Generoidaan seuraavaksi sovellukselle Bootstrapin tarvitsemat tiedostot.
-**Ota kuitenkin ensin talteen sovelluksen navigaatiopalkin generoiva koodi.** Suoritetaan sitten bootstrapin tarvitsemien tiedostojen generointi (mm. tiedoston application.html.erb ylikirjottavalla) komennolla
+Gemin [asennusohjetta](https://github.com/twbs/bootstrap-rubygem#a-ruby-on-rails) noudattaen lisätään tiedoston _app/assets/javascript/application.js_ loppuun seuraavat 
 
-    rails generate layout:install bootstrap3 --force
-
-Käynnistetään rails server uudelleen. Kun nyt avaamme sovelluksen selaimella, huomaamme jo pienen muutoksen esim. fonteissa. Myös navigointipalkki on hävinnyt.
-
-**HUOM:** jos hakemistoon app/assets/stylesheets jäi vielä tiedosto application.css, saatat joutua poistamaan sen sillä yo. skripti on luonut korvaavan tiedoston _application.css.scss_
-
-Edellä suorittamamme komento on luonut navigointipalkkia varten hakemistoon app/views/layout tiedostot *&#95;navigation.html.erb* ja *&#95;navigation&#95;links.html.erb*
-
-Kuten arvata saattaa, navigointipalkkiin tulevat linkit sijoitetaan tiedostoon *&#95;navigation&#95;links.html.erb*. Jokainen linkki tulee sijoittaa li-tagin sisälle. Lisää tiedostoon seuraavat:
-
-```erb
-<li><%= link_to 'breweries', breweries_path %></li>
-<li><%= link_to 'beers', beers_path %></li>
-<li><%= link_to 'styles', styles_path %></li>
-<li><%= link_to 'ratings', ratings_path %></li>
-<li><%= link_to 'users', users_path %></li>
-<li><%= link_to 'clubs', beer_clubs_path %></li>
-<li><%= link_to 'places', places_path %></li>
-<% if not current_user.nil? %>
-    <li><%= link_to current_user.username, current_user %></li>
-    <li><%= link_to 'rate a beer', new_rating_path %></li>
-    <li><%= link_to 'join a club', new_membership_path %></li>
-    <li><%= link_to 'signout', signout_path, method: :delete %></li>
-<% else %>
-    <li><%= link_to 'signin', signin_path %></li>
-    <li><%= link_to 'signup', signup_path %></li>
-<% end %>
+```
+//= require jquery3
+//= require popper
+//= require bootstrap-sprockets
 ```
 
-Sen lisäksi että Bootstrapilla voi helposti muodostaa navigointipalkin, joka pysyy jatkuvasti sivun ylälaidassa, voidaan Bootstrapin grid-järjestelmän avulla jakaa sivu erillisiin osiin, ks. http://getbootstrap.com/css/#grid
+Muutetaan myös tiedoston _app/assets/css/application.css_ pääte muotoon _scss_ ja lisätään tiedoston loppuun rivi
 
-Muutetaan sovelluksen layoutin eli tiedoston application.html.erb sivupohjan renderöivää osaa seuraavasti:
+```
+@import "bootstrap";
+```
 
-```erb
+Kun nyt avaamme sovelluksen selaimella (ja sovellus on uudelleenkäynnistettu), huomaamme jo pienen muutoksen esim. fonteissa. 
+
+### Navbar
+
+Bootstrapissa käyttöliittymä rakennetaan CSS-luokkina määritellyistä komponenteista. Eräs esimerkki bootstrapin komponenteista on [navbar](https://getbootstrap.com/docs/4.0/components/navbar/), jonka avulla voidaan muotoilla sovelluksen navigaatiopalkki.
+
+Muutetaan tiedosto _app/views/layouts/application.html.erb_  seuraavaan muotoon:
+
+```ruby
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ratebeer</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
   <body>
-    <header>
-      <%= render 'layouts/navigation' %>
-    </header>
 
-    <main role="main" class=".container">
-      <%= render 'layouts/messages' %>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-      <div class="row">
-        <div class="col-md-8">
-          <%= yield %>
-        </div>
-        <div class="col-md-4">
-          <img src="http://www.cs.helsinki.fi/u/mluukkai/wadror/pint.jpg" width="200">
-        </div>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <%= link_to 'breweries', breweries_path, { class: "nav-link" } %>
+          </li>      
+          <li class="nav-item">
+            <%= link_to 'beers', beers_path, { class: "nav-link" } %>
+          </li>     
+          <li class="nav-item">
+            <%= link_to 'styles', styles_path, { class: "nav-link" } %>
+          </li>   
+          <li class="nav-item">
+            <%= link_to 'ratings', ratings_path, { class: "nav-link" } %>
+          </li>       
+          <li class="nav-item">
+            <%= link_to 'users', users_path, { class: "nav-link" } %>
+          </li>  
+          <li class="nav-item">
+            <%= link_to 'clubs', beer_clubs_path, { class: "nav-link" } %>
+          </li>   
+          <li class="nav-item">
+            <%= link_to 'places', places_path, { class: "nav-link" } %>
+          </li> 
+          <% if current_user %>
+            <li class="nav-item">
+              <%= link_to current_user.username, current_user, { class: "nav-link" } %>
+            </li> 
+            <li class="nav-item">
+              <%= link_to 'rate a beer ', new_rating_path, { class: "nav-link" } %>
+            </li>   
+            <li class="nav-item">
+              <%= link_to 'join a club ', new_membership_path, { class: "nav-link" } %>
+            </li> 
+            <li class="nav-item">
+              <%= link_to 'signout', signout_path, { class: "nav-link" } %>
+            </li>                    
+          <% else %>
+            <li class="nav-item">
+              <%= link_to 'signin', signin_path, { class: "nav-link" } %>
+            </li>  
+            <li class="nav-item">
+              <%= link_to 'signup', signup_path, { class: "nav-link" } %>
+            </li>                        
+          <% end %>                            
+        </ul>
       </div>
+    </nav>
 
-    </main>
+    <%= yield %>
   </body>
+</html>
 ```
 
-Eli sijoitamme bootstrapin containeriin yhden rivin, jonka jaamme kahteen sarakkeeseen: 8:n levyiseen johon kunkin sivun tiedot upotetaan ja 4:n levyiseen osaan jossa näytämme kuvan.
+Bootstrapin dokumentaatio ei ole ihan selkein mahdollinen, mutta pienellä ihmettelyllä saimme aikaan navigaatiopalkin, joka on sisällöltään samanlainen entisen kaltainen.
+
+Vaikka bootstrapilla muotoiltu navigaatiopalkki on koodina pidempi ja sotkuisempikin kuin aiempi navigaatiopalkkimme, on sillä kuitenkin eräs merkittävä etu. Jos sovellusta tarkastellaan "isota" näytöltä, näkyy navigaatiopalkki normaalisti:
+
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-0a.png)
+
+Jos taas sovellusta tarkastellaan pienemmältä näytöltä, esim. mobiililaitteelta, näytetään navigaatiopalkin sijaan symboli, jota klikkaamalla navigaatiopalkki aujeaa alaspäin:
+
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-0b.png)
+
+Bootstrapilla muotoiltu navigaatiopalkki on _responsiivinen_, se mukautuu sovellusta käyttävän selaimen kokoon.
+
+### Grid
+
+Sen lisäksi että Bootstrapilla voi helposti muodostaa responsiivisen navigointipalkin, voidaan Bootstrapin grid-järjestelmän avulla jakaa sivu erillisiin osiin, ks. https://getbootstrap.com/docs/4.0/layout/grid/
+
+Muutetaan tiedoston _app/views/layout/application.html.erb_ alaosassa oleva yksittäisten näkymätemplatejen renderöinnin kohdan merkkaava 
+
+```erb
+<%= yield %>
+```     
+
+muotoon
+
+```erb
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8">
+      <%= yield %>
+    </div>
+    <div class="col-sm-4">
+      <img 
+        src="http://www.cs.helsinki.fi/u/mluukkai/wadror/pint.jpg" 
+        width="200"
+        style="padding-top:30px"
+      >
+    </div>
+  </div>
+</div>
+```
+
+Eli sijoitamme bootstrapin containeriin, eli varsinaisen sivun sisällön sisältävään osaan yhden rivin, jonka jaamme kahteen sarakkeeseen: 8:n levyiseen johon kunkin sivun tiedot upotetaan ja 4:n levyiseen osaan jossa näytämme kuvan riippumatta siitä millä sivulla ollan.
 
 Sivun pohja on nyt kunnossa ja voimme hyödyntää bootstrapin tyylejä ja komponentteja sivuillamme.
 
-Navigaatio määriteltiin jo *navbar*-komponentin ks. http://getbootstrap.com/components/#navbar avulla.
+### notifikaatio
 
-Muotoillaan seuraavaksi hieman sivulla käyttämiämme taulukoita. Bootstrapin sivulta http://getbootstrap.com/css/#tables näemme, että taulukon normaali bootstrap-muotoilu saadaan käyttöön lisäämällä taulukon HTML-koodille luokka <code>table</code>, seuraavasti:
+Useissa sovelluksen näkymissä on rivi
+
+```erb
+<p id="notice"><%= notice %></p>
+```
+
+jonka avulla käyttäjälle näytetään erilaisia notifikaatioita, mm. _Beer was successfully created._
+
+Notifikaatiot kannattaa muotoilla bootstrapin [alert](https://getbootstrap.com/docs/4.0/components/alerts/)-komponentin avulla:
+
+
+```erb
+<% if notice %>
+  <div class="alert alert-primary" role="alert">
+    <%= notice %>
+  </div>
+<% end %>
+```
+
+
+Sen sijaan että tekisimme lisäisimme muutoksen jokaiselle sivulle, millä notifikaation näyttävä koodi on, on parempi siirtää notifikaation näyttävä logiikka   tiedostoon _app/views/layout/application.html.erb_
+
+```erb
+<div class="container">
+  <% if notice %>
+    <div class="alert alert-primary" role="alert">
+      <%= notice %>
+    </div>
+  <% end %>
+
+  <div class="row">
+    ...
+  </div>
+</div>
+```
+
+ja poistaa se muista näkymätiedostoista, kuten _app/views/beers/index.html.erb_
+
+Jos käytät Visual Studio Codea, niin voit käyttää _replace in files_ -toimintoa poistamaan ylimääräiseksi jääneet <code><p id="notice"><%= notice %></p></code> -komennot. 
+
+### lisää komponentteja
+
+Muotoillaan seuraavaksi hieman sivulla käyttämiämme taulukoita. Bootstrapin sivulta https://getbootstrap.com/docs/4.0/content/tables/ näemme, että taulukon normaali bootstrap-muotoilu saadaan käyttöön lisäämällä taulukon HTML-koodille luokka <code>table</code>, seuraavasti:
 
 ```erb
 <table class="table">
@@ -244,9 +361,9 @@ Lisätään luokkamäärittely esim. oluiden sivulle ja kokeillaan. Näyttää j
 >
 > Muuta ainakin muutama sovelluksen taulukoista käyttämään bootstrapin tyylejä.
 >
->
+> VS Coden käyttäjille muutos onnistuu helposti _replace in files_ -toiminnolla
 
-Bootstrap tarjoaa valmiit tyylit myös painikkeille http://getbootstrap.com/css/#buttons
+Bootstrap tarjoaa valmiit tyylit myös painikkeille https://getbootstrap.com/docs/4.0/components/buttons/
 
 Päätetään käyttää luokkaparin <code>btn btn-primary</code> määrittelemää sinistä painiketta. Seuraavassa esimerkki, missä luokka on lisätty oluen reittauksen tekevälle painikkeelle:
 
@@ -263,25 +380,38 @@ Päätetään käyttää luokkaparin <code>btn btn-primary</code> määrittelem�
 Luokka voidaan lisätä myös niihin linkkeihin, jotka halutaan napin painikkeen näköisiksi:
 
 ```erb
-<%= link_to 'New Beer', new_beer_path, class:'btn btn-primary' %>
+<%= link_to('New Beer', new_beer_path, class:'btn btn-primary') if current_user %>
 ```
 
 > ## Tehtävä 2
 >
 > Lisää sovelluksen ainakin muutamille painikkeille ja painikkeen tapaan toimiville linkeille valitut tyylit. Poisto-operaatioissa tyyliksi kannattaa laittaa <code>btn btn-danger</code>.
 
-
 > ## Tehtävä 3
 >
-> Muuta navigointipalkkia siten, että käyttäjän kirjautuessa kirjautunutta käyttäjää koskevat toiminnot tulevat menupalkin dropdowniksi alla olevan kuvan tapaan.
+> Sovelluksemme lomakkeet ovat tällä hetkellä melko rumia. Tee ainakin uuden olutseuran luomislomakkeesta tyylikkäämpi Bootstrapin [lomakkeiden](https://getbootstrap.com/docs/4.0/components/forms/) muotoiluun tarkoitettujen komponenttien avulla. 
 >
-> Ohjeita löydät dokumentista http://getbootstrap.com/components/#nav-dropdowns
+>Saat päättää lomakkeen tarkan tyylin itse. Eräs tapa muotoilla lomake on seuraava
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-3.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-3a.png)
 
 > ## Tehtävä 4
 >
-> Tee jostain sivustosi osasta tyylikkäämpi käyttämällä jotain Bootstrapin komponenttia. Saat merkitä rastin jos käytät aikaa sivustosi ulkoasun parantamiseen vähintään 15 minuuttia. Saat rastin myös jos muutat loputkin sovelluksen taulukoista ja napeista käyttämään bootstrapin tyylejä.
+> Muuta navigointipalkkia siten, että käyttäjän kirjautuessa kirjautunutta käyttäjää koskevat toiminnot tulevat menupalkin dropdowniksi alla olevan kuvan tapaan.
+>
+> Apua löydät [navbarin](https://getbootstrap.com/docs/4.0/components/navbar/) ohjeiden _dropdown_-elementtejä sisältävistä esimerkeistä.
+>
+> Ratkaisu ei ole ihan suoraviivainen. Eräs ratkaisu on muodostaa linkit apufunktion _link_to_ sijaan suoraan _a_-tageina seuraavaan tyyliin:
+>
+> ```
+> <a class="dropdown-item" href=<%= new_rating_path %>>rate a beer</a>
+> ```
+
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-3.png)
+
+> ## Tehtävä 5
+>
+> Tee jostain sivustosi osasta tyylikkäämpi käyttämällä jotain Bootstrapin komponenttia. Saat merkitä rastin jos käytät aikaa sivustosi ulkoasun parantamiseen vähintään 15 minuuttia. 
 
 ## Panimon aktiivisuus
 
@@ -558,7 +688,7 @@ Kaikki panimot renderöivä template ainoastaan *renderöi partiaalin* ja lähet
 
 Panimoiden sivun template on nyt lähes silmiä hivelevä!
 
-> ## Tehtävä 5-6 (kahden tehtävän arvoinen)
+> ## Tehtävä 6-7 (kahden tehtävän arvoinen)
 >
 > Ratings-sivumme on tällä hetkellä hieman tylsä. Muuta sivua siten, että sillä näytetään reittausten sijaan:
 >* kolme reittausten keskiarvon perusteella parasta olutta ja  panimoa
@@ -597,7 +727,7 @@ Panimoiden sivun template on nyt lähes silmiä hivelevä!
 >
 > __Älä copypastaa näyttöjen koodia vaan käytä tarvittaessa partiaaleja.__
 
-> ## Tehtävä 7
+> ## Tehtävä 8
 >
 > Lisää reittausten sivulle myös parhaat kolme oluttyyliä
 
@@ -672,7 +802,7 @@ Näytön muodostava template siistiytyykin huomattavasti.
 
 Painikkeet muodostava koodi olisi pystytty myös eristämään omaan partialiin, ja onkin hiukan makuasia kumpi on tässä tilanteessa parempi ratkaisu, helper-metodi vai partiali.
 
-> ## Tehtävä 8
+> ## Tehtävä 9
 >
 > Usealla sovelluksen sivulla näytetään reittausten keskiarvoja. Keskiarvot ovat Decimal-tyyppiä, joten ne tulostuvat välillä hieman liiankin monen desimaalin tarkkuudella. Määrittele reittausten keskiarvon renderöintiä varten apumetodi <code>round(param)</code>, joka tulostaa aina parametrinsa __yhden__ desimaalin tarkkuudella, ja ota apumetodi käyttöön (ainakin joissakin) näyttötemplateissa.
 >
@@ -729,7 +859,7 @@ http://guides.rubyonrails.org/routing.html#adding-more-restful-actions
 
 ## Admin-käyttäjä ja pääsynhallintaa
 
-> ## Tehtävä 9
+> ## Tehtävä 10
 >
 > Tällä hetkellä kuka tahansa kirjautunut käyttäjä voi poistaa panimoja, oluita ja olutseuroja. Laajennetaan järjestelmää siten, että osa käyttäjistä on administraattoreja, ja poisto-operaatioit ovat vain sallittuja vain heille
 >
@@ -757,7 +887,7 @@ http://guides.rubyonrails.org/routing.html#adding-more-restful-actions
 >
 > **HUOM:** toteutuksessa kannattanee hyödyntää [esifiltteriä](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko4.md#kirjautuneiden-toiminnot)
 
-> ## Tehtävä 10-11 (kahden tehtävän arvoinen)
+> ## Tehtävä 11-12 (kahden tehtävän arvoinen)
 >
 > Toteuta toiminnallisuus, jonka avulla administraattorit voivat jäädyttää jonkin käyttäjätunnuksen. Jäädyttäminen voi tapahtua esim. napilla, jonka vain administraattorit näkevät käyttäjän sivulla. Jäädytetyn tunnuksen omaava käyttäjä ei saa päästä kirjautumaan järjestelmään. Yrittäessään kirjautumista, sovellus huomauttaa käyttäjälle että hänen tunnus on jäädytetty ja kehoittaa ottamaan yhteyttä ylläpitäjiin. Administraattorien tulee pystyä palauttamaan jäädytetty käyttäjätunnus ennalleen.
 >
@@ -792,7 +922,7 @@ Aihetta esittelevä Rails cast on jo aika ikääntynyt, eli tarkemmat ohjeet kan
 
 Emme ole vielä toistaiseksi puhuneet mitään Rails-sovellusten tietoturvasta. Nyt on aika puuttua asiaan. Rails-guideissa on tarjolla erinomainen katsaus tyypillisimmistä web-sovellusten tietoturvauhista ja siitä miten Rails-sovelluksissa voi uhkiin varautua.
 
-> ## Tehtävät 12-14 (kolmen tehtävän arvoinen)
+> ## Tehtävät 13-15 (kolmen tehtävän arvoinen)
 >
 > Lue http://guides.rubyonrails.org/security.html
 >
