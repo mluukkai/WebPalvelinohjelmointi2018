@@ -425,7 +425,15 @@ Osa panimoista on jo lopettanut toimintansa ja haluaisimme eriyttää lopettanee
 
     rails g migration AddActivityToBrewery active:boolean
 
-Huom: koska migraation nimi alkaa sanalla Add ja loppuu olion nimeen Brewery, ja sisältää tiedon lisättävästä sarakkeesta, generoituu juuri oikea migraatiokoodi automaattisesti.
+Huom: koska migraation nimi alkaa sanalla Add ja loppuu olion nimeen Brewery, ja sisältää tiedon lisättävästä sarakkeesta, generoituu juuri oikea migraatiokoodi automaattisesti. Asia on kuitenkin syytä varmistaa tarkistamalla generoituneen migraatiotiedoston sisältö
+
+```ruby
+class AddActivityToBrewery < ActiveRecord::Migration[5.2]
+  def change
+    add_column :breweries, :active, :boolean
+  end
+end
+```
 
 Suoritetaan migraatio ja käydään konsolista käsin merkkaamassa kaikki tietokannassa olevat panimot aktiiviseksi:
 
@@ -438,44 +446,45 @@ Käydään luomassa uusi panimo, jotta saamme tietokantaamme myös yhden epäakt
 Muutetaan sitten panimon sivua siten, että se kertoo panimon mahdollisen epäaktiivisuuden panimon nimen vieressä:
 
 ```erb
-<h2><%= @brewery.name %>
+ <h2>
+  <%= @brewery.name %>
   <% if not @brewery.active  %>
-    <span class="label label-info">retired</span>
+    <span class="badge badge-info">retired</span>
   <% end %>
 </h2>
 
+<p><em>Established at <%= @brewery.year %></em></p>
+
+<p>Number of beers <%= @brewery.beers.count %> </p>
+
 <p>
-  <em>Established year:</em>
-  <%= @brewery.year %>
+ <% @brewery.beers.each do |beer| %>
+   <%= link_to beer.name, beer %>
+ <% end %>
 </p>
 
-<p>Number of beers <%= @brewery.beers.count%> </p>
-
-<ul>
- <% @brewery.beers.each do |beer| %>
-   <li><%= link_to beer.name, beer %></li>
- <% end %>
-</ul>
-
-<% if @brewery.ratings.empty? %>
-    <p>beers of the brewery have not yet been rated! </p>
-<% else %>
-    <p>Has <%= pluralize(@brewery.ratings.count,'rating') %>, average <%= @brewery.average_rating %> </p>
-<% end %>
+<p>
+  <% if @brewery.ratings.empty? %>
+    beer has not yet been rated!
+  <% else %>
+    Has <%= pluralize(@brewery.ratings.count, 'rating') %>, average <%= @brewery.average_rating %>
+  <% end %>
+</p>
 
 <% if current_user %>
   <%= link_to 'Edit', edit_brewery_path(@brewery), class:"btn btn-primary"  %>
   <%= link_to 'Destroy', @brewery, method: :delete, data: { confirm: 'Are you sure?' }, class:"btn btn-danger"  %>
 <% end %>
+
 ```
 
 Panimon luomis- ja editointilomakkeeseen on syytä lisätä mahdollisuus panimon aktiivisuuden asettamiseen. Lisätään views/breweries/_form.html.erb:iin checkbox aktiivisuuden säätelyä varten:
 
 ```erb
-  <div class="field">
-    <%= f.label :active %>
-    <%= f.check_box :active %>
-  </div>
+<div class="field">
+  <%= f.label :active %>
+  <%= f.check_box :active %>
+</div>
 ```
 
 Kokeillaan. Huomaamme kuitenkin että aktiivisuuden muuttaminen ei toimi.
@@ -485,39 +494,38 @@ Syynä tälle on se, että attribuuttia <code>active</code> ei ole lueteltu  mas
 Tutkitaan hieman panimokontrolleria. Sekä uuden panimon luominen, että panimon tietojen muuttaminen hakevat panimoon liittyvät tiedot metodin <code>brewery_params</code> avulla:
 
 ```ruby
+def create
+  @brewery = Brewery.new(brewery_params)
 
-  def create
-    @brewery = Brewery.new(brewery_params)
+  # ...
+end
 
-    # ...
-  end
+def update
+  # ...
+  if @brewery.update(brewery_params)
+  # ...
+end
 
-  def update
-    # ...
-    if @brewery.update(brewery_params)
-    # ...
-  end
-
-  def brewery_params
-    params.require(:brewery).permit(:name, :year)
-  end
+def brewery_params
+  params.require(:brewery).permit(:name, :year)
+end
 ```
 
 Kuten [viikolla 2 totesimme](
-https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko2.md#reittauksen-talletus) on jokainen massasijoitettavaksi tarkoitettu attribuutti eksplisiittisesti sallittava <code>permit</code> metodin avulla. Muutetaan metodia <code>brewery_params</code> seuraavasti:
+https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#reittauksen-talletus) on jokainen massasijoitettavaksi tarkoitettu attribuutti eksplisiittisesti sallittava <code>permit</code> metodin avulla. Muutetaan metodia <code>brewery_params</code> seuraavasti:
 ```ruby
-  def brewery_params
-    params.require(:brewery).permit(:name, :year, :active)
-  end
+def brewery_params
+  params.require(:brewery).permit(:name, :year, :active)
+end
 ```
 
 Päätetään, että haluamme näyttää panimoiden listalla erikseen aktiiviset ja epäaktiiviset panimot. Suoraviivainen ratkaisu on seuraava. Talletetaan kontrollerissa aktiiviset ja passiiviset omiin muuttujiinsa:
 
 ```ruby
-  def index
-    @active_breweries = Brewery.where(active:true)
-    @retired_breweries = Brewery.where(active:[nil, false])
-  end
+def index
+  @active_breweries = Brewery.where(active: true)
+  @retired_breweries = Brewery.where(active: [nil, false])
+end
 ```
 
 Kentän <code>active</code>-arvo voi olla joko eksplisiittisesti asetettu <code>false</code> tai <code>nil</code> jotka molemmat tarkoittavat eläköitynyttä panimoa, olemme joutuneet lisäämään jälkimmäiseen <code>where</code>-lauseeseen molemmat vaihtoehdot.
@@ -590,17 +598,20 @@ Määritellään nyt panimoille kaksi scopea, aktiiviset ja eläköityneet:
 
 ```ruby
 class Brewery < ApplicationRecord
-  include RatingAverage
+  has_many :beers, dependent: :destroy
+  has_many :ratings, through: :beers
 
   validates :name, presence: true
-  validates :year, numericality: { less_than_or_equal_to: ->(_) { Time.now.year} }
+  validates :year, numericality: { only_integer: true,
+                                   greater_than: 1039,
+                                   less_than_or_equal_to: ->(_) { Time.now.year } }
 
-  scope :active, -> { where active:true }
-  scope :retired, -> { where active:[nil,false] }
+  scope :active, -> { where active: true }
+  scope :retired, -> { where active: [nil,false] }
 
-  has_many :beers, :dependent => :destroy
-  has_many :ratings, :through => :beers
+  include RatingAverage
 end
+
 ```
 
 Scope määrittelee luokalle metodin, joka palauttaa kaikki scopen määrittelevän kyselyn palauttamat oliot.
@@ -614,10 +625,10 @@ Nyt <code>Brewery</code>-luokalta saadaan pyydettyä kaikkien panimoiden lisäks
 Kontrollerista tulee nyt elegantti:
 
 ```ruby
-  def index
-    @active_breweries = Brewery.active
-    @retired_breweries = Brewery.retired
-  end
+def index
+  @active_breweries = Brewery.active
+  @retired_breweries = Brewery.retired
+end
 ```
 
 Ratkaisu on luettavuuden lisäksi parempi myös olioiden vastuujaon kannalta. Ei ole järkevää laittaa kontrollerin vastuulle sen kertomista _miten_ aktiiviset ja eläköityneet panimot tulee hakea kannasta, sen sijaan tämä on hyvin luontevaa antaa modelin vastuulle, sillä modelin rooli on nimenomaan toimia abstraktiokerroksena muun sovelluksen ja tietokannan välillä.
@@ -625,19 +636,19 @@ Ratkaisu on luettavuuden lisäksi parempi myös olioiden vastuujaon kannalta. Ei
 Kannattaa huomioida, että ActiveRecord mahdollistaa operaatioiden ketjuttamisen. Voitaisiin kirjoittaa esim:
 
 ```ruby
-  Brewery.where(active:true).where("year>2000")
+  Brewery.where(active: true).where("year>2000")
 ```
 
 ja tuloksena olisi SQL-kysely
 
 ```sql
-  SELECT "breweries".* FROM "breweries" WHERE "breweries"."active" = ? AND (year>2000)
+SELECT "breweries".* FROM "breweries" WHERE "breweries"."active" = ? AND (year>2000)
 ```
 
 ActiveRecord osaa siis optimoida ketjutetut metodikutsut yhdeksi SQL-operaatioksi. Myös scope toimii osana ketjutusta, eli vuoden 2000 jälkeen perustetut, edelleen aktiiviset panimot saataisiin selville myös seuraavalla 'onlinerilla':
 
 ```ruby
-  Brewery.active.where("year>2000")
+Brewery.active.where("year>2000")
 ```
 
 ## Partiaalit
@@ -689,7 +700,6 @@ Kaikki panimot renderöivä template ainoastaan *renderöi partiaalin* ja lähet
 <br>
 
 <%= link_to 'New Brewery', new_brewery_path, class:"btn btn-primary"  %>
-
 ```
 
 Panimoiden sivun template on nyt lähes silmiä hivelevä!
@@ -697,9 +707,8 @@ Panimoiden sivun template on nyt lähes silmiä hivelevä!
 > ## Tehtävä 6-7 (kahden tehtävän arvoinen)
 >
 > Ratings-sivumme on tällä hetkellä hieman tylsä. Muuta sivua siten, että sillä näytetään reittausten sijaan:
->* kolme reittausten keskiarvon perusteella parasta olutta ja  panimoa
->* kolme eniten reittauksia tehnyttä käyttäjää
->* viisi viimeksi tehtyä reittausta.
+>* kolme reittausten keskiarvon perusteella parasta olutta ja panimoa
+>* viisi viimeksi tehtyä reittausta
 >
 > **Vihjeitä:**
 >
@@ -716,9 +725,9 @@ Panimoiden sivun template on nyt lähes silmiä hivelevä!
 >  # ...
 >
 >  def self.top(n)
->    sorted_by_rating_in_desc_order = Brewery.all.sort_by{ |b| -(b.average_rating||0) }
+>    sorted_by_rating_in_desc_order = Brewery.all.sort_by{ |b| -(b.average_rating || 0) }
 >    # palauta listalta parhaat n kappaletta
->    # miten? ks. http://www.ruby-doc.org/core-2.1.0/Array.html
+>    # miten? ks. http://www.ruby-doc.org/core-2.5.1/Array.html
 >  end
 >end
 >```
@@ -735,14 +744,13 @@ Panimoiden sivun template on nyt lähes silmiä hivelevä!
 
 > ## Tehtävä 8
 >
-> Lisää reittausten sivulle myös parhaat kolme oluttyyliä
+> Lisää reittausten sivulle myös parhaat kolme oluttyyliä ja kolme eniten reittauksia tehnyttä käyttäjää.
 
 Reittausten sivu voi näyttää tehtävävien jälkeen esim. seuraavalta:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-4.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-4.png)
 
-Sivun muotoiluun voi olla apua seuraavasta: http://getbootstrap.com/css/#grid-nesting
-
+Sivun muotoiluun voi olla apua seuraavasta: https://getbootstrap.com/docs/4.0/layout/grid/#nesting
 
 ## Näyttöjen koodin siistiminen helpereillä
 
@@ -763,10 +771,9 @@ Sovelluksissa on usein tarve kirjoittaa apumetodeja (eli Railsin terminologian m
 Huomaamme, että näyttöjemme koodissa on joitain toistuvia osia. Esim. oluen, tyylin ja panimon show.html.erb-templateissa on kaikissa hyvin samantapainen koodi, jolla sivulle luodaan tarvittaessa linkit editointia ja poistamista varten:
 
 ```erb
-<%= if current_user %>
-  <%= link_to 'Edit', edit_beer_path(@beer), class:"btn btn-primary" %>
-
-  <%= link_to 'Delete', @beer, method: :delete, data: { confirm: 'Are you sure?' }, class:"btn btn-danger"  %>
+<% if current_user %>
+  <%= link_to 'Edit', edit_brewery_path(@brewery), class:"btn btn-primary"  %>
+  <%= link_to 'Destroy', @brewery, method: :delete, data: { confirm: 'Are you sure?' }, class:"btn btn-danger"  %>
 <% end %>
 ```
 
@@ -776,13 +783,13 @@ Eriytetään nämä omaksi helperiksi, moduliin application_helper.rb
 module ApplicationHelper
   def edit_and_destroy_buttons(item)
     unless current_user.nil?
-      edit = link_to('Edit', url_for([:edit, item]), class:"btn btn-primary")
+      edit = link_to('Edit', url_for([:edit, item]), class: "btn btn-primary")
       del = link_to('Destroy', item, method: :delete,
-                    data: {confirm: 'Are you sure?' }, class:"btn btn-danger")
+                                     data: { confirm: 'Are you sure?' },
+                                     class: "btn btn-danger")
       raw("#{edit} #{del}")
     end
   end
-
 end
 ```
 
@@ -810,7 +817,7 @@ Painikkeet muodostava koodi olisi pystytty myös eristämään omaan partialiin,
 
 > ## Tehtävä 9
 >
-> Usealla sovelluksen sivulla näytetään reittausten keskiarvoja. Keskiarvot ovat Decimal-tyyppiä, joten ne tulostuvat välillä hieman liiankin monen desimaalin tarkkuudella. Määrittele reittausten keskiarvon renderöintiä varten apumetodi <code>round(param)</code>, joka tulostaa aina parametrinsa __yhden__ desimaalin tarkkuudella, ja ota apumetodi käyttöön (ainakin joissakin) näyttötemplateissa.
+> Usealla sovelluksen sivulla näytetään reittausten keskiarvoja. Keskiarvot ovat Decimal-tyyppiä, joten ne tulostuvat välillä hieman liiankin monen desimaalin tarkkuudella. Määrittele reittausten keskiarvon renderöintiä varten apumetodi <code>round(number)</code>, joka tulostaa aina parametrinsa __yhden__ desimaalin tarkkuudella, ja ota apumetodi käyttöön (ainakin joissakin) näyttötemplateissa.
 >
 > Voit käyttää helpperissäsi esim. Railsista löytyvää <code>number_with_precision</code>-metodia, ks. http://api.rubyonrails.org/classes/ActionView/Helpers/NumberHelper.html#method-i-number_with_precision
 
