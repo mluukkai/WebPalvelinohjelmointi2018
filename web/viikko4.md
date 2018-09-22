@@ -1671,9 +1671,11 @@ Eriyisesti Web-sovellusten yhteydessä jatkuva deployaaminen saattaa olla hyvink
 http://about.travis-ci.org/docs/user/deployment/heroku/
 ja http://about.travis-ci.org/blog/2013-07-09-introducing-continuous-deployment-to-heroku/
 >
-> **HUOM** on erittäin suositeltavaa että teet konfiguroinnin [travisin komentorivityökalun](https://github.com/travis-ci/travis.rb#installation) avulla!
+> **HUOM:** linkit uudelleenohjaavat salakavalasti travis-ci.com:in puolelle. Ohjeet ovat validit, mutta käytä travis-ci.org:ia!
 >
-> **HUOM2:**  Travisin ja Herokun yhteistoiminnallisuudessa on ilmennyt aika-ajoin ongelmia. Tutki tarkkaan Travisin buildiin tulevia virheilmoituksia ja jos et keksi mikä on vikana, kokeile deployaamista jonkin ajan (esim. muutaman tunnin) kuluttua uudelleen. Älä siis juutu tähän tehtävään!
+> **HUOM2:** on erittäin suositeltavaa että teet konfiguroinnin [travisin komentorivityökalun](https://github.com/travis-ci/travis.rb#installation) avulla!
+>
+> **HUOM3:**  Travisin ja Herokun yhteistoiminnallisuudessa on ilmennyt aika-ajoin ongelmia. Tutki tarkkaan Travisin buildiin tulevia virheilmoituksia ja jos et keksi mikä on vikana, kokeile deployaamista jonkin ajan (esim. muutaman tunnin) kuluttua uudelleen. Älä siis juutu tähän tehtävään!
 
 ## Koodin laatumetriikat
 
