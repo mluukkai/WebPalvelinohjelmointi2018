@@ -655,35 +655,35 @@ it "shows the known beers", js:true do
 Kun suoritamme testit, törmäämme virheilmoitukseen
 
 ```ruby
-  1) Beerlist page shows one known beer
-     Failure/Error: visit beerlist_path
+1) Beerlist page shows one known beer
+    Failure/Error: visit beerlist_path
 
-     WebMock::NetConnectNotAllowedError:
-       Real HTTP connections are disabled. Unregistered request: GET http://127.0.0.1:52187/__identify__ with headers {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}
+    WebMock::NetConnectNotAllowedError:
+      Real HTTP connections are disabled. Unregistered request: GET http://127.0.0.1:52187/__identify__ with headers {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}
 
-       You can stub this request with the following snippet:
+      You can stub this request with the following snippet:
 
-       stub_request(:get, "http://127.0.0.1:52187/__identify__").
-         with(
-           headers: {
-       	  'Accept'=>'*/*',
-       	  'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-       	  'User-Agent'=>'Ruby'
-           }).
-         to_return(status: 200, body: "", headers: {})
+      stub_request(:get, "http://127.0.0.1:52187/__identify__").
+        with(
+          headers: {
+        'Accept'=>'*/*',
+        'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+        'User-Agent'=>'Ruby'
+          }).
+        to_return(status: 200, body: "", headers: {})
 
-       ============================================================
+      ============================================================
 ```
 
 Virheen syy on siinä, että otimme viikolla 5 käyttöömme [WebMock-gemin](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko5.md#olutpaikkojen-etsimistoiminnon-testaaminen) joka oletusarvoisesti kieltää testikoodin suorittamat HTTP-yhteydet. Javascriptilla toteutettu olutlistahan yrittää hakea oluiden listan json-muodossa palvelimelta. Pääsemme virheestä eroon sallimalla yhteydet paikalliselle palvelimelle, esim. muuttamalla testit alustavaan <code>before :all</code> -lohkoa seuraavasti:
 
 ```ruby
-  before :all do
-    Capybara.register_driver :selenium do |app|
-      Capybara::Selenium::Driver.new(app, :browser => :chrome)
-    end
-    WebMock.disable_net_connect!(allow_localhost: true) 
+before :all do
+  Capybara.register_driver :selenium do |app|
+    Capybara::Selenium::Driver.new(app, :browser => :chrome)
   end
+  WebMock.disable_net_connect!(allow_localhost: true) 
+end
 ```
 
 Testi toimii vihdoin.
@@ -704,12 +704,12 @@ Kuten sivulla https://github.com/jnicklas/capybara#asynchronous-javascript-ajax-
 Tiedämme, että javascriptin pitäisi lisätä sivun taulukkoon rivejä. Saammekin sivun näkymään oikein, jos lisäämme alkuun komennon <code>find('table').find('tr:nth-child(2)')</code> joka etsii sivulta taulukon ja sen sisältä toisen rivin (taulukon ensimmäinen rivihän on jo sivupohjassa mukana oleva taulukon otsikkorivi):
 
 ``` ruby
-  it "shows a known beer", :js => true do
-    visit beerlist_path
-    find('table').find('tr:nth-child(2)')
-    save_and_open_page
-    expect(page).to have_content "Nikolai"
-  end
+it "shows a known beer", :js => true do
+  visit beerlist_path
+  find('table').find('tr:nth-child(2)')
+  save_and_open_page
+  expect(page).to have_content "Nikolai"
+end
 ```
 
 Nyt capybara odottaa taulukon valmistumista ja siirtyy sivun avaavaan komentoon vasta taulukon latauduttua (itseasiassa vain 2 riviä taulukkoa on varmuudella valmiina).
@@ -835,7 +835,7 @@ Luodaan indeksiä varten migraatio
 Migraatio on seuraavanlainen:
 
 ```ruby
-class AddUserIndexBasedOnUsername < ActiveRecord::Migration
+class AddConfirmedToMembership < ActiveRecord::Migration[5.2]
   def change
     add_index :users, :username
   end
@@ -851,17 +851,17 @@ Indeksin huono puoli on se, että kun järjestelmään lisätään uusi käyttä
 Kaikki oluet näyttävä kontrolleri on yksinkertainen. Oluet haetaan tietokannasta, järjestetään HTTP-kutsussa olleen parametrin määrittelemällä tavalla ja asetetaan templatea varten muuttujaan:
 
 ```ruby
-  def index
-    @beers = Beer.all
+def index
+  @beers = Beer.all
 
-    order = params[:order] || 'name'
+  order = params[:order] || 'name'
 
-    @beers = case order
-      when 'name' then @beers.sort_by{ |b| b.name }
-      when 'brewery' then @beers.sort_by{ |b| b.brewery.name }
-      when 'style' then @beers.sort_by{ |b| b.style.name }
-    end
-  end
+  @beers = case order
+            when 'name' then @beers.sort_by(&:name)
+            when 'brewery' then @beers.sort_by{ |b| b.brewery.name }
+            when 'style' then @beers.sort_by{ |b| b.style.name }
+            end
+end
 ```
 
 Template listaa oluet taulukkona:
@@ -891,7 +891,7 @@ Suorita <code>bundle install</code> ja käynnistä rails server uudelleen. Kun m
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-7.png)
 
 Raportti kertoo että <code>Executing action: index</code> eli kontrollerimetodin suoritus aiheuttaa yhden SQL-kyselyn <code>SELECT "beers".* FROM "beers"</code>. Sen sijaan
- <code>Rendering: beers/index</code> eli näkymätemplaten suoritus aiheuttaa peräti 9 SQL-kyselyä!
+ <code>Rendering: beers/index</code> eli näkymätemplaten suoritus aiheuttaa peräti 11 SQL-kyselyä!
 
 Kyselyjä klikkaamalla päästään tarkastelemaan syytä:
 
@@ -900,9 +900,9 @@ Kyselyjä klikkaamalla päästään tarkastelemaan syytä:
 Näkymätemplaten renderöinti siis suorittaa useaan kertaan seuraavat kyselyt:
 
 ```ruby
-SELECT  "breweries".* FROM "breweries"  WHERE "breweries"."id" = ?  ORDER BY "breweries"."id" ASC LIMIT 1
+SELECT  "styles".* FROM "styles" WHERE "styles"."id" = ? LIMIT ?;
 
-SELECT  "styles".* FROM "styles"  WHERE "styles"."id" = ?  ORDER BY "styles"."id" ASC LIMIT 1
+SELECT  "breweries".* FROM "breweries" WHERE "breweries"."id" = ? LIMIT ?; 
 ```
 Käytännössä jokaista erillistä olutta kohti tehdään oma kysely sekä <code>styles</code>- että <code>breweries</code> tauluun.
 
@@ -911,24 +911,24 @@ Syynä tälle on se, että activerecordissa on oletusarvoisesti käytössä ns. 
 Voimme ohjata ActiveRecordin metodien parametrien avulla kyselyistä generoituvaa SQL:ää. Esim. seuraavasti voimme ohjeistaa, että oluiden lisäksi niihin liittyvät panimot tulee hakea tietokannasta:
 
 ```ruby
-  def index
-    @beers = Beer.includes(:brewery).all
-    # ...
-  end
+def index
+  @beers = Beer.includes(:brewery).all
+  # ...
+end
 ```
 
 Miniprofilerin avulla näemme. että kontrollerin suoritus aiheuttaa nyt kaksi kyselyä:
 
 ```ruby
-SELECT "beers".* FROM "beers"
-SELECT "breweries".* FROM "breweries"  WHERE "breweries"."id" IN (1, 2, 3, 6)
+SELECT "beers".* FROM "beers"; 
+SELECT "breweries".* FROM "breweries" WHERE "breweries"."id" IN (?, ?, ?, ?);
 ```
 
-Näyttötemplaten  suoritus aiheuttaa enää 5 kyselyä, jotka kaikki ovat muotoa:
+Näyttötemplaten suoritus aiheuttaa enää 7 kyselyä, jotka kaikki ovat muotoa:
 
 ```ruby
 
-SELECT  "styles".* FROM "styles"  WHERE "styles"."id" = ?  ORDER BY "styles"."id" ASC LIMIT 1
+SELECT  "styles".* FROM "styles" WHERE "styles"."id" = ? LIMIT ?; 
 ```
 
 Näytön renderöinnin yhteydessä enää on haettava oluisiin liittyvät tyylit tietokannasta, kukin omalla SQL-kyselyllä.
@@ -936,11 +936,11 @@ Näytön renderöinnin yhteydessä enää on haettava oluisiin liittyvät tyylit
 Optimoidaan kontrolleria vielä siten, että myös kaikki tarvittavat tyylit luetaan kerralla kannasta:
 
 ```ruby
-  def index
-    @beers = Beer.includes(:brewery, :style).all
+def index
+  @beers = Beer.includes(:brewery, :style).all
 
-    # ...
-  end
+  # ...
+end
 ```
 
 Kontrollerin suoritus aiheuttaa nyt kolme kyselyä ja näytön renderöinti ainoastaan yhden kyselyn. Miniprofiler paljastaa että kysely on
@@ -952,11 +952,11 @@ SELECT  "users".* FROM "users"  WHERE "users"."id" = ? LIMIT 1
 ja syynä sille on
 
 ```ruby
-app/controllers/application_controller.rb:10:in 'current_user'
+app/controllers/application_controller.rb:12:in `current_user'
 ```
 eli näytön muuttujan <code>current_user</code> avulla tekemä viittaus kirjautuneena olevaan käyttäjään. Tämä ei kuitenkaan ole hirveän vakavaa.
 
-Saimme siis optimoitua SQL-kutsujen määrän 1+2n:stä (missä n tietokannassa olevien oluiden määrä) kolmeen (plus yhteen)!
+Saimme siis optimoitua SQL-kutsujen määrän _1 + 2n_:stä (missä n tietokannassa olevien oluiden määrä) kolmeen (plus yhteen)! Määrä on sikäli hyvä, että se on vakio ja ei riipu järjestelmässä olevien oluiden määrästä.
 
 Kokemaamme kutsutaan n+1-ongelmaksi (ks. http://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations), eli hakiessamme kannasta yhdellä kyselyllä listallisen olioita, jokainen listan olioista aiheuttaakin salakavalasti uuden tietokantahaun ja näin yhden haun sijaan tapahtuukin noin n+1 hakua.
 
@@ -1004,19 +1004,19 @@ Huomaa, että elementin <code>td</code> sisällä olevan if:in ehdon toimivuus r
 Muuttuisi tilanne hieman hankalammaksi SQL:n optimoinnin suhteen. Metodimme viimeisin versio oli seuraava:
 
 ```ruby
-  def favorite_beer
-    return nil if ratings.empty?
-    ratings.order(score: :desc).limit(1).first.beer
-  end
+def favorite_beer
+  return nil if ratings.empty?
+  ratings.order(score: :desc).limit(1).first.beer
+end
 ```
 
 Nyt edes eager loadaaminen ei auta, sillä metodikutsu auheuttaa joka tapauksessa SQL-kyselyn. Jos sen sijaan toteuttaisimme metodin keskusmuistissa olueeseen liittyviä reittauksia (kuten teimme aluksi viikolla 4):
 
 ```ruby
-  def favorite_beer
-    return nil if ratings.empty?
-    ratings.sort_by{ |r| r.score }.last.beer
-  end
+def favorite_beer
+  return nil if ratings.empty?
+  ratings.sort_by{ |r| r.score }.last.beer
+end
 ```
 
 metodikutsu _ei_ aiheuttaisi tietokantaoperaatiota _jos_ reittaukset olisi eager loadattu siinä vaiheessa kun metodia kutsutaan.
@@ -1025,7 +1025,9 @@ Saattaakin olla, että metodista olisi tietyissä tilanteissa suorituskykyä opt
 
 ## Cachays eli palvelinpuolen välimuistitoiminnallisuudet
 
-Luodaan tietokantaamme hiukan lisää dataa. Kopioi seuraava tiedostoon db/seeds.db
+Luodaan tietokantaamme hiukan lisää dataa. 
+
+Kopioi seuraava tiedostoon _db/seeds.db_
 
 ```ruby
 users = 200           # jos koneesi on hidas, riittää esim 100
@@ -1377,7 +1379,7 @@ Nyt fragmentin avaimeksi tulee merkkijono, jonka Rails generoi kutsumalla olion 
 Ratkaisu on vielä sikäli puutteellinen, että jos olueeseen tehdään uusi reittaus, olio ei itsessään muutu ja fragmentti ei ekspiroidu. Ongelma on kuitenkin helppo korjata. Lisätään reittaukseen tieto, että reittauksen syntyessä, muuttuessa tai tuhoutuessa, on samalla 'kosketettava' reittaukseen liittyvää olutta:
 
 ```ruby
-class Rating < ActiveRecord::Base
+class Rating < ApplicationRecord
   belongs_to :beer, touch: true
 
   # ...
