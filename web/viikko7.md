@@ -47,23 +47,23 @@ Kontrolleri pääsee HTTP-pyynnön parametriin käsiksi <code>params</code>-hash
 Laajennetaan oluiden kontrolleria siten, että se testaa onko pyynnössä parametria, ja jos on, oluet järjestetään halutulla tavalla:
 
 ```ruby
-  def index
-    @beers = Beer.all
+def index
+  @beers = Beer.all
 
-    order = params[:order] || 'name'
+  order = params[:order] || 'name'
 
-    @beers = case order
-      when 'name' then @beers.sort_by{ |b| b.name }
-      when 'brewery' then @beers.sort_by{ |b| b.brewery.name }
-      when 'style' then @beers.sort_by{ |b| b.style.name }
-    end
+  @beers = case order
+    when 'name' then @beers.sort_by{ |b| b.name }
+    when 'brewery' then @beers.sort_by{ |b| b.brewery.name }
+    when 'style' then @beers.sort_by{ |b| b.style.name }
   end
+end
 ```
 
 Koodi määrittelee järjestämisen tapahtuvan oletusarvoisesti nimen perusteella. Tämä tapahtuu seuraavasti
 
 ```ruby
-    order = params[:order] || 'name'
+order = params[:order] || 'name'
 ```
 
 Normaalisti <code>order</code> saa arvon <code>params[:order]</code>, jos parametria <code>:order</code> ei ole asetettu, eli sen arvo on <code>nil</code>, tulee arvoksi <code>||</code>:n jälkeinen osa eli 'name'.
@@ -71,52 +71,44 @@ Normaalisti <code>order</code> saa arvon <code>params[:order]</code>, jos parame
 **Huom1:** käytämme oluiden järjestämiseen rubyn <code>case when</code>-komentoa
 
 ```ruby
-    @beers = case order
-      when 'name' then @beers.sort_by{ |b| b.name }
-      when 'brewery' then @beers.sort_by{ |b| b.brewery.name }
-      when 'style' then @beers.sort_by{ |b| b.style.name }
-    end
+@beers = case order
+  when 'name' then @beers.sort_by{ |b| b.name }
+  when 'brewery' then @beers.sort_by{ |b| b.brewery.name }
+  when 'style' then @beers.sort_by{ |b| b.style.name }
+end
 ```
 
 joka toimii oleellisesti samoin kuin seuraava
 
 ```ruby
-    @beers =
-    if order == 'name'
-      @beers.sort_by{ |b| b.name }
-    elsif orded == 'brewery'
-      @beers.sort_by{ |b| b.brewery.name }
-    elsif orded == 'style'
-      @beers.sort_by{ |b| b.style.name }
-    end
+  @beers =
+  if order == 'name'
+    @beers.sort_by{ |b| b.name }
+  elsif orded == 'brewery'
+    @beers.sort_by{ |b| b.brewery.name }
+  elsif orded == 'style'
+    @beers.sort_by{ |b| b.style.name }
+  end
 ```
 
 **Huom2:** esimerkissä oluet haetaan ensin tietokannasta ja sen jälkeen järjestetään ne keskusmuistissa. Oluiden lista olisi mahdollista järjestää myös tietokantatasolla:
 
 ```ruby
-   # oluet nimen perusteella järjestettynä
-   Beer.order(:name)
+# oluet nimen perusteella järjestettynä
+Beer.order(:name)
 
-   # oluet panimoiden nimien perusteella järjestettynä
-   Beer.includes(:brewery).order("breweries.name")
+# oluet panimoiden nimien perusteella järjestettynä
+Beer.includes(:brewery).order("breweries.name")
 
-   # oluet tyylin nimien perusteella järjestettynä
-   Beer.includes(:style).order("style.name")
+# oluet tyylin nimien perusteella järjestettynä
+Beer.includes(:style).order("style.name")
 ```
 
 > ## Tehtävä 1
 >
-> Muuta panimot listaavaa sivua siten, että panimot voidaan järjestää nimen mukaiseen aakkosjärjestykseen tai perustamisvuoden mukaiseen järjestykseen. Nimen mukainen järjestys on oletusarvoinen. Viime viikolla laajensimme panimoiden listaa siten että aktiiviset ja lopettaneet panimot ovat omalla listallaan. Voit toteuttaa toiminnallisuuden siten, että molempien listojen järjestys on aina sama.
-
-> ## Tehtävä 2
+> Muuta olutseurat listaavaa sivua siten, että seurat voidaan järjestää nimen mukaiseen aakkosjärjestykseen, perustamisvuoden mukaiseen järjestykseen tai kaupungin nimen mukaiseen aakkosjärjestykseen. Nimen mukainen järjestys on oletusarvoinen. 
 >
-> **HUOM** Tämä tehtävä saattaa olla haastava saada toimimaan oikein. Älä jumita tähän tehtävään, seuraavat tehtävät eivät riipu tästä tehtävästä.
->
-> Laajenna panimoiden järjestämistoimintoa siten, että jos panimot ovat esim. vuoden mukaan järjestettyjä eli saraketta _year_ on klikattu ja saraketta klikataan heti perään toistamiseen, järjestetään panimot vuoden mukaan käänteiseen järjestykseen.
->
-> Vihje: joudut muistamaan panimoiden edellisen järjestyksen ja muistaminen taas onnistuu parhaiten [session](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko3.md#k%C3%A4ytt%C3%A4j%C3%A4-ja-sessio) avulla.
->
-> Toteutuksesi saa vaihtaa järjestyssuuntaa myös siinä tapauksessa, että järjestysperuste vaihtuu esim. nimen perusteella tehtävästä vuoden perusteella tehtäväksi.
+> *HUOM* jos et ole toteuttanut sovellukseesi olutkerhoja, voit toteuttaa tämän tehtävän toiminnallisuuden panimoiden sivulle (ja olettaa että aktiiviset ja lopettaneet panimot järjestetään aina samalla tavalla).
 
 ## Selainpuolella toteutettu toiminnallisuus
 
@@ -158,58 +150,42 @@ Kuten odotettua, osoitteessa http://localhost:3000/beerlist ei nyt näy mitään
 
 Alamme nyt kirjoittamaan toimintalogiikan toteutusta javascriptillä hyödyntäen [JQuery](https://jquery.com/)-kirjastoa.
 
-Jotta saamme JQueryn toimimaan hyvin yhteen Railsin ns. [turbolinks](https://github.com/rails/turbolinks)-ominaisuuden kanssa, otetaan käyttöön gemi https://github.com/kossnocorp/jquery.turbolinks eli lisätään Gemfileen rivi
-
-    gem 'jquery-turbolinks'
-
-tämän lisäksi tiedostoon app/assets/javascripts/application.js on **lisättävä** rivien
-
-    //= require jquery
-    //= require jquery_ujs
-
-väliin rivi
-
-    //= require jquery.turbolinks
-
-
 Rails-sovelluksen tarvitsema javascript-koodi kannattaa sijoittaa hakemistoon app/assets/javascripts. Tehdään hakemistoon tiedosto _beerlist.js_ jolla on seuraava sisältö:
 
 ```javascript
-$(document).ready(function () {
-    $('#beers').html("hello from javascript");
-    console.log("hello console!");
-});
+document.addEventListener("turbolinks:load", () => {
+  $('#beers').html("hello from javascript");
+  console.log("hello console!");
+})
 ```
 
 Kun sivu nyt avataan uudelleen, asetetaan javascriptillä tai tarkemmin sanottuna jQuery-kirjastolla id:n <code>beers</code> omaavaan elementtiin teksti "hello form javascript". Seuraava komento kirjoittaa javascript-konsoliin tervehdyksen.
 
 Javascript-ohjelmoinnissa selaimessa oleva konsoli on **erittäin tärkeä** työväline. Konsolin saa avattua chromessa tools-valikosta tai painamalla ctrl, shift, j (linux) tai alt, cmd, i (mac):
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w7-1.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w7-1.png)
 
 **Konsoli on syytä pitää koko ajan auki Javascriptillä ohjelmoitaessa!**
 
-Javascript näyttää aluksi melko kryptiseltä, mm. paljon käytettyjen anonyymifunktioiden takia. Edellä oleva koodi määrittelee että <code>$(document).ready</code>-tapahtuman yhteydessä suoritetaan anonyymifunktion määrittelemä koodi:
+Javascript näyttää aluksi melko kryptiseltä, mm. paljon käytettyjen anonyymifunktioiden takia. Edellä oleva koodi määrittelee että sivun lataututtua tapahtuvan __"turbolinks:load"-tapahtuman yhteydessä suoritetaan anonyymifunktion määrittelemä koodi:
 
 ```javascript
-function () {
-    $('#beers').html("hello from javascript");
-    console.log("hello console!");
+() => {
+  $('#beers').html("hello from javascript");
+  console.log("hello console!");
 }
 ```
 
-<code>$(document).ready</code> taas on tapahtuma (engl. event), joka tapahtuu koko www-sivun HTML-koodin ollessa latautunut selaimelle.
 
-
-Jos kokeilemme selaimella osoitetta [http://localhost:3000/beers.json](http://localhost:3000/beers.json) huomaamme, että saamme vastaukseksi oluiden tiedot tekstuaalisessa json-muodossa (ks. http://en.wikipedia.org/wiki/JSON, http:www.json.org):
+Jos kokeilemme selaimella osoitetta http://localhost:3000/beers.json huomaamme, että saamme vastaukseksi oluiden tiedot tekstuaalisessa json-muodossa (ks. http://en.wikipedia.org/wiki/JSON, http:www.json.org):
 
 ```ruby
-[{"id":6,"name":"Hefeweizen","style":{"id":4,"name":"Weizen","description":"A south German style of wheat beer (weissbier) made with a typical ratio of 50:50, or even higher, wheat. A yeast that produces a unique phenolic flavors of banana and cloves with an often dry and tart edge, some spiciness, bubblegum or notes of apples. Little hop bitterness, and a moderate level of alcohol. The \"Hefe\" prefix means \"with yeast\", hence the beers unfiltered and cloudy appearance. Poured into a traditional Weizen glass, the Hefeweizen can be one sexy looking beer. \r\n\r\nOften served with a lemon wedge (popularized by Americans), to either cut the wheat or yeast edge, which many either find to be a flavorful snap ... or an insult and something that damages the beer's taste and head retention.","created_at":"2017-02-05T17:44:15.892Z","updated_at":"2017-02-05T18:25:02.337Z"},"brewery_id":3,"url":"http://localhost:3000/beers/6.json"},{"id":7,"name":"Helles","style":{"id":1,"name":"European pale lager","description":"Similar to the Munich Helles story, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweetish notes from an all-malt base.","created_at":"2017-02-05T17:44:15.873Z","updated_at":"2017-02-05T18:21:13.441Z"},"brewery_id":3,"url":"http://localhost:3000/beers/7.json"},{"id":4,"name":"Huvila Pale Ale","style":{"id":2,"name":"American pale ale","description":"Of British origin, this style is now popular worldwide and the use of local ingredients, or imported, produces variances in character from region to region. Generally, expect a good balance of malt and hops. Fruity esters and diacetyl can vary from none to moderate, and bitterness can range from lightly floral to pungent. \r\n\r\nAmerican versions tend to be cleaner and hoppier, while British tend to be more malty, buttery, aromatic and balanced.","created_at":"2017-02-05T17:44:15.887Z","updated_at":"2017-02-05T18:22:25.674Z"},"brewery_id":2,"url":"http://localhost:3000/beers/4.json"},{"id":1,"name":"Iso 3","style":{"id":1,"name":"European pale lager","description":"Similar to the Munich Helles story, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweetish notes from an all-malt base.","created_at":"2017-02-05T17:44:15.873Z","updated_at":"2017-02-05T18:21:13.441Z"},"brewery_id":1,"url":"http://localhost:3000/beers/1.json"},{"id":2,"name":"Karhu","style":{"id":1,"name":"European pale lager","description":"Similar to the Munich Helles story, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweetish notes from an all-malt base.","created_at":"2017-02-05T17:44:15.873Z","updated_at":"2017-02-05T18:21:13.441Z"},"brewery_id":1,"url":"http://localhost:3000/beers/2.json"}]
+[{"id":10,"name":"Extra Light Triple Brewed","style":{"id":1,"name":"European pale lager","description":"Similar to Munich Helles, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweet notes from an all-malt base.","created_at":"2018-09-20T10:17:39.358Z","updated_at":"2018-09-20T10:35:04.921Z"},"brewery_id":1,"created_at":"2018-09-01T16:47:54.117Z","updated_at":"2018-09-20T10:17:39.414Z","url":"http://localhost:3000/beers/10.json"},{"id":6,"name":"Hefeweizen","style":{"id":4,"name":"German hefeweizen","description":"A south German style of wheat beer (weissbier) typically made with a ratio of 50 percent barley to 50 percent wheat. Sometimes the percentage of wheat is even higher. \"Hefe\" means \"with yeast,\" hence the beer's unfiltered and cloudy appearance. The particular ale yeast used produces unique esters and phenols of banana and cloves with an often dry and tart edge, some spiciness, and notes of bubblegum or apples. Hefeweizens are typified by little hop bitterness, and a moderate level of alcohol. Often served with a lemon wedge (popularized by Americans), to cut the wheat or yeasty edge, some may find this to be either a flavorful snap or an insult that can damage the beer's taste and head retention.","created_at":"2018-09-20T10:17:39.361Z","updated_at":"2018-09-20T10:36:17.788Z"},"brewery_id":3,"created_at":"2018-09-01T16:41:53.522Z","updated_at":"2018-09-20T10:17:39.406Z","url":"http://localhost:3000/beers/6.json"},{"id":7,"name":"Helles","style":{"id":1,"name":"European pale lager","description":"Similar to Munich Helles, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweet notes from an all-malt base.","created_at":"2018-09-20T10:17:39.358Z","updated_at":"2018-09-20T10:35:04.921Z"},"brewery_id":3,"created_at":"2018-09-01T16:41:53.525Z","updated_at":"2018-09-20T10:17:39.408Z","url":"http://localhost:3000/beers/7.json"},{"id":16,"name":"Helles","style":{"id":1,"name":"European pale lager","description":"Similar to Munich Helles, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweet notes from an all-malt base.","created_at":"2018-09-20T10:17:39.358Z","updated_at":"2018-09-20T10:35:04.921Z"},"brewery_id":3,"created_at":"2018-09-08T10:56:52.592Z","updated_at":"2018-09-20T10:17:39.420Z","url":"http://localhost:3000/beers/16.json"},{"id":4,"name":"Huvila Pale Ale","style":{"id":2,"name":"American Pale Ale","description":"Originally British in origin, this style is now popular worldwide and the use of local or imported ingredients produces variances in character from region to region. American versions tend to be cleaner and hoppier (with the piney, citrusy Cascade variety appearing frequently) than British versions, which are usually more malty, buttery, aromatic, and balanced. Pale Ales range in color from deep gold to medium amber. Fruity esters and diacetyl can vary from none to moderate, and hop aroma can range from lightly floral to bold and pungent. In general, expect a good balance of caramel malt and expressive hops with a medium body and a mildly bitter finish. ","created_at":"2018-09-20T10:17:39.359Z","updated_at":"2018-09-22T12:07:42.742Z"},"brewery_id":2,"created_at":"2018-09-01T16:41:53.516Z","updated_at":"2018-09-20T10:17:39.396Z","url":"http://localhost:3000/beers/4.json"},{"id":9,"name":"IVB","style":{"id":1,"name":"European pale lager","description":"Similar to Munich Helles, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweet notes from an all-malt base.","created_at":"2018-09-20T10:17:39.358Z","updated_at":"2018-09-20T10:35:04.921Z"},"brewery_id":1,"created_at":"2018-09-01T16:46:01.643Z","updated_at":"2018-09-20T10:17:39.412Z","url":"http://localhost:3000/beers/9.json"},{"id":1,"name":"Iso 3","style":{"id":1,"name":"European pale lager","description":"Similar to Munich Helles, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweet notes from an all-malt base.","created_at":"2018-09-20T10:17:39.358Z","updated_at":"2018-09-20T10:35:04.921Z"},"brewery_id":1,"created_at":"2018-09-01T16:41:53.508Z","updated_at":"2018-09-20T10:17:39.384Z","url":"http://localhost:3000/beers/1.json"},{"id":2,"name":"Karhu","style":{"id":1,"name":"European pale lager","description":"Similar to Munich Helles, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweet notes from an all-malt base.","created_at":"2018-09-20T10:17:39.358Z","updated_at":"2018-09-20T10:35:04.921Z"},"brewery_id":1,"created_at":"2018-09-01T16:41:53.511Z","updated_at":"2018-09-20T10:17:39.389Z","url":"http://localhost:3000/beers/2.json"},{"id":8,"name":"Lite","style":{"id":1,"name":"European pale lager","description":"Similar to Munich Helles, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweet notes from an all-malt base.","created_at":"2018-09-20T10:17:39.358Z","updated_at":"2018-09-20T10:35:04.921Z"},"brewery_id":1,"created_at":"2018-09-01T16:45:09.037Z","updated_at":"2018-09-20T10:17:39.410Z","url":"http://localhost:3000/beers/8.json"},{"id":14,"name":"Nanny State","style":{"id":6,"name":"Low alcohol beer","description":"Low Alcohol Beer is also commonly known as Non Alcohol (NA) beer, despite containing small amounts of alcohol. Low Alcohol Beers are generally subjected to one of two things: a controlled brewing process that results in a low alcohol content, or the alcohol is removed using a reverse-osmosis method which passes alcohol through a permeable membrane. They tend to be very light on aroma, body, and flavor.","created_at":"2018-09-20T10:17:39.362Z","updated_at":"2018-09-22T12:11:57.808Z"},"brewery_id":5,"created_at":"2018-09-06T14:30:50.585Z","updated_at":"2018-09-20T10:17:39.418Z","url":"http://localhost:3000/beers/14.json"},{"id":23,"name":"Panimomestarin IPA","style":{"id":5,"name":"American IPA","description":"Today's American IPA is a different soul from the IPA style first reincarnated in the 1980s. More flavorful and aromatic than the withering English IPA, its color can range from very pale golden to reddish amber. Hops are the star here, and those used in the style tend to be American with an emphasis on herbal, piney, and/or fruity (especially citrusy) varieties. Southern Hemisphere and experimental hops do appear with some frequency though, as brewers seek to distinguish their flagship IPA from a sea of competitors. Bitterness levels vary, but typically run moderate to high. Medium bodied with a clean, bready, and balancing malt backbone, the American IPA has become a dominant force in the marketplace, influencing brewers and beer cultures worldwide.","created_at":"2018-09-20T10:17:39.361Z","updated_at":"2018-09-22T12:09:23.686Z"},"brewery_id":1,"created_at":"2018-09-22T10:33:04.353Z","updated_at":"2018-09-22T10:33:04.353Z","url":"http://localhost:3000/beers/23.json"},{"id":13,"name":"Punk IPA","style":{"id":5,"name":"American IPA","description":"Today's American IPA is a different soul from the IPA style first reincarnated in the 1980s. More flavorful and aromatic than the withering English IPA, its color can range from very pale golden to reddish amber. Hops are the star here, and those used in the style tend to be American with an emphasis on herbal, piney, and/or fruity (especially citrusy) varieties. Southern Hemisphere and experimental hops do appear with some frequency though, as brewers seek to distinguish their flagship IPA from a sea of competitors. Bitterness levels vary, but typically run moderate to high. Medium bodied with a clean, bready, and balancing malt backbone, the American IPA has become a dominant force in the marketplace, influencing brewers and beer cultures worldwide.","created_at":"2018-09-20T10:17:39.361Z","updated_at":"2018-09-22T12:09:23.686Z"},"brewery_id":5,"created_at":"2018-09-06T14:30:33.589Z","updated_at":"2018-09-20T10:17:39.416Z","url":"http://localhost:3000/beers/13.json"},{"id":22,"name":"Sink the Bismarck","style":{"id":3,"name":"Baltic Porter","description":"Porters of the late 1700's were quite strong compared to today's standards, easily surpassing 7 percent alcohol by volume. Some English brewers made a stronger, more robust version, to be shipped across the North Sea that they dubbed a Baltic Porter. In general, the style's dark brown color covered up cloudiness and the smoky, roasted brown malts and bitter tastes masked brewing imperfections. Historically, the addition of stale ale also lent a pleasant acidic flavor to the style, which made it quite popular. These issues were quite important given that most breweries at the time were getting away from pub brewing and opening up production facilities that could ship beer across the world.","created_at":"2018-09-20T10:17:39.360Z","updated_at":"2018-09-22T12:08:13.953Z"},"brewery_id":5,"created_at":"2018-09-22T10:09:59.120Z","updated_at":"2018-09-22T10:09:59.120Z","url":"http://localhost:3000/beers/22.json"},{"id":21,"name":"Trans European Lager","style":{"id":1,"name":"European pale lager","description":"Similar to Munich Helles, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweet notes from an all-malt base.","created_at":"2018-09-20T10:17:39.358Z","updated_at":"2018-09-20T10:35:04.921Z"},"brewery_id":1,"created_at":"2018-09-20T10:42:19.312Z","updated_at":"2018-09-20T10:42:19.312Z","url":"http://localhost:3000/beers/21.json"},{"id":3,"name":"Tuplahumala","style":{"id":1,"name":"European pale lager","description":"Similar to Munich Helles, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweet notes from an all-malt base.","created_at":"2018-09-20T10:17:39.358Z","updated_at":"2018-09-20T10:35:04.921Z"},"brewery_id":1,"created_at":"2018-09-01T16:41:53.513Z","updated_at":"2018-09-20T10:17:39.392Z","url":"http://localhost:3000/beers/3.json"},{"id":5,"name":"X Porter","style":{"id":3,"name":"Baltic Porter","description":"Porters of the late 1700's were quite strong compared to today's standards, easily surpassing 7 percent alcohol by volume. Some English brewers made a stronger, more robust version, to be shipped across the North Sea that they dubbed a Baltic Porter. In general, the style's dark brown color covered up cloudiness and the smoky, roasted brown malts and bitter tastes masked brewing imperfections. Historically, the addition of stale ale also lent a pleasant acidic flavor to the style, which made it quite popular. These issues were quite important given that most breweries at the time were getting away from pub brewing and opening up production facilities that could ship beer across the world.","created_at":"2018-09-20T10:17:39.360Z","updated_at":"2018-09-22T12:08:13.953Z"},"brewery_id":2,"created_at":"2018-09-01T16:41:53.519Z","updated_at":"2018-09-20T10:17:39.400Z","url":"http://localhost:3000/beers/5.json"}]
 ```
 
 Json-muotoisen sivun saa hieman luettavampaan muotoon esim. kopioimalla sivun sisällön [jsonlint](http://jsonlint.com/) palveluun:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w7-3.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w7-3.png)
 
 Parempi ratkaisu on asentaa selaimeen jsonia ymmärtävä plugin, eräs suositeltava on chromen [jsonview](https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc), plugin muotoilee jsonin selaimeen todella siististi:
 
@@ -218,20 +194,30 @@ Parempi ratkaisu on asentaa selaimeen jsonia ymmärtävä plugin, eräs suositel
 Tarkemmin tarkasteltuna jokainen yksittäinen json-muotoinen olut muistuttaa hyvin paljon Rubyn hashiä:
 
 ```ruby
-{"id":6,"name":"Hefeweizen","style":{"id":4,"name":"Weizen","description":"A south German style of wheat beer (weissbier) made with a typical ratio of 50:50, or even higher, wheat. A yeast that produces a unique phenolic flavors of banana and cloves with an often dry and tart edge, some spiciness, bubblegum or notes of apples. Little hop bitterness, and a moderate level of alcohol. The \"Hefe\" prefix means \"with yeast\", hence the beers unfiltered and cloudy appearance. Poured into a traditional Weizen glass, the Hefeweizen can be one sexy looking beer. \r\n\r\nOften served with a lemon wedge (popularized by Americans), to either cut the wheat or yeast edge, which many either find to be a flavorful snap ... or an insult and something that damages the beer's taste and head retention.","created_at":"2017-02-05T17:44:15.892Z","updated_at":"2017-02-05T18:25:02.337Z"},"brewery_id":3,"url":"http://localhost:3000/beers/6.json"}
+{
+  "id":10,"name":"Extra Light Triple Brewed",
+  "style":{
+    "id":1,"name":"European pale lager",
+    "description":"Similar to Munich Helles, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweet notes from an all-malt base.",
+    "created_at":"2018-09-20T10:17:39.358Z",
+    "updated_at":"2018-09-20T10:35:04.921Z"
+  },
+  "brewery_id":1,
+  "created_at":"2018-09-01T16:47:54.117Z",
+  "updated_at":"2018-09-20T10:17:39.414Z","url":"http://localhost:3000/beers/10.json"}
 ```
 
 Minkä takia Rails osaa tarvittaessa palauttaa resurssit HTML:n sijaan jsonina?
 
-Yritetään saada kaikkien reittausten lista jsonina, eli kokeillaan osoitetta [http://localhost:3000/ratings.json](http://localhost:3000/ratings.json)
+Yritetään saada kaikkien reittausten lista jsonina, eli kokeillaan osoitetta http://localhost:3000/ratings.json
 
 Seurauksena on virheilmoitus:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-1.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w7-4b.png)
 
 Eli ihan automaattisesti jsonit eivät synny, loimme kaiken reittaukseen liittyvän koodin käsin, ja kuten virheilmoituksesta voimme päätellä, formaatille 'json' ei ole olemassa sopivaa templatea.
 
-Huomaamme, että scaffoldilla luotujen resurssien, esim oluen views-hakemistosta löytyy joukko _json.jbuilder_-päätteisiä templateja, ja kuten arvata saattaa, käyttää Rails näitä jos resurssi halutaan json-muotoisena.
+Huomaamme, että scaffoldilla luotujen resurssien, esim. oluen views-hakemistosta löytyy joukko _json.jbuilder_-päätteisiä templateja, ja kuten arvata saattaa, käyttää Rails näitä jos resurssi halutaan json-muotoisena.
 
 Ottamalla mallia templatesta app/views/beers/index.json.jbuilder teemme reittauksille seuraavan json.jbuilder-templaten (tiedosto on siis app/views/ratings/index.json.jbuilder):
 
@@ -241,10 +227,10 @@ json.array!(@ratings) do |rating|
 end
 ```
 
-ja nyt saamme reittaukset jsonina osoitteesta [http://localhost:3000/ratings.json](http://localhost:3000/ratings.json)
+ja nyt saamme reittaukset jsonina osoitteesta http://localhost:3000/ratings.json
 
 ```ruby
-[{"id":1,"score":13},{"id":2,"score":34},{"id":3,"score":25}]
+[{"id":31,"score":34},{"id":30,"score":42},{"id":27,"score":40},{"id":25,"score":12},{"id":24,"score":10}]
 ```
 
 *HUOM:* jbuilder-templatessa käytettävän muuttujan <code>@ratings</code>
@@ -263,14 +249,14 @@ Lisää jbuilderista seuraavissa http://railscasts.com/episodes/320-jbuilder?aut
 Json-jbuilder-templatejen ohella toinen tapa palauttaa json-muotoista dataa olisi käytää <code>respond_to</code>-komentoa, jota muutamat scaffoldienkin generoivat metodit käyttävät. Tällöin json-jbuilder-templatea ei tarvittaisi ja kontrolleri näyttäisi seuraavalta
 
 ```ruby
-  def index
-    @ratings = Rating.all
+def index
+  @ratings = Rating.all
 
-    respond_to do |format|
-      format.html { } # renderöidään oletusarvoinen template
-      format.json { render json: @ratings }
-    end
+  respond_to do |format|
+    format.html { } # renderöidään oletusarvoinen template
+    format.json { render json: @ratings }
   end
+end
 ```
 
 Jbuilder-templatejen käyttö on kuitenkin ehdottomasti parempi vaihtoehto, tällöin json-muotoisen "näytön" eli resurssin representaation muodostaminen eriytetään täysin kontrollerista. Ei ole kontrollerin vastuulla muotoilla vastauksen ulkoasua oli kyseessä sitten json- tai HTML-muotoinen vastaus.
@@ -280,40 +266,40 @@ Palataan oluiden sivun pariin. Kun muodostamme sivun javascriptillä, ideana onk
 Muokataan javascript-koodiamme seuraavasti:
 
 ```javascript
-$(document).ready(function () {
-    $.getJSON('beers.json', function (beers) {
-        oluet = beers
-        $("#beers").html("oluita löytyi "+beers.length);
-    });
-});
+document.addEventListener("turbolinks:load", () => {
+  $.getJSON('beers.json', (beers) => {
+    oluet = beers
+    $("#beers").html("oluita löytyi " + beers.length);
+  });
+})
 ```
 
 Koodin ensimmäinen rivi (joka siis suoritetaan heti kun sivu on latautunut) tekee HTTP GET -kyselyn palvelimen osoitteeseen beers.json ja määrittelee takaisinkutsufunktion, jota selain kutsuu siinä vaiheessa kun GET-kyselyyn tulee vastaus palvelimelta. Takaisinkutsufunktion parametrissa <code>beers</code> on palvelimelta tullut data, eli json-muodossa oleva oluiden lista. Muuttujan sisältö sijoitetaan globaaliin muuttujaan <code>oluet</code> ja oluiden listan pituus näytetään www-sivulla id:n beers omaavassa elementissä.
 
 Koska sijoitimme viitteen oluiden listan globaaliin muuttujaan, voimme tarkastella sitä selaimen konsolista käsin (muistutuksena että konsolin saa avattua chromessa tools-valikosta tai painamalla ctrl, shift, j (linux) tai alt, cmd, i (mac) ja jos olit jo sulkenut konsolin teit pahan virheen. **Konsoli tulee pitää aina auki javascriptillä ohjelmoitaessa!**):
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w7-2.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w7-2.png)
 
 Takaisinkutsufunktion pitäisi siis saatuaan oluet palvelimelta muodostaa ne listaava HTML-koodi ja lisätä se sivulle.
 
 Muutetaan javascript-koodiamme siten, että se listaa aluksi ainoastaan oluiden nimet:
 
 ```javascript
-    $.getJSON('beers.json', function (beers) {
-        var beer_list = [];
+$.getJSON('beers.json', (beers) => {
+  const beer_list = []
 
-        $.each(beers, function (index, beer) {
-            beer_list.push('<li>' + beer['name'] + '</li>')
-        });
+  beers.forEach( (beer) => {
+    beer_list.push('<li>' + beer['name'] + '</li>')
+  })
 
-        $("#beers").html('<ul>'+ beer_list.join('') + '</ul>');
-     });
+  $("#beers").html('<ul>'+ beer_list.join('') + '</ul>')
+});
 ```
 
-Koodi määrittelee paikallisen taulukkomuuttujan <code>beer_list</code> ja käy läpi parametrina saamansa oluiden listan <code>beers</code> (hieman erikoiselta näyttävää jqueryn <code>each</code>-metodia käyttäen, ks. http://api.jquery.com/jQuery.each/), ja lisää jokaista olutta kohti <code>beer_list</code>:iin HTML-elementin, joka on muotoa
+Koodi määrittelee paikallisen taulukkomuuttujan <code>beer_list</code> ja käy läpi parametrina saamansa oluiden listan <code>beers</code> ja lisää jokaista olutta kohti <code>beer_list</code>:iin HTML-elementin, joka on muotoa
 
 ```erb
-    <li>Karhu tuplahumala</li>
+<li>Extra Light Triple Brewed</li>
 ```
 
 Lopuksi listan alkuun ja loppuun lisätään ul-tagit ja listan alkiot liitetään yhteen join-metodilla. Näin saatu HTML-koodi liitetään id:n <code>beers</code> omaavaan elementtiin.
@@ -323,25 +309,24 @@ Nyt siis saimme yksinkertaisen listan oluiden nimistä sivulle.
 Entä jos haluaisimme järjestää oluet? Jotta tämä onnistuu, refaktoroimme koodin ensin seuraavanlaiseksi:
 
 ```javascript
-var BEERS = {};
+const BEERS = {}
 
-BEERS.show = function(){
-    var beer_list = [];
+BEERS.show = () => {
+  const beer_list = []
 
-    $.each(BEERS.list, function (index, beer) {
-        beer_list.push('<li>' + beer['name'] + '</li>')
-    });
+  BEERS.list.forEach((beer) => {
+    beer_list.push('<li>' + beer['name'] + '</li>')
+  })
 
-    $("#beers").html('<ul>'+ beer_list.join('') + '</ul>');
-};
+  $("#beers").html('<ul>' + beer_list.join('') + '</ul>')
+}
 
-$(document).ready(function () {
-
-    $.getJSON('beers.json', function (beers) {
-        BEERS.list = beers;
-        BEERS.show();
-     });
-});
+document.addEventListener("turbolinks:load", () => {
+  $.getJSON('beers.json', (beers) => {
+    BEERS.list = beers
+    BEERS.show()
+  })
+})
 ```
 
 Määrittelimme nyt olion <code>BEERS</code>, jonka attribuuttiin <code>BEERS.list</code> palvelimelta saapuva oluiden lista sijoitetaan. Metodi <code>BEERS.show</code> muodostaa <code>BEERS.list</code>:in oluista HTML-taulukon ja sijoittaa sen näytölle.
@@ -358,37 +343,39 @@ Lisätään sivulle painike (tai linkki), jota painamalla oluet saadaan sivulle 
 Lisätään sitten javascriptillä linkille klikkauksenkäsittelijä, joka linkkiä klikatessa laittaa oluet käänteiseen järjestykseen ja näyttää ne sivun beers-elementissä:
 
 ```javascript
-var BEERS = {};
+const BEERS = {}
 
-BEERS.show = function(){
-    var beer_list = [];
+BEERS.show = () => {
+  const beer_list = []
 
-    $.each(BEERS.list, function (index, beer) {
-        beer_list.push('<li>' + beer['name'] + '</li>')
-    });
+  BEERS.list.forEach((beer) => {
+    beer_list.push('<li>' + beer['name'] + '</li>')
+  })
 
-    $("#beers").html('<ul>'+ beer_list.join('') + '</ul>');
-};
+  $("#beers").html('<ul>' + beer_list.join('') + '</ul>')
+}
 
-BEERS.reverse = function(){
-    BEERS.list.reverse();
-};
+BEERS.reverse = () => {
+  BEERS.list.reverse()
+}
 
-$(document).ready(function () {
-    $("#reverse").click(function (e) {
-        BEERS.reverse();
-        BEERS.show();
-        e.preventDefault();
-    });
+document.addEventListener("turbolinks:load", () => {
+  $("#reverse").click((e) => {
+    e.preventDefault()
+    BEERS.reverse()
+    BEERS.show()
+  })
 
-    $.getJSON('beers.json', function (beers) {
-        BEERS.list = beers;
-        BEERS.show();
-    });
-});
+  $.getJSON('beers.json', (beers) => {
+    BEERS.list = beers
+    BEERS.show()
+  })
+})
 ```
 
-Linkin klikkauksen käsittelijä siis määritellään tapahtuman <code>document ready</code> sisällä, eli kun dokumentti on latautunut, _rekisteröidään_ klikkausten käsittelijäfunktio id:n "reverse" omaavalle linkkielementille. Selain kutsuu määriteltyä funktiota kun linkkiä klikataan. Viimeiseksi komento <code>preventDefault</code> estää klikkauksen "normaalin" toiminnallisuuden eli (nyt olemattoman) linkin seuraamisen.
+Linkin klikkauksen käsittelijä siis määritellään sivun latautumista vastaavan tapahtuman <code>turbolinks:load</code> sisällä, eli kun dokumentti on latautunut, _rekisteröidään_ klikkausten käsittelijäfunktio id:n "reverse" omaavalle linkkielementille.  
+
+Kun linkkiä klikataan, tapahtumankäsittelijä kutsuu aluksi metodia <code>e.preventDefault</code>, joka estää klikkauksen "normaalin" toiminnallisuuden eli (nyt olemattoman) linkin seuraamisen. Tämän jälkeen kutsutaan metodeita _reverse_ ja _show_ piirtämään oluet ruudulle käänteisessä järjestysessä.
 
 Nyt ymmärrämme riittävästi perusteita ja olemme valmiina toteuttamaan todellisen toiminnallisuuden.
 
@@ -412,13 +399,13 @@ Eli kolmesta sarakenimestä on tehty linkki, joihin tullaan rekisteröimään kl
 Muutetaan sitten javascriptissä määriteltyä metodia <code>show</code> siten, että se laittaa oluiden nimet taulukkoon:
 
 ```javascript
-BEERS.show = function(){
-    var table = $("#beertable");
+BEERS.show = () => {
+  const table = $("#beertable")
 
-    $.each(BEERS.list, function (index, beer) {
-        table.append('<tr><td>'+beer['name']+'</td></tr>');
-    });
-};
+  BEERS.list.forEach((beer) => {
+    table.append('<tr><td>' + beer['name'] + '</td></tr>')
+  })
+}
 ```
 
 Eli ensin koodi tallettaa viitteen taulukkoon muuttujana <code>table</code> ja lisää sinne <code>append</code>-komennolla uuden rivin kutakin olutta varten.
@@ -428,176 +415,169 @@ Laajennetaan sitten metodia näyttämään kaikki tiedot oluista. Huomaamme kuit
 Ongelma on onneksi helppo ratkaista muokkaamalla oluiden listan tuottavaa json-jbuildertemplatea. Template näyttää nyt seuraavalta:
 
 ```ruby
-json.array!(@beers) do |beer|
-  json.extract! beer, :id, :name, :style, :brewery_id
-  json.url beer_url(beer, format: :json)
-end
+json.array! @beers, partial: 'beers/beer', as: :beer
 ```
 
-Template määrittelee, että jokaisesta oluesta json-esitykseen sisällytetään kentät _id_, _name_ ja _brewery_id_ sekä _style_ joka taas viittaa olueeseen liittyvään <code>Style</code>-olioon. Tyyliolio tuleekin renderöityä oluen json-esityksen sisälle kokonaisuudessaan. Saamme myös panimon json-esityksen oluen jsonin mukaan jos korvaamme templatessa _brewery_id_:n _brewery_:llä. Muutamme siis templaten muotoon:
+Template määrittelee, että jokaisesta oluesta muodostetaan json-esitys tiedoston *_beer.json.jbuilder* avulla, tiedoston sisältö on seuraava
 
 ```ruby
-json.array!(@beers) do |beer|
-  json.extract! beer, :id, :name, :style, :brewery
-end
+json.extract! beer, :id, :name, :style, :brewery_id, :created_at, :updated_at
+json.url beer_url(beer, format: :json)
 ```
 
-poistimme viimeisen rivin joka lisäsi jokaisen oluen json-esityksen mukaan urlin oluen omaan json-esitykseen.
+Tiedosto määrittelee, että yksittäisen oluen jsoniin sisällytetään kentät _id_, _name_ ja _brewery_id_ sekä _style_ joka taas viittaa olueeseen liittyvään <code>Style</code>-olioon. Tyyliolio tuleekin renderöityä oluen json-esityksen sisälle kokonaisuudessaan. Saamme myös panimon json-esityksen oluen jsonin mukaan jos korvaamme templatessa _brewery_id_:n _brewery_:llä. Muutamme siis yksittäisen oluen jsonin renderöinnistä vastaavan templaten seuraavaan muotoon:
+
+```ruby
+json.extract! beer, :id, :name, :style, :brewery
+```
+
+poistimme viimeisen rivin joka lisäsi jokaisen oluen json-esityksen mukaan urlin oluen omaan json-esitykseen, poistimme myös aikaleimakentät.
 
 Nyt saamme taulukon generoitua seuraavalla javascriptillä:
 
 ```javascript
-BEERS.show = function(){
-    var table = $("#beertable");
+BEERS.show = () => {
+  const table = $("#beertable")
 
-    $.each(BEERS.list, function (index, beer) {
-        table.append('<tr>'
-                        +'<td>'+beer['name']+'</td>'
-                        +'<td>'+beer['style']['name']+'</td>'
-                        +'<td>'+beer['brewery']['name']+'</td>'
-                    +'</tr>');
-    });
-};
+  BEERS.list.forEach((beer) => {
+    table.append('<tr>'
+      + '<td>' + beer['name'] + '</td>'
+      + '<td>' + beer['style']['name'] + '</td>'
+      + '<td>' + beer['brewery']['name'] + '</td>'
+      + '</tr>')
+  })
+}
 ```
 
-Oluiden listan json-esityksen mukana tulee nyt paljon tarpeetontakin tietoa sillä mukaan renderöityvät jokaisen oluen panimon ja tyylin json-esitykset kokonaisuudessaan. Voisimme optimoida templatea siten, että oluen panimosta ja tyylistä tulee json-esitykseen mukaan ainoastaan nimi:
+Oluiden listan json-esityksen mukana tulee nyt paljon tarpeetontakin tietoa sillä mukaan renderöityvät jokaisen oluen panimon ja tyylin json-esitykset kokonaisuudessaan. Voisimme optimoida yksittäisen oluen json-esityksen generoivaa templatea siten, että oluen panimosta ja tyylistä tulee json-esitykseen mukaan ainoastaan nimi:
 
 ```ruby
-json.array!(@beers) do |beer|
-  json.extract! beer, :id, :name
-  json.style do
-    json.name beer.style.name
-  end
-  json.brewery do
-    json.name beer.brewery.name
-  end
+json.extract! beer, :id, :name
+json.style do
+  json.name beer.style.name
+end
+json.brewery do
+  json.name beer.brewery.name
 end
 ```
 
 Nyt palvelimen lähettämä oluiden jsonmuotoinen lista on huomattavasti inhimillisemmän kokoinen:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w7-5.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w7-5.png)
 
 Rekisteröimme vielä järjestämisen suorittavat tapahtumankuuntelijat linkeille (seuraavassa lopullinen javascript-koodi):
 
 ```javascript
-var BEERS = {};
+const BEERS = {}
 
-BEERS.show = function(){
-    $("#beertable tr:gt(0)").remove();
+BEERS.show = () => {
+  $("#beertable tr:gt(0)").remove()
+  const table = $("#beertable")
 
-    var table = $("#beertable");
+  BEERS.list.forEach((beer) => {
+    table.append('<tr>'
+      + '<td>' + beer['name'] + '</td>'
+      + '<td>' + beer['style']['name'] + '</td>'
+      + '<td>' + beer['brewery']['name'] + '</td>'
+      + '</tr>')
+  })
+}
 
-    $.each(BEERS.list, function (index, beer) {
-        table.append('<tr>'
-            +'<td>'+beer['name']+'</td>'
-            +'<td>'+beer['style']['name']+'</td>'
-            +'<td>'+beer['brewery']['name']+'</td>'
-            +'</tr>');
-    });
-};
+BEERS.sort_by_name = () => {
+  BEERS.list.sort((a, b) => {
+    return a.name.toUpperCase().localeCompare(b.name.toUpperCase());
+  })
+}
 
-BEERS.sort_by_name = function(){
-    BEERS.list.sort( function(a,b){
-        return a.name.toUpperCase().localeCompare(b.name.toUpperCase());
-    });
-};
+BEERS.sort_by_style = () => {
+  BEERS.list.sort((a, b) => {
+    return a.style.name.toUpperCase().localeCompare(b.style.name.toUpperCase())
+  })
+}
 
-BEERS.sort_by_style = function(){
-    BEERS.list.sort( function(a,b){
-        return a.style.name.toUpperCase().localeCompare(b.style.name.toUpperCase());
-    });
-};
+BEERS.sort_by_brewery = () => {
+  BEERS.list.sort((a, b) => {
+    return a.brewery.name.toUpperCase().localeCompare(b.brewery.name.toUpperCase());
+  })
+}
 
-BEERS.sort_by_brewery = function(){
-    BEERS.list.sort( function(a,b){
-        return a.brewery.name.toUpperCase().localeCompare(b.brewery.name.toUpperCase());
-    });
-};
+document.addEventListener("turbolinks:load", () => {
+  $("#name").click((e) => {
+    e.preventDefault()
+    BEERS.sort_by_name()
+    BEERS.show();
+    
+  })
 
-$(document).ready(function () {
-    $("#name").click(function (e) {
-        BEERS.sort_by_name();
-        BEERS.show();
-        e.preventDefault();
-    });
+  $("#style").click((e) => {
+    e.preventDefault()
+    BEERS.sort_by_style()
+    BEERS.show()
+  })
 
-    $("#style").click(function (e) {
-        BEERS.sort_by_style();
-        BEERS.show();
-        e.preventDefault();
-    });
+  $("#brewery").click((e) => {
+    e.preventDefault()
+    BEERS.sort_by_brewery()
+    BEERS.show()
+  })
 
-    $("#brewery").click(function (e) {
-        BEERS.sort_by_brewery();
-        BEERS.show();
-        e.preventDefault();
-    });
-
-    $.getJSON('beers.json', function (beers) {
-        BEERS.list = beers;
-        BEERS.sort_by_name();
-        BEERS.show();
-    });
-
-});
+  $.getJSON('beers.json', (beers) => {
+    BEERS.list = beers
+    BEERS.show()
+  })
+})
 ```
 
 Javascript-koodimme tulee liitetyksi sovelluksen jokaiselle sivulle. Tästä on se ikävä seuraus, että ollaanpa millä sivulla tahansa, lataa javascript oluiden listan komennon <code>getJSON('beers.json', ...) </code> takia. Myös tapahtumakunntelijat yritetään rekisteröidä jokaiselle sivulle vaikka niiden rekisteröinti on mielekästä ainoastaan jos ollaan oluiden listalla.
 
-Viritellään javascript-koodia vielä siten, että <code>$(document).ready</code>:n sisällä oleva koodi suoritetaan ainoastaan jos ollaan sivulla, josta taulukko <code>beertable</code> löytyy:
+Viritellään javascript-koodia vielä siten, että <code>turbolinks:load</code>:n tapahtumankäsittelijässä oleva koodi suoritetaan ainoastaan jos ollaan sivulla, josta taulukko <code>beertable</code> löytyy:
 
 ```javascript
-$(document).ready(function () {
-    if ( $("#beertable").length>0 ) {
+document.addEventListener("turbolinks:load", () => {
+  if ($("#beertable").length == 0) {
+    return
+  } 
+  
+  $("#name").click((e) => {
+    e.preventDefault()
+    BEERS.sort_by_name()
+    BEERS.show();
+    
+  })
 
-      $("#name").click(function (e) {
-          BEERS.sort_by_name();
-          BEERS.show();
-          e.preventDefault();
-      });
+  $("#style").click((e) => {
+    e.preventDefault()
+    BEERS.sort_by_style()
+    BEERS.show()
+  })
 
-      $("#style").click(function (e) {
-          BEERS.sort_by_style();
-          BEERS.show();
-          e.preventDefault();
-      });
+  $("#brewery").click((e) => {
+    e.preventDefault()
+    BEERS.sort_by_brewery()
+    BEERS.show()
+  })
 
-      $("#brewery").click(function (e) {
-          BEERS.sort_by_brewery();
-          BEERS.show();
-          e.preventDefault();
-      });
-
-
-      $.getJSON('beers.json', function (beers) {
-        BEERS.list = beers;
-        BEERS.sort_by_name;
-        BEERS.show();
-      });
-
-    }
-});
+  $.getJSON('beers.json', (beers) => {
+    BEERS.list = beers
+    BEERS.show()
+  })
+})
 ```
 
 Tällä hetkellä trendinä siirtää yhä suurempi osa web-sivujen toiminnallisuudesta selaimeen. Etuna mm. se että web-sovelluksien toiminta saadaan muistuttamaan yhä enenevissä määrin desktop-sovelluksia.
 
-## AngularJS ja React 
+## React 
 
 Äsken javascriptillä toteuttamamme oluet listaava sivu oli koodin rakenteen puolesta ihan kohtuullista, mutta Railsin sujuvuuteen ja vaivattomuuteen verrattuna koodi oli raskaahkoa ja paikoin ikävien, rutiininomaisten yksityiskohtien täyttämää. Jos sovelluksen selainpuolella toteutettavan koodin määrä alkaa kasvaa, on lopputuloksena helposti sekava koodi, jonka toiminnasta kukaan ei enää ota selvää ja jonka laajentaminen muuttuu erittäin haastavaksi.
 
-Javascript-frontendsovelluskehykset tuovat asiaan helpotusta. Viime vuoden [materiaalissa](https://github.com/mluukkai/WebPalvelinohjelmointi2016/blob/master/web/viikko7.md#angularjs) tutustuimme nopeasti [AngularJS](https://angularjs.org)-kirjastoon. AngularJS oli hetken maailman ylivoimaisesti suosituin fronendsovelluskehys, mutta version [2.0](https://angular.io) ilmestymisen jälkeen se menetti nopeasti asemansa [React](https://facebook.github.io/react/)-nimiselle kirjastolle. 
+Javascript-frontendsovelluskehykset tuovat asiaan helpotusta. Tämän hetken suosituin ratkaisu frontendien tekemiseen on Facebookin kehittämä [React](https://facebook.github.io/react/). React on laaja aihe ja pääset syventymään siihen laitoksen kurssilla Fullstack-websovellusohjelmointi joka järjestetään nyt menossa olevana [avoimen yliopiston kurssina](https://fullstackopen.github.io/) ja uudistettuna versiona [periodissa 3](https://courses.helsinki.fi/fi/TKT21009/124960978).
 
-[React](https://facebook.github.io/react/) on tällä hetkellä hypekäyrän huipuilla. Reactin käyttö on kuitenkin siinä määrin kompleksista että emme tällä kurssilla voi tutustua siihen edes pintapuolisesti.
-
-Jos olet kiinnostunut Reactista ja haluat käyttää sitä esim. periodin 4 [harjoitustyössä](https://github.com/mluukkai/WebPalvelinohjelmointi2017/wiki/projekti), voit tutustua aiheeseen osoitteesta <https://github.com/mluukkai/reactbeer> löytyvässä pienessä tutoriaalissa. Reactbeerissä käydään läpi myös muutamia asioita, joita tulee huomioida siinä tapauksessa että Railsia käytetään ensisijaisesti _json-muotoista_ dataa tarjoavana "backendinä".
-
-Javascript-maailma on tällä hetkellä erittäin turbulentissa ja monia turhauttavassa tilassa (ks. esim. [Javascript fatigue](http://thefullstack.xyz/javascript-fatigue/>) ja [How it feels to learn Javascript](https://hackernoon.com/how-it-feels-to-learn-javascript-in-2016-d3a717dd577f#.vg5ddumd2)). React näyttää juuri nyt siltä hevoselta minkä varaan rahat kannattaa pelata. Vuoden tai parin päästä tilanne voi jo olla ihan toinen. Juuri tällä hetkellä eniten js-hipsterien silmissä asemiaan nostava frontendsovelluskehys on <https://vuejs.org>. 
-
-> ## Tehtävä 3
+> ## Tehtävä 2
 >
-> Toteuta edellisten esimerkkien tyyliin javascriptillä  kaikki panimot listaava sivu http:localhost:3000/brewerylist  
+> Toteuta edellisten esimerkkien tyyliin javascriptillä kaikki panimot listaava sivu http:localhost:3000/brewerylist  
+>
 > Sivulla näytetään jokaisesta panimosta nimi, perustusvuosi, panimon valmistamien oluiden lukumäärä ja tieto siitä onko panimo lopettanut. Sivun siis **ei** tarvitse eritellä lopettaneita panimoita omaan taulukkoonsa.
+>
 > Panimoiden järjestäminen toteutetaan vasta seuraavassa tehtäässä.
 >
 > **Muista pitää Javascript-konsoli koko ajan auki tehtävää tehdessäsi!** Voit debugata Javasriptia tulostelemalla konsoliin komennolla <code>console.log()</code>
@@ -606,7 +586,7 @@ Javascript-maailma on tällä hetkellä erittäin turbulentissa ja monia turhaut
 >
 > **HUOM2:** tehtävä kannattaa tehdä yksi pieni askel kerrallaan, samaan tapaan kuin oluiden lista tehtiin yllä olevassa esimerkissä. Javascriptin debuggaus saattaa olla haasteellista ja **varmin tapa aiheuttaa iso turhautuma onkin yrittää tehdä tehtävä nopeasti copypasteamalla beerlistin koodi**.
 
-> ## Tehtävä 4
+> ## Tehtävä 3
 >
 > Laajenna panimoiden listaa siten, että panimot voi järjestää joko aakkos- tai perustamisvuoden mukaiseen järjestykseen tai panimon valmistamien oluiden lukumäärän perusteella. 
 
@@ -773,7 +753,7 @@ Tiedämme, että javascriptin pitäisi lisätä sivun taulukkoon rivejä. Saamme
 
 Nyt capybara odottaa taulukon valmistumista ja siirtyy sivun avaavaan komentoon vasta taulukon latauduttua (itseasiassa vain 2 riviä taulukkoa on varmuudella valmiina).
 
-> ## Tehtävä 5
+> ## Tehtävä 4
 >
 > Tee testi joka varmistaa, että oluet ovat beerlist-sivulla oletusarvoisesti nimen mukaan aakkosjärjestyksessä
 >
@@ -785,7 +765,7 @@ Nyt capybara odottaa taulukon valmistumista ja siirtyy sivun avaavaan komentoon 
 >
 > Rivin sisältöä voi testata normaaliin tapaan expect ja have_content -metodeilla.
 
-> ## Tehtävä 6
+> ## Tehtävä 5
 >
 > Tee testit seuraaville toiminnallisuuksille
 > * klikattaessa saraketta 'style' järjestyvät oluet tyylin nimen mukaiseen aakkosjärjestykseen
@@ -825,7 +805,7 @@ Lisää asset pipelinestä ja mm. javascriptin liittämisestä railssovelluksiin
 * http://railsapps.github.io/rails-javascript-include-external.html
 
 
-> ## Tehtävät 7-9 (kolmen tehtävän arvoinen)
+> ## Tehtävät 6-8 (kolmen tehtävän arvoinen)
 >
 > ### Tehtävä on hieman työläs, joten tee ensin helpommat pois alta. Muut viikon tehtävät eivät riipu tästä tehtävästä.
 >
@@ -1032,7 +1012,7 @@ Muutetaan seuraavaa tehtävää varten kaikki käyttäjät listaava template  mu
 
 Huomaa, että elementin <code>td</code> sisällä olevan if:in ehdon toimivuus riippuu siitä miten olet nimennyt asioita viikolla 5 tehdyn tehtävän koodissa. Voit tarvittaessa poistaa koko ehdon.
 
-> ## Tehtävä 10
+> ## Tehtävä 9
 >
 > Muutos aiheuttaa n+1-ongelman käyttäjien sivulle. Korjaa ongelma edellisen esimerkin tapaan eager loadaamalla tarvittavat oliot käyttäjien hakemisen yhteydessä. Varmista optimointisi onnistuminen miniprofilerilla.
 
@@ -1354,7 +1334,7 @@ Nyt sivun yläreunaan tulee laatikko, joka kertoo välimuistifragmenttien tilan,
 
 **Huom3:** koska debuglaatikko on sivun yläreunassa eli ennen  fragmentin mahdollisesti generoivaa koodia, **tulee sivu aina reloadata**, jotta debuglaatikko näyttäisi fragmenttien ajantasaisen tilanteen.
 
-> ## Tehtävä 11
+> ## Tehtävä 10
 >
 > Toteuta panimot listaavalle sivulle fragmentticachays. Varmista, että sivun sisältöön vaikuttava muutos ekspiroi cachen. Voit jättää huomiotta tehtävässä 2 tehdyn lisäyksen, jonka avulla järjestys saadaan muutettua päinvastaiseksi klikkaamalla sarakkeen nimeä uudelleen.
 
@@ -1425,7 +1405,7 @@ end
 
 Käytännössä <code>belongs_to</code>-yhteyteen liitetty <code>touch: true</code> saa aikaan sen, että yhteyden toisessa päässä olevan olion kenttä <code>updated_at</code> päivittyy.
 
-> ## Tehtävä 12
+> ## Tehtävä 11
 >
 > Toteuta yksittäisen panimon sivulle fragmentticachays. Huomaa, että edellisen esimerkin tapaan panimon sivufragmentin on ekspiroiduttava automaattisesti jos panimon oluisiin tulee muutoksia.
 
@@ -1615,7 +1595,7 @@ end
 
 ja annat komennon <code>TestJob.perform_async</code> operaatio suoritetaan toistuvasti 30 sekunin välein niin kauan kunnes konsoli suljetaan.
 
-> ## Tehtävä 13
+> ## Tehtävä 12
 >
 > Nopeuta ratings-sivun toimintaa haluamasi tekniikan. Voit olettaa, että käyttäjät ovat tyytyväisiä eventual consistency -mallin mukaiseen tiedon ajantasaisuuteen.  
 >
@@ -1645,7 +1625,7 @@ Autentikointi tapahtuu OAuth2-standardia (ks. https://tools.ietf.org/html/draft-
 
 OAuth-pohjainen autentikaatio onnistuu Railsilla helposti Omniauth-gemien avulla, ks. http://www.omniauth.org/ Jokaista palveluntarjoajaa kohti on nykyään olemassa oma geminsä, esim. [omniauth-github](https://github.com/intridea/omniauth-github)
 
-> ## Tehtävä 14
+> ## Tehtävä 13
 >
 > Lisää sovellukseen mahdollisuus käyttää sitä GitHub-tunnuksilla. Etene seuraavasti:
 > * Kirjaudu GitHubiin ja mene [setting-sivulle](https://github.com/settings/profile). Valitse vasemmalta _oauth applications_ ja klikkaa _Register new Application_, määrittele _homepage urliksi_ http://localhost:3000 ja _authorization callback urliksi_ http://localhost:3000/auth/github/callback
@@ -1694,7 +1674,7 @@ Jo meille tutuksi tullut <code>Rails.cache</code> on oikeastaan yksinkertainen a
 Uusien tietokantatyyppien noususta huolimatta relaatiotietokannat tulevat kuitenkin säilymään ja on todennäköistä että isommissa sovelluksissa on käytössä rinnakkain erilaisia tietokantoja, ja kuhunkin talletustarkoitukseen pyritään valitsemaan tilanteeseen parhaiten sopiva tietokantatyyppi, ks.
 http://www.martinfowler.com/bliki/PolyglotPersistence.html
 
-> ## Tehtävä 15
+> ## Tehtävä 14
 
 TEHTÄVÄ refaktoroi moduuliin 
  
@@ -1707,7 +1687,7 @@ end
 
 ##
 
-> ## Tehtävä 16
+> ## Tehtävä 15
 >
 > Kurssi on tehtävien osalta ohi ja on aika antaa kurssipalaute osoitteessa https://ilmo.cs.helsinki.fi/kurssit/servlet/Valinta
 

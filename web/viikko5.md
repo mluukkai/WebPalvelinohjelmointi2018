@@ -1340,7 +1340,7 @@ Olemme käyttäneet Railsin migraatioita jo ensimmäisestä viikosta alkaen. On 
 
 Tehtävän jälkeen oluttyylin sivu voi näyttää esim. seuraavalta
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w5-6.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w5-6.png)
 
 Hyvä lista oluttyyleistä kuvauksineen löytyy osoitteesta http://beeradvocate.com/beer/style/
 
@@ -1361,7 +1361,7 @@ Hyvä lista oluttyyleistä kuvauksineen löytyy osoitteesta http://beeradvocate.
 
 Tehtävän jälkeen olutpaikkojen sivu voi näyttää esim. seuraavalta
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w5-9.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w5-6.png)
 
 ## Tehtävien palautus
 
