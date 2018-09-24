@@ -598,16 +598,22 @@ Tehdään rspec/capybaralla muutama testi javascriptillä toteutetulle oluiden l
 require 'rails_helper'
 
 describe "Beerlist page" do
+  before :all do
+    Capybara.register_driver :selenium do |app|
+      Capybara::Selenium::Driver.new(app, :browser => :chrome)
+    end
+  end
+
   before :each do
-    @brewery1 = FactoryGirl.create(:brewery, name:"Koff")
-    @brewery2 = FactoryGirl.create(:brewery, name:"Schlenkerla")
-    @brewery3 = FactoryGirl.create(:brewery, name:"Ayinger")
+    @brewery1 = FactoryBot.create(:brewery, name:"Koff")
+    @brewery2 = FactoryBot.create(:brewery, name:"Schlenkerla")
+    @brewery3 = FactoryBot.create(:brewery, name:"Ayinger")
     @style1 = Style.create name:"Lager"
     @style2 = Style.create name:"Rauchbier"
     @style3 = Style.create name:"Weizen"
-    @beer1 = FactoryGirl.create(:beer, name:"Nikolai", brewery: @brewery1, style:@style1)
-    @beer2 = FactoryGirl.create(:beer, name:"Fastenbier", brewery:@brewery2, style:@style2)
-    @beer3 = FactoryGirl.create(:beer, name:"Lechte Weisse", brewery:@brewery3, style:@style3)
+    @beer1 = FactoryBot.create(:beer, name:"Nikolai", brewery: @brewery1, style:@style1)
+    @beer2 = FactoryBot.create(:beer, name:"Fastenbier", brewery:@brewery2, style:@style2)
+    @beer3 = FactoryBot.create(:beer, name:"Lechte Weisse", brewery:@brewery3, style:@style3)
   end
 
   it "shows one known beer" do
@@ -620,17 +626,21 @@ end
 Suoritetaan testi komennolla <code>rspec spec/features/beerlist_page_spec.rb</code>. Tuloksena on kuitenkin virheilmoitus:
 
 ```ruby
-  1) beerlist page Beerlist page shows one known beer
+  1) Beerlist page shows one known beer
      Failure/Error: expect(page).to have_content "Nikolai"
-       expected to find text "Nikolai" in "breweries beers styles ratings users clubs places | signin signup Beers Name Style Brewery"
+       expected to find text "Nikolai" in "breweries beers styles ratings users clubs places signin signup\nyou should be signed in\nSign in\nusername password"
+     # ./spec/features/beerlist_page_spec.rb:18:in `block (2 levels) in <top (required)>'
+
+Finished in 21.17 seconds (files took 5.33 seconds to load)
+1 example, 1 failure
 ```
 
 Näyttää siis siltä että sivulla ei ole ollenkaan oluiden listaa. Varmistetaan tämä laittamalla testiin juuri ennen komentoa <code>expect</code> komento <code>save_and_open_page</code> jonka avulla saamme siis avattua selaimeen sivun jolle capybara on navigoinut
-(ks. https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko4.md#capybarav4#capybara).
+(ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko4.md#capybarav4#capybara).
 
 Ja aivan kuten arvelimme, sivulla näytettävä oluttaulukko on tyhjä:
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-2.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-2.png)
 
 Syy ongelmalle löytyy capybaran dokumentaatiosta https://github.com/jnicklas/capybara#drivers
 
@@ -639,103 +649,54 @@ Syy ongelmalle löytyy capybaran dokumentaatiosta https://github.com/jnicklas/ca
 Ja korjauskin on helppo. Javascriptiä tarvitseviin testeihin riittää lisätä parametri, jonka ansiosta testi suoritetaan javascriptiä osaavan Selenium-testiajurin avulla:
 
 ```ruby
-    it "shows the known beers", js:true do
+it "shows the known beers", js:true do
 ```
 
-Jotta selenium saadaan käyttöön, on Gemfilen test-scopeen lisättävä seuraavat gemit:
-
-    gem 'selenium-webdriver', '2.53.4'
-    gem "chromedriver-helper"
-
-Suoritetaan <code>bundle install</code>, ja ajetaan testit. Jälleen törmäämme virheilmoitukseen:
+Kun suoritamme testit, törmäämme virheilmoitukseen
 
 ```ruby
+  1) Beerlist page shows one known beer
      Failure/Error: visit beerlist_path
+
      WebMock::NetConnectNotAllowedError:
-       Real HTTP connections are disabled. Unregistered request: GET http://127.0.0.1:60873/__identify__ with headers {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}
+       Real HTTP connections are disabled. Unregistered request: GET http://127.0.0.1:52187/__identify__ with headers {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}
+
+       You can stub this request with the following snippet:
+
+       stub_request(:get, "http://127.0.0.1:52187/__identify__").
+         with(
+           headers: {
+       	  'Accept'=>'*/*',
+       	  'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+       	  'User-Agent'=>'Ruby'
+           }).
+         to_return(status: 200, body: "", headers: {})
+
+       ============================================================
 ```
 
-Virheen syy on siinä, että otimme viikolla 5 käyttöömme WebMock-gemin joka oletusarvoisesti kieltää testikoodin suorittamat HTTP-yhteydet. Javascriptilla toteutettu olutlistahan yrittää hakea oluiden listan json-muodossa palvelimelta. Pääsemme virheestä eroon sallimalla yhteydet paikalliselle palvelimelle, eli lisäämällä esim.  <code>before</code>-lohkon alkuun seuraavan komennon:
-
-    WebMock.disable_net_connect!(allow_localhost:true)
-
-Testi toimii vihdoin, mutta ei mene läpi. Huomaamme että korjausta alkuperäiseen ongelmaan ei tapahdu: vaikka <code>before :each</code> -lohkossa lisäämme oluita tietokantaan, vaikuttaa tietokanta tyhjältä.
-
-Syynä tälle on se, että ajettaessa testejä Seleniumin kautta, rspecin normaali tapa suorittaa testi yhtenä tietokantatransaktiona (joka automaattisesti suorittaa rollback-operaation testin lopussa nollaten näin tietokantaan tapahtuneet muutokset) ei ole tuettu (ks. https://github.com/jnicklas/capybara#transactions-and-database-setup). Joudummekin kytkemään ominaisuuden pois päältä Seleniumin kautta ajettavien testien aluksi komennolla <code>self.use_transactional_fixtures = false</code>
-
-Ikävä seuraus tästä on se, että testien tietokantaan tallettama data ei nyt automaattisesti poistu jokaisen testin jälkeen. DatabaseCleaner gemi https://github.com/bmabey/database_cleaner tuo kuitenkin avun tähän. Otetaan gem käyttöön määrittelemällä Gemfilen test-scopeen seuraava
-
-    gem 'database_cleaner'
-
-Suoritetaan sitten tuttu <code>bundle install</code>.
-
-Konfiguroidaan testit siten, että _ennen kaikkia testejä_ (<code>before :all</code>) laitetaan transaktionaalisuus pois päältä, sallitaan HTTP-yhteydet paikalliselle palvelimelle ja määritellään DatabaseCleanerille käytettävä strategia (ks. http://stackoverflow.com/questions/10904996/difference-between-truncation-transaction-and-deletion-database-strategies). _Jokaisen testin alussa_ (<code>before :each</code>) käynnistetään DatabaseCleaner ja jokaisen testin lopussa (<code>after :each</code>) pyydetään DatabaseCleaneria tyhjentämään tietokanta. Kun kaikki testit on suoritettu (<code>after :all</code>) palautetaan normaali transaktionaalisuus:
+Virheen syy on siinä, että otimme viikolla 5 käyttöömme [WebMock-gemin](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko5.md#olutpaikkojen-etsimistoiminnon-testaaminen) joka oletusarvoisesti kieltää testikoodin suorittamat HTTP-yhteydet. Javascriptilla toteutettu olutlistahan yrittää hakea oluiden listan json-muodossa palvelimelta. Pääsemme virheestä eroon sallimalla yhteydet paikalliselle palvelimelle, esim. muuttamalla testit alustavaan <code>before :all</code> -lohkoa seuraavasti:
 
 ```ruby
-require 'rails_helper'
-
-describe "beerlist page" do
-
   before :all do
-    self.use_transactional_fixtures = false
-    WebMock.disable_net_connect!(allow_localhost:true)
-  end
-
-  before :each do
-    DatabaseCleaner.strategy = :truncation
-    DatabaseCleaner.start
-
-    @brewery1 = FactoryGirl.create(:brewery, name: "Koff")
-    @brewery2 = FactoryGirl.create(:brewery, name: "Schlenkerla")
-    @brewery3 = FactoryGirl.create(:brewery, name: "Ayinger")
-    @style1 = Style.create name: "Lager"
-    @style2 = Style.create name: "Rauchbier"
-    @style3 = Style.create name: "Weizen"
-    @beer1 = FactoryGirl.create(:beer, name: "Nikolai", brewery: @brewery1, style: @style1)
-    @beer2 = FactoryGirl.create(:beer, name: "Fastenbier", brewery: @brewery2, style: @style2)
-    @beer3 = FactoryGirl.create(:beer, name: "Lechte Weisse", brewery: @brewery3, style: @style3)
-  end
-
-  after :each do
-    DatabaseCleaner.clean
-  end
-
-  after :all do
-    self.use_transactional_fixtures = true
-  end
-
-  it "shows one known beer", js: true do
-    visit beerlist_path
-    save_and_open_page
-    expect(page).to have_content "Nikolai"
-  end
-end
-```
-
-Jouduimme jo näkemään hieman vaivaa, mutta testi toimii vihdoin!
-
-**HUOM** Selenium käyttää oletusarvoisesti Firefoxia ja ei tällä hetkellä tue Firefoxin uusimpia versioita, tuki on versioon 45 asti. Eli jos testi ei toimi, syynä on todennäköisesti Firefoxin liian uusi versio. Voit tässä tilanteessa (tai muutenkin) käyttää Firefoxin sijaan Chromea tekemällä <code>before :all</code> seuraavan lisäyksen
-
-```ruby
-describe "Beerlist page" do
-  before :all do
-    self.use_transactional_fixtures = false
-    WebMock.disable_net_connect!(allow_localhost:true)
     Capybara.register_driver :selenium do |app|
       Capybara::Selenium::Driver.new(app, :browser => :chrome)
     end
+    WebMock.disable_net_connect!(allow_localhost: true) 
   end
-end
 ```
+
+Testi toimii vihdoin.
+
 
 Kun sivuille luodaan sisältöä javascriptillä, ei sisältö ilmesty sivulle vielä samalla hetkellä kuin sivun html-pohja ladataan vaan vasta javascript takaisinkutsufunktion suorituksen jälkeen. Eli jos katsomme sivun sisältöä välittömästi sivulle navigoinnin jälkeen, ei javascript ole vielä ehtinyt muodostaa sivun lopullista sisältöä. Esim. seuraavassa <code>save_and_open_page</code> saattaa avata sivun, jossa ei vielä näy yhtään olutta:
 
 ``` ruby
-  it "shows a known beer", js:true do
-    visit beerlist_path
-    save_and_open_page
-    expect(page).to have_content "Nikolai"
-  end
+it "shows a known beer", js:true do
+  visit beerlist_path
+  save_and_open_page
+  expect(page).to have_content "Nikolai"
+end
 ```
 
 Kuten sivulla https://github.com/jnicklas/capybara#asynchronous-javascript-ajax-and-friends sanotaan, osaa capybara odottaa asynkroonisia javascript-kutsuja sen verran, että testien sivulta etsimät elementit ovat latautuneet.
@@ -752,6 +713,25 @@ Tiedämme, että javascriptin pitäisi lisätä sivun taulukkoon rivejä. Saamme
 ```
 
 Nyt capybara odottaa taulukon valmistumista ja siirtyy sivun avaavaan komentoon vasta taulukon latauduttua (itseasiassa vain 2 riviä taulukkoa on varmuudella valmiina).
+
+Testien suorittaminen todellisessa selaimella on melko hidasta. Saat nopeutettua testejä käyttämällä Chromen Headless- moodia, eli "käyttöliittymätöntä versiota". Headless-selaimen käyttöönotto onnistuu muuttamalla <code>before :all</code> -lohko muotoon 
+
+``` ruby
+before :all do
+  Capybara.register_driver :selenium do |app|
+    capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+      chromeOptions: { args: ['headless', 'disable-gpu']  }
+    )
+
+    Capybara::Selenium::Driver.new app,
+      browser: :chrome,
+      desired_capabilities: capabilities      
+  end
+  WebMock.disable_net_connect!(allow_localhost: true) 
+end
+```
+
+Konfiguraation muutoksen jälkeen suoritus normaalilla selaimella onnistuu poistamalla parametri <code>headless</code> kolmannelta riviltä.
 
 > ## Tehtävä 4
 >
@@ -776,7 +756,7 @@ Travisin toimintaansaattaminen muutosten jälkeen on vapaaehtoista.
 
 ## Asset pipeline
 
-Rails-sovelluksiin liittyviä javascript- ja tyylitiedostoja (ja kuvia) hallitaan ns. Asset pipelinen avulla, ks. http://guides.rubyonrails.org/asset_pipeline.html
+Rails-sovelluksiin liittyviä javascript- ja tyylitiedostoja (ja kuvia) hallitaan ns. Asset pipelinen avulla, ks. https://guides.rubyonrails.org/asset_pipeline.html
 
 Periaatteena on se, että sovelluskehittäjä sijoittaa sovellukseen liittyvät javascript-tiedostot hakemistoon _app/assets/javascripts_ ja tyylitiedostot hakemistoon _app/assets/stylesheets_.  Molempia voidaan sijoittaa useaan eri tiedostoon, ja tarvittaessa alihakemistoihin.
 
@@ -785,25 +765,26 @@ Sovellusta kehitettäessä (eli kun sovellus on ns. development-moodissa) Rails 
 Sovelluksen mukaan liitettävät javascript-tiedostot määritellään tiedostossa _app/assets/javascripts/application.js_, jonka sisältö on nyt seuraava
 
 ```javascript
-//= require jquery
-//= require jquery_ujs
+//= require rails-ujs
+//= require activestorage
 //= require turbolinks
-//= require bootstrap
 //= require_tree .
+//= require jquery3
+//= require popper
+//= require bootstrap-sprockets
 ```
 
-Vaikka koko tiedoston sisältö näyttää olevan kommenteissa, on kuitenkin kyse "oikeista", asset pipelinestä huolehtivan [sprockets-kääntäjän](https://github.com/sstephenson/sprockets) komennoista, joiden avulla määritellään sovellukseen mukaan otettavat javascript-tiedostot. Neljä ensimmäistä riviä määrittelevät, että mukaan otetaan jquery, jquery_ujs, turbolinks ja bootstrap. Kaikki näistä on asennettu sovellukseen gemien avulla.
+Vaikka koko tiedoston sisältö näyttää olevan kommenteissa, on kuitenkin kyse "oikeista", asset pipelinestä huolehtivan [sprockets-kääntäjän](https://github.com/sstephenson/sprockets) komennoista, joiden avulla määritellään sovellukseen mukaan otettavat javascript-tiedostot. Tiedosto määrittelee, että mukaan otetaan rails-ujs, activestorage, turbolinks, jquery3, popper ja bootstrap-sprockets. Kaikki näistä on asennettu sovellukseen gemien avulla.
 
-Viimeinen rivi määrittelee, että kaikki hakemiston *assets/javascripts/* ja sen alihakemistojen sisältämät javascript-tiedostot sisällytetään ohjelmaan.
+Rivi <code>//= require_tree .</code> määrittelee, että kaikki hakemiston *assets/javascripts/* ja sen alihakemistojen sisältämät javascript-tiedostot sisällytetään ohjelmaan.
 
-Asset pipeline mahdollistaa myös [coffeescriptin](http://coffeescript.org/) käyttämisen, tällöin tiedostojen päätteeksi tulee <code>.js.coffee</code>. Sovellusta suoritettaessa scprockets kääntää coffeescriptin automaattisesti javascriptiksi.
+Asset pipeline mahdollistaa myös [coffeescriptin](http://coffeescript.org/) käyttämisen, tällöin tiedostojen päätteeksi tulee <code>.js.coffee</code>. Sovellusta suoritettaessa scprockets kääntää coffeescriptin automaattisesti javascriptiksi. 
 
 Tuotantokäytössä sovelluksella ei suorituskykysyistä yleensä kannata olla useampia javascript- tai tyylitiedostoja. Kun sovellusta aletaan suorittaa tuotantoympäristössä (eli production-moodissa), sprockets yhdistääkin kaikki sovelluksen javascript- ja tyylitiedostot yksittäisiksi, optimoiduiksi tiedostoiksi. Huomaamme tämän jos katsomme herokussa olevan sovelluksen html-lähdekoodia, esim: http://wad-ratebeer.herokuapp.com/ sisältää se nyt ainoastaan yhden js- ja yhden css-tiedoston joista varsinkin js-tiedoston luettavuus on ihmisen kannalta heikko.
 
 Lisää asset pipelinestä ja mm. javascriptin liittämisestä railssovelluksiin mm. seuraavissa:
 * http://railscasts.com/episodes/279-understanding-the-asset-pipeline
 * http://railsapps.github.io/rails-javascript-include-external.html
-
 
 > ## Tehtävät 6-8 (kolmen tehtävän arvoinen)
 >
