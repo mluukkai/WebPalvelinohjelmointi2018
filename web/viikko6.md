@@ -893,7 +893,7 @@ http://guides.rubyonrails.org/routing.html#adding-more-restful-actions
 >
 > **HUOM:** toteutuksessa kannattanee hyödyntää [esifiltteriä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko4.md#kirjautuneiden-toiminnot)
 
-> ## Tehtävä 11-12 (kahden tehtävän arvoinen)
+> ## Tehtävät 11-12 (kahden tehtävän arvoinen)
 >
 > Toteuta toiminnallisuus, jonka avulla administraattorit voivat sulkea jonkin käyttäjätunnuksen. Sulkeminen voi tapahtua esim. napilla, jonka vain administraattorit näkevät käyttäjän sivulla. Suljetun tunnuksen omaava käyttäjä ei saa päästä kirjautumaan järjestelmään. Yrittäessään kirjautumista, sovellus huomauttaa käyttäjälle että hänen tunnus on suljettu ja kehoittaa ottamaan yhteyttä ylläpitäjiin. Administraattorien tulee pystyä palauttamaan suljettu käyttäjätunnus ennalleen.
 >
@@ -909,7 +909,7 @@ Administraattori näkee käyttäjien näkymästä suljetut käyttäjätunnukset
 
 Jos käyttjätunnus on suljettu, kirjautuminen ei onnistu
 
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-1a.png)
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-1x.png)
 
 Administraattori voi uudelleenaktivoida suljetun käyttäjätunnuksen käyttäjän sivulta
 
