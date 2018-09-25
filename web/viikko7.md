@@ -1027,23 +1027,23 @@ Saattaakin olla, että metodista olisi tietyissä tilanteissa suorituskykyä opt
 
 Luodaan tietokantaamme hiukan lisää dataa. 
 
-Kopioi seuraava tiedostoon _db/seeds.db_
+Korvaa tiedoston _db/seeds.db_ sisältö seuraavalla:
 
 ```ruby
-users = 200           # jos koneesi on hidas, riittää esim 100
-breweries = 100       # jos koneesi on hidas, riittää esim 50
-beers_in_brewery = 40
+users = 400             # jos koneesi on hidas, riittää esim 200
+breweries = 200         # jos koneesi on hidas, riittää esim 100
+beers_in_brewery = 50
 ratings_per_user = 30
 
 (1..users).each do |i|
-  User.create! username:"user_#{i}", password:"Passwd1", password_confirmation:"Passwd1"
+  User.create! username: "user_#{i}", password:"Passwd1", password_confirmation: "Passwd1"
 end
 
 (1..breweries).each do |i|
-  Brewery.create! name:"Brewery_#{i}", year:1900, active:true
+  Brewery.create! name:"Brewery_#{i}", year: 1900, active: true
 end
 
-bulk = Style.create! name:"Bulk", description:"cheap, not much taste"
+bulk = Style.create! name: "Bulk", description: "cheap, not much taste"
 
 Brewery.all.each do |b|
   n = rand(beers_in_brewery)
@@ -1068,11 +1068,11 @@ Käytämme tiedostossa normaalien olioiden luovien metodien <code>create</code> 
 
 **Kopioi sitten vanha tietokanta _db/development.sqlite_ talteen**, jotta voit palata vanhaan tilanteeseen suorituskyvyn virittelyn jälkeen. Vot ottaa vanhan tietokannan käyttöön muuttamalla sen nimeksi jälleen development.sqlite
 
-**Huom:** tämä ei ole välttämättä paras mahdollinen tapa tehdä suorituskykytestausta oikeille Rails-sovelluksille, ks. lisää tietoa seuraavasta http://guides.rubyonrails.org/v3.2.13/performance_testing.html (guidesta ei ole Rails 4:lle päivitettyä versiota.)
+**Huom:** tämä ei ole välttämättä paras mahdollinen tapa tehdä suorituskykytestausta oikeille Rails-sovelluksille, ks. lisää tietoa seuraavasta http://guides.rubyonrails.org/v3.2.13/performance_testing.html (guidesta ei ole Rails 5:lle päivitettyä versiota.)
 
 Suorita seedaus komennolla
 
-    rake db:seed
+    rails db:seed
 
 Skriptin suorittamisessa kuluu tovi.
 
@@ -1083,18 +1083,18 @@ Nyt tietokannassamme on runsaasti dataa ja sivujen lataaminen alkaa olla hitaamp
 Kokeile nyt miten sivujen suorituskykyyn vaikuttaa jos kommentoit pois äsken tekemäsi SQL-kyselyjen optimoinnit oluiden sivulta, eli muuta olutkontrolleri takaisin muotoon:
 
 ```ruby
-  def index
-    # @beers = Beer.includes(:brewery, :style).all
-    @beers = Beer.all
+def index
+  # @beers = Beer.includes(:brewery, :style).all
+  @beers = Beer.all
 
-    order = params[:order] || 'name'
+  order = params[:order] || 'name'
 
-    @beers = case order
-      when 'name' then @beers.sort_by{ |b| b.name }
-      when 'brewery' then @beers.sort_by{ |b| b.brewery.name }
-      when 'style' then @beers.sort_by{ |b| b.style.name }
-    end
+  @beers = case order
+    when 'name' then @beers.sort_by{ |b| b.name }
+    when 'brewery' then @beers.sort_by{ |b| b.brewery.name }
+    when 'style' then @beers.sort_by{ |b| b.style.name }
   end
+end
 ```
 
 Huomioi myös suoritettujen SQL-kyselyjen määrä optimoinnilla ja ilman. Tuloksenhan näet jälleen kätevästi miniprofilerin avulla.
@@ -1105,26 +1105,28 @@ Datamäärän ollessa suuri, ei pelkkä kyselyjen optimointi riitä, vaan on ets
 
 Vaihtoehdoksi nousee tällöin **cachaus eli välimuistien käyttö**.
 
-Web-sovelluksessa cachaystä voidaan suorittaa sekä selaimen, että palvelimen puolella (sekä selaimen ja palvelimen välissä olevissa proxyissä). Tarkastellaan nyt palvelimen puolella tapahtuvaa cachaystä. Toteutimme jo [toissa viikolla](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko5.md#suorituskyvyn-optimointi) "käsin" beermapping-apista haettujen tietojen cachaystä Rails.cachen avulla. Tutkitaan nyt muutamaa hieman automaattisempaa cachaysmekanismia.
+Web-sovelluksessa cachaystä voidaan suorittaa sekä selaimen, että palvelimen puolella (sekä selaimen ja palvelimen välissä olevissa proxyissä). Tarkastellaan nyt palvelimen puolella tapahtuvaa cachaystä. Toteutimme jo [toissa viikolla](https://github.com/mluukkai/WebPalvelinohjelmointi2017/blob/master/web/viikko5.md#suorituskyvyn-optimointi) "käsin" beermapping-apista haettujen tietojen cachaystä Rails.cachen avulla. Tutkitaan nyt railsin tarjoamaa hieman automaattisempaa cachaysmekanismia.
 
-Rails tarjoaa palvelinpuolen cachaystä kolmella tasolla:
-* kokonaisten sivujen cachays (page cache)
-* kontrollerin metodien tulosten cachays (action cache)
-* sivufragmenttien cachays (fragment cache)
+Cachays ei ole oletusarvoisesti päällä kun sovellusta suoritetaan development-moodissa. Kytkit ehkä cachen päälle viikolla 5. 
 
-Ks. http://guides.rubyonrails.org/caching_with_rails.html
+Jos cache on päällä, on projektissa olemassa tiedosto _tmp/caching-dev.txt_. Jos tiedostoa ei ole, saat cachen päälle suorittamalla komentoriviltä komennon <code>rails dev:cache</code>. Komennon pitäisi tulostaa
 
-Rails 4:ssä kaksi ensimmäistä edellisistä on poistettu Railsin coresta mutta ne saadaan tarvittaessa käyttöön erillisten gemien avulla. Tutustummekin nyt ainoastaan viimeiseen eli **sivufragmenttien cachaamiseen**, joka onkin cachaysstrategioista monipuolisin.
+```
+Development mode is now being cached.
+```
 
-Cachays ei ole oletusarvoisesti päällä kun sovellusta suoritetaan development-moodissa. Saat cachayksen päälle muuttamalla tiedostosta _config/environment/development.rb_ seuraavan rivin arvoksi <code>true</code>:
+Jos komento tulostaa
 
-    config.action_controller.perform_caching = false
+```
+Development mode is no longer being cached.
+```
+suorita se uudelleen.
 
 **Käynnistä nyt sovellus uudelleen.**
 
 Päätetään cachata oluiden listan näyttäminen.
 
-Fragmentticachays tapahtuu sisällyttämällä näkymätemplaten cachattavan osa seuraavanlaiseen lohkoon:
+Cachays tapahtuu sisällyttämällä näkymätemplaten cachattavan osa, eli _sivufragmentti_ seuraavanlaiseen lohkoon:
 
 ```erb
 <% cache 'avain', skip_digest: true do %>
@@ -1132,7 +1134,7 @@ Fragmentticachays tapahtuu sisällyttämällä näkymätemplaten cachattavan osa
 <% end %>
 ```
 
-Kuten arvata saattaa, <code>avain</code> on avain, jolla cachattava näkymäfragmentti talletetaan. Avaimena voi olla merkkijono tai olio .<code>skip_digest: true</code> liittyy [näyttötemplatejen versiointiin](http://blog.remarkablelabs.com/2012/12/russian-doll-caching-cache-digests-rails-4-countdown-to-2013) jonka haluamme nyt jättää huomioimatta. Tämä kuitenkin tarkoittaa, että välimuisti on syytä tyhjentää (komennolla <code>Rails.cache.clear</code>) _jos_ näkymätemplaten koodia muutetaan.
+Kuten arvata saattaa, <code>avain</code> on avain, jolla cachattava näkymäfragmentti talletetaan. Avaimena voi olla merkkijono tai olio. <code>skip_digest: true</code> liittyy [näyttötemplatejen versiointiin](http://blog.remarkablelabs.com/2012/12/russian-doll-caching-cache-digests-rails-4-countdown-to-2013) jonka haluamme nyt jättää huomioimatta. Tämä kuitenkin tarkoittaa, että välimuisti on syytä tyhjentää (komennolla <code>Rails.cache.clear</code>) _jos_ näkymätemplaten koodia muutetaan.
 
 Fragmentticachayksen lisääminen oluiden listalle views/beers/index.html on helppoa, cachataan sivulta sen dynaaminen osa eli oluiden taulukko:
 
@@ -1154,14 +1156,14 @@ Fragmentticachayksen lisääminen oluiden listalle views/beers/index.html on hel
       <% @beers.each do |beer| %>
         <tr>
           <td><%= link_to beer.name, beer %></td>
-          <td><%= link_to beer.style, beer.style %></td>
+          <td><%= link_to beer.style.name, beer.style %></td>
           <td><%= link_to beer.brewery.name, beer.brewery %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
 
-<% end %>
+  <% end %>
 
 <br>
 
@@ -1172,13 +1174,13 @@ Kun nyt menemme sivulle, ei sivufragmenttia ole vielä talletettu välimuistin j
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-9.png)
 
-Sivun renderöimiseen kulunut aika <code>Rendering: beers/index</code> oli siis 814 millisekuntia.
+Sivun latausaika on 852.3, mistä itse sivun renderöimiseen kulunut aika <code>Rendering: beers/index</code> on siis 365.1 millisekuntia.
 
-Sivulla käytyämme fragmentti tallettuu välimuistiin ja seuraava sivun avaaminen on huomattavasti nopeampi:
+Sivulla käytyämme sivun osa tallettuu välimuistiin ja seuraava sivun avaaminen on huomattavasti nopeampi:
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-10.png)
 
-Eli näkymätemplate renderöityy kolmessa millisekunnissa!
+Koko sivun latausaika on 154 millisekuntia, josta ainoastaan 4.5 millisekuntia kuluu näkymätemplaten lataamiseen.
 
 Huom: uuden oluen luomislinkkiä ei kannata laittaa cachatyn fragmentin sisälle, sillä linkki tulee näyttää ainoastaan kirjautuneille käyttäjille. Sivun cachatty osa näytetään nyt kaikille samanlaisena.
 
@@ -1187,19 +1189,19 @@ Jos luomme nyt uuden oluen huomaamme, että uuden oluen tietoja ei tule sivulle.
 Ekspirointi tapahtuu komennolla <code>expire_fragment(avain)</code> jota tulee siis kutsua kontrollerista niissä kohdissa joissa oluiden listan sisältö mahdollisesti muuttuu. Tälläisiä kohtia ovat olutkontrollerin metodit <code>create</code>, <code>update</code> ja <code>destroy</code>. Muutos on helppo:
 
 ```erb
-  def create
-    expire_fragment('beerlist')
-  end
+def create
+  expire_fragment('beerlist')
+end
 
-  def update
-    expire_fragment('beerlist')
-    # ...
-  end
+def update
+  expire_fragment('beerlist')
+  # ...
+end
 
-  def destroy
-    expire_fragment('beerlist')
-    # ...
-  end
+def destroy
+  expire_fragment('beerlist')
+  # ...
+end
 ```
 
 Muutosten jälkeen sivu toimii odotetulla tavalla!
@@ -1207,44 +1209,33 @@ Muutosten jälkeen sivu toimii odotetulla tavalla!
 Kaikkien oluiden sivua olisi mahdollista nopeuttaa vielä jonkin verran. Nyt nimittäin kontrolleri suorittaa tietokantaoperaation
 
 ```erb
-    @beers = Beer.includes(:brewery, :style).all
+@beers = Beer.includes(:brewery, :style).all
 ```
 
-myös silloin kun sivufragmentti löytyy välimuistista. Voisimmekin testata fragmentin olemassaoloa metodilla <code>fragment_exist?</code> ja suorittaa tietokantaoperaation ainoastaan jos fragmentti ei ole olemassa (muistutus: unless tarkoittaa samaa kuin if not):
+myös silloin kun sivufragmentti löytyy välimuistista. Voisimmekin testata fragmentin olemassaoloa metodilla <code>fragment_exist?</code> ja suorittaa tietokantaoperaation ainoastaan jos fragmentti ei ole olemassa:
 
 ```erb
-  def index
-    unless fragment_exist?( 'beerlist' )
-      @beers = Beer.includes(:brewery, :style).all
+def index
+  # jos fragmentti olemassa, lopetetaan metodi tähän (eli renderöidään heti näkymä)
+  return if request.format.html? && fragment_exist?('beerlist')
 
-      order = params[:order] || 'name'
+  @beers = Beer.includes(:brewery, :style).all
 
-      @beers = case order
-        when 'name' then @beers.sort_by{ |b| b.name }
-        when 'brewery' then @beers.sort_by{ |b| b.brewery.name }
-        when 'style' then @beers.sort_by{ |b| b.style.name }
-      end
-    end
-  end
+  order = params[:order] || 'name'
+
+  @beers = case order
+            when 'name' then @beers.sort_by(&:name)
+            when 'brewery' then @beers.sort_by{ |b| b.brewery.name }
+            when 'style' then @beers.sort_by{ |b| b.style.name }
+            end
+end
 ```
-
-Kontrolleri näyttää hieman ikävältä, mutta sivu nopeutuu entisestään:
-
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-11.png)
-
-Voisimme siistiä ratkaisua aavistuksen palauttamalla metodin <code>index</code> ennalleen ja tarkastamalla fragmentin olemassaolon esifiltterissä:
-
-```ruby
-  before_action :skip_if_cached, only:[:index]
-
-  def skip_if_cached
-    return render :index if request.format.html? and fragment_exist?( 'beerlist' )
-  end
-```
-
-Jos esifiltteri <code>skip_if_cached</code> huomaa, että fragmentti on olemassa, se renderöi näkymätemplaten suoraan. Tässä tapauksessa varsinaista kontrollerimetodia ei suoriteta ollenkaan. 
 
 Ehdossa oleva <code>request.format.html?</code> varmistaa sen, että suoritamme kontrollerimetodin kaiken koodin siinä tapauksessa jos muodostamme _json_-muotoisen vastauksen.
+
+Sivu nopeutuu entisestään:
+
+![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-11.png)
 
 Huomaamme kuitenkin että sivulla on pieni ongelma. Oluet sai järjestettyä sarakkeita klikkaamalla vaihtoehtoisiin järjestyksiin. Cachays on kuitenkin rikkonut toiminnon!
 
@@ -1252,128 +1243,106 @@ Yksi tapa korjata toiminnallisuus on liittää fragmentin avaimeen järjestys:
 
 ```erb
 <% cache "beerlist-#{@order}", skip_digest: true do %>
-   taulukon html
+  taulukon html
 <% end %>
 ```
 
 Järjestys talletetaan siis muuttujaan <code>@order</code> kontrollerissa. Seuraavassa kontrollerin vaatimat muutokset:
 
 ```ruby
-  def skip_if_cached
-    @order = params[:order] || 'name'
-    return render :index if request.format.html? and fragment_exist?( "beerlist-#{@order}"  )
-  end
+def index
+  @order = params[:order] || 'name'
+  return if request.format.html? && fragment_exist?("beerlist-#{@order}")
 
-  def index
-    @beers = Beer.includes(:brewery, :style).all
-
-    @beers = case @order
-      when 'name' then @beers.sort_by{ |b| b.name }
-      when 'brewery' then @beers.sort_by{ |b| b.brewery.name }
-      when 'style' then @beers.sort_by{ |b| b.style.name }
-    end
-  end
+  @beers = Beer.includes(:brewery, :style).all
+  @beers = case @order
+            when 'name' then @beers.sort_by(&:name)
+            when 'brewery' then @beers.sort_by{ |b| b.brewery.name }
+            when 'style' then @beers.sort_by{ |b| b.style.name }
+            end
+end
 ```
-
-eli koska kontrollerimetodia ei välttämättä suoriteta, tallettaa esifiltteri järjestyksen.
 
 Ekspiroinnin yhteydessä on ekspiroitava kaikki kolme järjestystä:
 
 ```ruby
-   ["beerlist-name", "beerlist-brewery", "beerlist-style"].each{ |f| expire_fragment(f) }
+["beerlist-name", "beerlist-brewery", "beerlist-style"].each{ |f| expire_fragment(f) }
 ```
 
 **Huom:** voit kutsua fragmentticachen operaatioita konsolista:
 
 ```ruby
-> ActionController::Base.new.fragment_exist?( 'beerlist-name' )
+> ActionController::Base.new.fragment_exist?('beerlist-name')
 Exist fragment? views/beerlist-name (0.4ms)
 => true
-> ActionController::Base.new.expire_fragment( 'beerlist-name' )
+> ActionController::Base.new.expire_fragment('beerlist-name')
 Expire fragment views/beerlist-name (0.6ms)
 => true
-> ActionController::Base.new.fragment_exist?( 'beerlist-name' )
+> ActionController::Base.new.fragment_exist?('beerlist-name')
 Exist fragment? views/beerlist-name (0.1ms)
 => nil
 ```
 
-**Huom2:** konsoliakin käytevämpi debuggauskeino on liittää kehityksen aikana sivun cachaamattomaan osaan tieto siitä mitä fragmentteja cachesta löytyy ja mikä on nykyistä sivua vastaava fragmentti. Lisätään seuraava oluiden sivun yläosaan:
-
-```html
-<div style="border-style: solid;">
-  beerlist-name: <%= ActionController::Base.new.fragment_exist?( 'beerlist-name' ) %>
-  <br>
-  beerlist-style: <%= ActionController::Base.new.fragment_exist?( 'beerlist-style' ) %>
-  <br>
-  beerlist-brewery: <%= ActionController::Base.new.fragment_exist?( 'beerlist-brewery' ) %>
-  <br>
-  current: <%= "beerlist-#{@order}" %>
-</div>
-```
-
-Nyt sivun yläreunaan tulee laatikko, joka kertoo välimuistifragmenttien tilan, eli onko fragmentti olemassa vai ei:
-
-![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w7-6.png)
-
-**Huom3:** koska debuglaatikko on sivun yläreunassa eli ennen  fragmentin mahdollisesti generoivaa koodia, **tulee sivu aina reloadata**, jotta debuglaatikko näyttäisi fragmenttien ajantasaisen tilanteen.
-
 > ## Tehtävä 10
 >
-> Toteuta panimot listaavalle sivulle fragmentticachays. Varmista, että sivun sisältöön vaikuttava muutos ekspiroi cachen. Voit jättää huomiotta tehtävässä 2 tehdyn lisäyksen, jonka avulla järjestys saadaan muutettua päinvastaiseksi klikkaamalla sarakkeen nimeä uudelleen.
+> Toteuta panimot listaavalle sivulle fragmentticachays. Varmista, että sivun sisältöön vaikuttava muutos ekspiroi cachen. 
 
 ## yksittäisen oluen sivun cashays
 
 Jos haluaisimme cachata yksittäisen oluen sivun, kannattaa fragmentin avaimeksi laittaa itse cachattava olio:
 
 ```ruby
-<% cache @beer do %>
+<% cache @beer do %> 
 
   <h2>
     <%= @beer.name %>
   </h2>
 
   <p>
-    <%= link_to @beer.style, @beer.style %>
-    brewed by
+    <strong>Style:</strong>
+    <%= link_to @beer.style.name, @beer.style %>
+  </p>
+
+  <p>
+    <strong>Brewery:</strong>
     <%= link_to @beer.brewery.name, @beer.brewery %>
   </p>
 
-  <% if @beer.ratings.empty? %>
-      <p>beer has not yet been rated! </p>
-  <% else %>
-      <p>Has <%= pluralize(@beer.ratings.count,'rating') %>, average <%= round(@beer.average_rating) %> </p>
-  <% end %>
+  <p>
+    <% if @beer.ratings.empty? %>
+      beer has not yet been rated!
+    <% else %>
+      Has <%= pluralize(@beer.ratings.count, 'rating') %>, 
+      average <%= round(@beer.average_rating) %>
+    <% end %>
+  </p>
 
 <% end %>
 
-<!- cachaamaton osa >
+<!- cachaamaton osa ->
 
 <% if current_user %>
-
   <h4>give a rating:</h4>
 
   <%= form_for(@rating) do |f| %>
-      <%= f.hidden_field :beer_id %>
-      score: <%= f.number_field :score %>
-      <%= f.submit class:"btn btn-primary"  %>
+    <%= f.hidden_field :beer_id %>
+    score: <%= f.number_field :score %>
+    <%= f.submit class:"btn btn-primary" %>
   <% end %>
-
-  <p></p>
-
 <% end %>
 
 <%= edit_and_destroy_buttons(@beer) %>
 ```
 
-Nyt fragmentin avaimeksi tulee merkkijono, jonka Rails generoi kutsumalla olion metodia <code>cache_key</code>. Metodi generoi avaimen joka yksilöi olion _ja_ sisältää aikaleiman, joka edustaa hetkeä, jolloin olio on viimeksi muuttunut. Jos olion kenttiin tulee muutos, muuttuu fragmentin avaimen arvo eli vanha fragmentti ekspiroituu automaattisesti. Seuraavassa esimerkki automaattisesti generoituvasta cache-avaimesta:
+Nyt fragmentin avaimeksi tulee merkkijono, jonka Rails generoi kutsumalla olion metodia <code>cache_key_with_version</code>. Metodi generoi avaimen joka yksilöi olion _ja_ sisältää aikaleiman, joka edustaa hetkeä, jolloin olio on viimeksi muuttunut. Jos olion kenttiin tulee muutos, muuttuu fragmentin avaimen arvo eli vanha fragmentti ekspiroituu automaattisesti. Seuraavassa esimerkki automaattisesti generoituvasta cache-avaimesta:
 
 ```ruby
 > b = Beer.first
-> b.cache_key
-=> "beers/1-20170106210715764510000"
+> b.cache_key_with_version
+=> "beers/1-20180924183300410080"
 > b.update_attribute(:name, 'ISO 4')
-> b.cache_key
-=> "beers/1-20170211200158000903000"
+> b.cache_key_with_version
+=> "beers/1-20180924183314873407"
 ```
 
 Ratkaisu on vielä sikäli puutteellinen, että jos olueeseen tehdään uusi reittaus, olio ei itsessään muutu ja fragmentti ei ekspiroidu. Ongelma on kuitenkin helppo korjata. Lisätään reittaukseen tieto, että reittauksen syntyessä, muuttuessa tai tuhoutuessa, on samalla 'kosketettava' reittaukseen liittyvää olutta:
@@ -1400,13 +1369,11 @@ kohta "If you want to avoid expiring the fragment manually..."
 
 ## Selainpuolen cachays
 
-Cachaysta harjoitetaan monilla tasoilla, myös selainpuolella. Suosittelen aiheesta kiinnostuneille Codeschoolin videota [etag](https://en.wikipedia.org/wiki/HTTP_ETag):ien käytöstä Rails-sovelluksissa, ks. http://rails4.codeschool.com/videos
-
-Codeschoolin muutkin Rails 4 -videot ovat erittäin suositeltavia!
+Cachaysta harjoitetaan monilla tasoilla, myös selainpuolella. Lisää tietoa Railsin tuesta selainpuolen cachaykseen [täällä](https://guides.rubyonrails.org/caching_with_rails.html#conditional-get-support) 
 
 ## Eventual consistency
 
-Sovelluksen käyttäjän kannalta ei ole aina välttämätöntä, että sovelluksen näyttämä tilanne on täysin ajantasalla. Esim. ei ole kriittistä, jos reittausstatistiikkaa näyttävä ratings-sivu näyttää muutaman minuutin vanhan tilanteen, pääasia on, että kaikki järjestelmään tullut data tulee ennen pitkää näkyville käyttäjille. Tälläisestä hieman löyhemmästä ajantasaisuusvaatimuksesta, jolla saatetaan pystyä tehostamaan sovelluksen suorituskykyä huomattavasti käytetään englanninkielistä nimitystä [__eventual consistency__](http://en.wikipedia.org/wiki/Eventual_consistency).
+Sovelluksen käyttäjän kannalta ei ole aina välttämätöntä, että sovelluksen näyttämä tilanne on täysin ajantasalla. Esim. ei ole kriittistä, jos reittausstatistiikkaa näyttävä ratings-sivu näyttää muutaman minuutin vanhan tilanteen, pääasia on, että kaikki järjestelmään tullut data tulee ennen pitkää näkyville käyttäjille. Tälläisestä hieman löyhemmästä ajantasaisuusvaatimuksesta, jolla saatetaan pystyä tehostamaan sovelluksen suorituskykyä huomattavasti käytetään englanninkielistä nimitystä [eventual consistency](http://en.wikipedia.org/wiki/Eventual_consistency).
 
 Eventual consistency -mallin mukainen ajantasaisuus on helppo määritellä Railsissa laittamalla esim. fragmentticachelle expiroitumisaika:
 
@@ -1425,35 +1392,25 @@ SQL:n optimointi ja cachayskään eivät vielä tee ratings-sivusta kovin nopeit
 Toinen ja ehkä parempi tapa reittaussivun nopeuttamiselle olisi cachata Rails.cacheen kontrollerin tarvitsemat tiedot. Kontrolleri on siis seuraava
 
 ```ruby
-  def index
-    @top_beers = Beer.top(3)
-    @top_breweries = Brewery.top(3)
-    @top_styles = Style.top(3)
-    @most_active_users = User.most_active(3)
-    @recent_ratings = Rating.recent
-    @ratings = Rating.all
-  end
+def index
+  @ratings = Rating.recent
+  @beers = Beer.top(3)
+  @styles = Style.top(3)
+  @breweries = Brewery.top(3)
+  @users = User.top(3)
+end
 ```
 
 Voisimme toimia nyt samoin kuin viikolla 5 kun talletimme olutravintoloiden tietoja Railsin cacheen, eli kontrolleri muuttuisi suunnilleen seuraavaan muotoon:
 
 ```ruby
-  def index
-    Rails.cache.write("beer top 3", Beer.top(3)) if cache_does_not_contain_data_or_it_is_too_old
-    @top_beers = Rails.cache.read "beer top 3"
+def index
+  Rails.cache.write("beer top 3", Beer.top(3)) if cache_does_not_contain_data_or_it_is_too_old
+  @top_beers = Rails.cache.read "beer top 3"
 
-    # ...
-  end
+  # ...
+end
 ```
-
-Kurssin tehtäväkirjanpitosovelluksen etusivu http://wadrorstats2017.herokuapp.com/ toimii tällä hetkellä melko nopeasti vaikka sivulla näytetäänkin kaikista järjestelmään tehdyistä palautuksista koostetut tilastot. Palautuksia on tällä hetkellä yli 600. Etusivun suorituskyky ei muuttuisi oikeastaan ollenkaan vaikka palautuksia olisi tuhatkertainen määrä.
-
-Sovellus tallettaa jokaisen palautuksen <code>Submission</code>-olioon. Jos etusivun generoinnin yhteydessä palautustilastot laskettaisiin käymällä läpi kaikki <code>Submission</code>-oliot, olisi sivun renderöinti huomattavasti hitaampaa, ja se hidastuisi sitä mukaa kun järjestelmään tulisi enemmän palautuksia.
-
-Sovellus toimii kuitenkin siten, että jokaisen viikon palautustilastot on esilaskettu <code>WeekStatistic</code>-olioihin. Sovellus päivittää viikkostatistiikkaa jokaisen uuden tai päivitetyn palautuksen yhteydessä. Tämä hidastaa palautuksen tekoa mariginaalisesti (operaatiossa pullonkaulana on sähköpostin lähetys, lähetykseen kuluu 95% operaation vievästä ajasta), mutta nopeuttaa etusivun lataamista todella paljon. Eli viikolla 7 etusivun tiedot saadaan generoitua seitsemän olion perusteella ja oliot saadaan tietokannasta yhdellä SQL-kyselyllä ja käytännössä etusivun generointi on suorituskyvyltään täysin riippumaton tehtyjen palautusten määrästä.
-
-Sovelluksen koodi löytyy osoitteesta
-https://github.com/mluukkai/wadrorstats
 
 Sovellusten suorituskyvyn optimointi ei ole välttämättä helppoa, se edellyttää monentasoisia ratkaisuja ja pitää useimmiten tehdä tilannekohtaisesti räätälöiden. Koodi muuttuu yleensä optimoinnin takia rumemmaksi.
 
@@ -1464,25 +1421,25 @@ Yhtenä negatiivisena puolena cachen ajoittain tapahtuvassa ekspiroimisessa, esi
 Parempaan ratkaisuun päästäisiinkin jos käyttäjälle tarjottaisiin aina niin ajantasainen data kuin mahdollista, eli kontrolleri olisi muotoa:
 
 ```ruby
-  def index
-    @top_beers = Rails.cache.read "beer top 3"
+def index
+  @top_beers = Rails.cache.read("beer top 3")
 
-    # ...
-  end
+  # ...
+end
 ```
 
 Välimuistin päivitys voitaisiin sitten suorittaa omassa taustalla olevassa, aika ajoin heräävässä säikeessä/prosessissa:
 
 ```ruby
-  # pseudokoodia, ei toimi oikeasti...
-  def background_worker
-    while true do
-       sleep 10.minutes
-       Rails.cache.write("beer top 3", Beer.top(3))
-       Rails.cache.write("brewery top 3", Brewery.top(3))
-       # ...
-    end
+# pseudokoodia, ei toimi oikeasti...
+def background_worker
+  while true do
+      sleep 10.minutes
+      Rails.cache.write("beer top 3", Beer.top(3))
+      Rails.cache.write("brewery top 3", Brewery.top(3))
+      # ...
   end
+end
 ```
 
 Ylläesitellyn kaltainen taustaprosessointitapa on siinä mielessä yksinkertainen, että sovelluksen ja taustaprosessointia suorittavan säikeen/prosessin ei tarvitse synkronoida toimintojaan. Toisinaan taas taustaprosessoinnin tarpeen laukaisee jokin sovellukselle tuleva pyyntö. Tällöin sovelluksen ja taustaprosessoijien välisen synkronoinnin voi hoitaa esim. viestijonojen avulla.
@@ -1491,13 +1448,9 @@ Viestijonoilla ja erillisillä prosesseilla tai säikeillä hoidetun taustaprose
 
 Jos sovellus tarvitsee ainoastaan jonkin yksinkertaisen, tasaisin aikavälein suoritettavan taustaoperaation, saattaa [Heroku scheduler](https://devcenter.heroku.com/articles/scheduler) olla yksinkertaisin vaihtoehto. Tällöin taustaoperaatio määritellään [Rake-taskina](http://railscasts.com/episodes/66-custom-rake-tasks), jonka Heroku suorittaa joko kerran vuorokaudessa, tunnissa tai kymmenessä minuutissa.
 
-Ennen Rails 4:sta Rails-sovellukset toimivat oletusarvoisesti yksisäikeisinä. Tästä taas oli seurauksena se, että sovellus käsitteli HTTP-pyynnöt peräkkäin (ellei palvelinohjelmiston tasolla oltu määritelty että sovelluksesta on käynnissä useampia instansseja, ks. esim. https://devcenter.heroku.com/articles/rails-unicorn). Rails 4:stä asti jokaisen pyynnön käsittely omassa säikeessään on oletusarvoisesti sallittu. On kuitenkin huomattava, että Railsin oletusarvoinen palvelinohjelmisto WEBrick _ei_ tue säikeistettyä pyyntöjen käsittelyä. Jos säikeistykselle on tarvetta, tulee palvelinohjelmistona käyttää [Pumaa](http://puma.io/). Puman käyttöönotto on [helppo tehdä](https://discussion.heroku.com/t/using-puma-on-heroku/150).
-
-Lisää säikeistettyjen Rails-sovellusten tekemisestä [Rails-castista] (https://www.cs.helsinki.fi/i/mluukkai/365-thread-safety.mp4). Huomaa, että säikeistyksen sallimisen jälkeen on huolehdittava siitä että koodi on säieturvallista!
-
 ## Sucker Punch
 
-Kuten edellä todettiin, paras vaihtoehto asynkronisten operaatioiden suorittamiseen Railsilla on [Sidekiq](http://railscasts.com/episodes/366-sidekiq). Sidekiq kuitenkin vaatii oman prosessinsta, eli esim. Herokussa sidekiqia ei ole helppoa suorittaa varaamatta sille omaa prosessia eli [dynoa](https://devcenter.heroku.com/articles/dynos), ja se taas maksaa vähintään 7 dollaria kuussa.
+Kuten edellä todettiin, paras vaihtoehto asynkronisten operaatioiden suorittamiseen Railsilla on [Sidekiq](http://railscasts.com/episodes/366-sidekiq). Sidekiq kuitenkin vaatii oman prosessinsa, eli esim. Herokussa sidekiqia ei ole helppoa suorittaa varaamatta sille omaa prosessia eli [dynoa](https://devcenter.heroku.com/articles/dynos), ja se taas maksaa vähintään 7 dollaria kuussa.
 
 Ilmaisten Heroku-palveluiden yhteydessä on madollista [Sucker Punch](https://github.com/brandonhilkert/sucker_punch)- kirjastoa:
 
@@ -1509,11 +1462,6 @@ Sucker Punchin käyttö on melko helppoa.
 
 Lisää gemfileen <code>gem 'sucker_punch', '~> 2.0'</code> ja suorita bundle install.
 
-Luodaan Sucker Punch -operaatioita varten hakemisto _app/jobs_ (Rails 5 luo hakemiston oletusarvoisesti). Listätään tiedostoon _application.rb_ seuraava rivi (Rails 5:llä tämä ei ole tarpeen):
-
-```ruby
-    config.autoload_paths += Dir["#{Rails.root}/app/jobs"]
-```
 
 eli määritellään Rails lataamaan automaattisesti luomaamme hakemistoon määritelty koodi.
 
