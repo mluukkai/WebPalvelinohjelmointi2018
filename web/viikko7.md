@@ -1602,17 +1602,6 @@ OAuth-pohjainen autentikaatio onnistuu Railsilla helposti Omniauth-gemien avulla
 > * joudut muokkaamaan <code>User</code>-modelia siten, että sen avulla hoidetaan sekä järjestelmän omaa salasanaa hyödyntävät käyttäjät, että GitHubin kautta kirjautuvat
 > * tällä hetkellä <code>User</code>-olioiden validoinnissa vaaditaan, että olioilla on vähintään 4 merkin mittainen salasana. Joudut tekemään validoinnin ehdolliseksi, siten ettei sitä vaadita GitHubin tunnuksilla kirjautuvalta käyttäjältä (katso apua googlella) tai toinen vaihtoehto on generoida myös GitHubin kautta kirjautuville esim. satunnainen salasana
 
-> ## Tehtävä 14
-
-TEHTÄVÄ refaktoroi moduuliin 
- 
-```
-def self.top(how_many)
-  sorted_by_rating_in_desc_order = all.sort_by{ |b| -(b.average_rating || 0) }
-  sorted_by_rating_in_desc_order[0, how_many]
-end
-```
-
 ## Refaktorointi: luokka metodit 
 
 Viikon 6 tehtävässä [6-7](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko6.md#teht%C3%A4v%C3%A4-6-7-kahden-teht%C3%A4v%C3%A4n-arvoinen) kehoitettiin tekemään luokille _Beer_, _Brewery_ ja _Style_ luokkametodit, joiden avulla kontrollerin on helppo selvittää saa reittausten perusteella parhaat panimot, oluet ja oluttyylit.
