@@ -1,5 +1,3 @@
-# KESKEN lukeminen omalla vastuulla
-
 **Tehtävien deadline poikkeuksellisesti vasta maanantaina 22.10. klo 23.59**
 
 Jatkamme sovelluksen rakentamista siitä, mihin jäimme viikon 6 lopussa. Allaoleva materiaali olettaa, että olet tehnyt kaikki edellisen viikon tehtävät. Jos et tehnyt kaikkia tehtäviä, voit täydentää ratkaisusi tehtävien palautusjärjestelmän kautta näkyvän esimerkivastauksen avulla.
@@ -1548,6 +1546,23 @@ Jos haluaisimme vastaavasti, että sovelluksemme näyttäisi käyttäjälle olut
 
 Viime aikoina onkin noussut suosioon tyyli, jossa sovellus koostetaan [mikropalveluista (engl. micro service)](https://martinfowler.com/articles/microservices.html) eli melko pienistä, yhden erillisen tehtävän itsenäisesti hoitavista palveluista. 
 
+## NoSQL-tietokannat
+
+Relaatiotietokannat ovat dominoineet tiedon tallennusta jo vuosikymmenten ajan. Viime aikoina on kuitenkin alkanut jälleen tapahtumaan tietokantarintamalla, ja kattotermin [NoSQL](https://en.wikipedia.org/wiki/NoSQL) alla kulkevat "ei relaatiotietokannat" ovat alkaneet nostaa suosiotaan.
+
+Yhtenä motivaationa NoSQL-tietokannoilla on ollut se, että relaatiotietokantoja on vaikea skaalata massivisten internetsovellusten vaatimaan suorituskykyyn. Toisaalta myös tiettyjen NoSQL-tietokantojen skeemattomuus tarjoaa sovellukselle joustavuutta verrattuna SQL-tietokantojen tarkastimääriteltyihin tietokantaskeemoihin.
+
+NoSQL-tietokantoja on useita, keskenään aivan erilaisilla toimintaperiaatteilla toimivia, mm.
+* avain/arvotietokannat (key-value databases)
+* dokumenttitietokannat (document databases)
+* saraketietokannat (columnar databases)
+* verkkotietokannat (graph databases)
+
+Jo meille tutuksi tullut <code>Rails.cache</code> on oikeastaan yksinkertainen avain-arvotietokanta, joka mahdollistaa mielivaltaisten olioiden tallettamisen avaimeen perustuen. Tietokannasta haku on rajoittunut hakuun avaimien perusteella ja tietokanta ei tue kannassa olevien olioiden välisiä liitoksia ollenkaan.
+
+Uusien tietokantatyyppien noususta huolimatta relaatiotietokannat tulevat kuitenkin säilymään ja on todennäköistä että isommissa sovelluksissa on käytössä rinnakkain erilaisia tietokantoja, ja kuhunkin talletustarkoitukseen pyritään valitsemaan tilanteeseen parhaiten sopiva tietokantatyyppi, ks.
+http://www.martinfowler.com/bliki/PolyglotPersistence.html
+
 ## Single sign on
 
 Monilla sivustoilla on viime aikoina yleistynyt käytäntö, jossa mahdollistetaan sivulle kirjautuminen esim. Google-,  Facebook- tai GitHub-tunnuksilla. Sivustot siis ovat ulkoistaneet käyttäjänhallinnan ja autentikoinnin erillisille palveluille.
@@ -1587,23 +1602,6 @@ OAuth-pohjainen autentikaatio onnistuu Railsilla helposti Omniauth-gemien avulla
 > * joudut muokkaamaan <code>User</code>-modelia siten, että sen avulla hoidetaan sekä järjestelmän omaa salasanaa hyödyntävät käyttäjät, että GitHubin kautta kirjautuvat
 > * tällä hetkellä <code>User</code>-olioiden validoinnissa vaaditaan, että olioilla on vähintään 4 merkin mittainen salasana. Joudut tekemään validoinnin ehdolliseksi, siten ettei sitä vaadita GitHubin tunnuksilla kirjautuvalta käyttäjältä (katso apua googlella) tai toinen vaihtoehto on generoida myös GitHubin kautta kirjautuville esim. satunnainen salasana
 
-## NoSQL-tietokannat
-
-Relaatiotietokannat ovat dominoineet tiedon tallennusta jo vuosikymmenten ajan. Viime aikoina on kuitenkin alkanut jälleen tapahtumaan tietokantarintamalla, ja kattotermin [NoSQL](https://en.wikipedia.org/wiki/NoSQL) alla kulkevat "ei relaatiotietokannat" ovat alkaneet nostaa suosiotaan.
-
-Yhtenä motivaationa NoSQL-tietokannoilla on ollut se, että relaatiotietokantoja on vaikea skaalata massivisten internetsovellusten vaatimaan suorituskykyyn. Toisaalta myös tiettyjen NoSQL-tietokantojen skeemattomuus tarjoaa sovellukselle joustavuutta verrattuna SQL-tietokantojen tarkastimääriteltyihin tietokantaskeemoihin.
-
-NoSQL-tietokantoja on useita, keskenään aivan erilaisilla toimintaperiaatteilla toimivia, mm.
-* avain/arvotietokannat (key-value databases)
-* dokumenttitietokannat (document databases)
-* saraketietokannat (columnar databases)
-* verkkotietokannat (graph databases)
-
-Jo meille tutuksi tullut <code>Rails.cache</code> on oikeastaan yksinkertainen avain-arvotietokanta, joka mahdollistaa mielivaltaisten olioiden tallettamisen avaimeen perustuen. Tietokannasta haku on rajoittunut hakuun avaimien perusteella ja tietokanta ei tue kannassa olevien olioiden välisiä liitoksia ollenkaan.
-
-Uusien tietokantatyyppien noususta huolimatta relaatiotietokannat tulevat kuitenkin säilymään ja on todennäköistä että isommissa sovelluksissa on käytössä rinnakkain erilaisia tietokantoja, ja kuhunkin talletustarkoitukseen pyritään valitsemaan tilanteeseen parhaiten sopiva tietokantatyyppi, ks.
-http://www.martinfowler.com/bliki/PolyglotPersistence.html
-
 > ## Tehtävä 14
 
 TEHTÄVÄ refaktoroi moduuliin 
@@ -1615,7 +1613,31 @@ def self.top(how_many)
 end
 ```
 
-##
+## Refaktorointi: luokka metodit 
+
+Viikon 6 tehtävässä [6-7](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko6.md#teht%C3%A4v%C3%A4-6-7-kahden-teht%C3%A4v%C3%A4n-arvoinen) kehoitettiin tekemään luokille _Beer_, _Brewery_ ja _Style_ luokkametodit, joiden avulla kontrollerin on helppo selvittää saa reittausten perusteella parhaat panimot, oluet ja oluttyylit.
+
+Metodit ovat kaikissa luokissa täsmälleen samat:
+
+```
+class Beer < ApplicationRecord
+  # ...
+
+  def self.top(how_many)
+    sorted_by_rating_in_desc_order = all.sort_by{ |b| -(b.average_rating || 0) }
+    sorted_by_rating_in_desc_order[0, how_many]
+  end
+end
+```
+
+Viikolla 2 siirrettiin luokkien määrittelemiä samanlaisia _oliometodeita_ [yhteiseen moduuliin](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md#yhteisen-koodin-siirto-moduuliin). 
+
+Myös luokkametodeja voidaan siirtää yhteiseen moduuliin, tekniikka ei kuitenkaan ole täysin sama kuin oliometodeja käytettävissä
+
+> ## Tehtävä 14
+>
+> Refaktoroi koodisi siten, että luokkien _Beer_, _Brewery_ ja _Style_ metodi _def self.top(how_many)_ määritellään moduulissa. Saat vihjeitä toteutukseen esim. googlaamalla _ruby module static method_ 
+
 
 > ## Tehtävä 15
 >
