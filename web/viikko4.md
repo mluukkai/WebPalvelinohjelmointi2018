@@ -636,12 +636,14 @@ FactoryBot.define do
   end
 
   factory :rating do
+    score { 10 }
     beer # reittaukseen liittyvä olut luodaan beer-tehtaalla
+    user # reittaukseen liittyvä user luodaan user-tehtaalla
   end
 end
 ```
 
-Reittausten luovan olitehtaan _:rating_ lisäksi tiedostossa määritellään panimoita ja oluita luovat fixturet.
+Reittausten luovan oliotehtaan _:rating_ lisäksi tiedostossa määritellään panimoita ja oluita luovat fixturet.
 
 Tehdas <code>FactoryBot.create(:brewery)</code> luo panimon, jonka nimi on 'anonymous' ja perustamisvuosi 1900. 
 
@@ -729,7 +731,7 @@ end
 Testi ei mene läpi, eli lisätään luokalle User metodin runko:
 
 ```ruby
-class User <ApplicationRecord
+class User < ApplicationRecord
   # ...
 
   def favorite_beer
