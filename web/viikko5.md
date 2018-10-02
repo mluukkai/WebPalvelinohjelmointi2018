@@ -738,7 +738,7 @@ Rails tarjoaa avain-arvopari-periaatteella toimivan hyvin helppokäyttöisen cac
 
 Välimuisti on oletusarvoisesti poissa päältä. Saat sen päälle suorittamalla komentoriviltä komennon <code>rails dev:cache</code> 
 
-Muuta myös tiedostosta _config/development.rb_ rivi
+Muuta myös tiedostosta _config/environments/development.rb_ rivi
 
 ```ruby
 config.cache_store = :memory_store
