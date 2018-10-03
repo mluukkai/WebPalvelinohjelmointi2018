@@ -922,6 +922,8 @@ describe "BeermappingApi" do
 
       stub_request(:get, /.*espoo/).to_return(body: canned_answer, headers: {'Content-Type' => "text/xml"})
 
+      BeermappingApi.places_in("espoo")
+
       places = BeermappingApi.places_in("espoo")
 
       expect(places.size).to eq(1)
