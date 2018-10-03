@@ -690,7 +690,7 @@ describe "BeermappingApi" do
     expect(places.size).to eq(1)
     place = places.first
     expect(place.name).to eq("Gallows Bird")
-    expect(place.street).to eq("Merituulentie 30")
+    expect(place.street).to eq("Eerikinkatu 18")
   end
 
 end
