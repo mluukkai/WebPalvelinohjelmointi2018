@@ -410,8 +410,8 @@ Taulukon rivit muodostava koodi on muodossa
 
 ```erb
 <tr>
-  <% Place.rendered_fields.each do |f| %>
-    <td><%= place.send(f) %></td>
+  <% Place.rendered_fields.each do |field| %>
+    <td><%= place.send(field) %></td>
   <% end %>
 </tr>   
 ```
@@ -1142,7 +1142,6 @@ eli tällä kertaa routeissa määriteltiin, että panimon id:hen viitataan <cod
 Tehtävän jälkeen sovelluksesi voi näyttää esim. seuraavalta:
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w5-2.png)
-
 
 ## Oluen reittaus suoraan oluen sivulta
 
