@@ -1100,7 +1100,15 @@ eli tällä kertaa routeissa määriteltiin, että panimon id:hen viitataan <cod
 >
 > Toinen tapa toiminnallisuuden toteuttamiseen on sivulla http://beermapping.com/api/reference/ oleva "Locquery Service"
 >
-> *HUOM* jos sinulla on vaikeuksia tehdä ravinotalan nimestä klikattava linkki, voit muuttaa taulukon _send_-metodia käyttävästä versiosta seuraavaan "karvalakkimalliin":
+> *HUOM1* Koska _Place_ ei ole ActiveRecord-luokka, ei seuraava toimi
+>
+> ```link_to place.name, place```
+> 
+> linkin kohdeosoite on määriteltävä pidemmässä muodossa
+>
+> ```link_to place.name, place_path(place.id)```
+> 
+> *HUOM2* jos sinulla on vaikeuksia tehdä ravinotalan nimestä klikattava linkki, voit muuttaa taulukon _send_-metodia käyttävästä versiosta seuraavaan "karvalakkimalliin":
 >
 >```erb
 ><table>
