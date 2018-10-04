@@ -1102,6 +1102,7 @@ eli tällä kertaa routeissa määriteltiin, että panimon id:hen viitataan <cod
 >
 > *HUOM* jos sinulla on vaikeuksia tehdä ravinotalan nimestä klikattava linkki, voit muuttaa taulukon _send_-metodia käyttävästä versiosta seuraavaan "karvalakkimalliin":
 >
+>```erb
 ><table>
 >  <thead>
 >    <th>id</th>
@@ -1126,6 +1127,7 @@ eli tällä kertaa routeissa määriteltiin, että panimon id:hen viitataan <cod
 >    </tr>
 >  <% end %>
 ></table>
+>```
 >
 > Kokeile hajottaako ravointoloiden sivun lisääminen mitään olemassaolevaa testiä. Jos, niin voit yrittää korjata testit. Välttämätöntä se ei kuitenkaan tässä vaiheessa ole.
 
