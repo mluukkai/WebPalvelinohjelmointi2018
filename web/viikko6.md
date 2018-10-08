@@ -231,7 +231,7 @@ Muutetaan tiedosto _app/views/layouts/application.html.erb_  seuraavaan muotoon:
               <%= link_to 'join a club ', new_membership_path, { class: "nav-link" } %>
             </li> 
             <li class="nav-item">
-              <%= link_to 'signout', signout_path, { class: "nav-link" } %>
+              <%= link_to 'signout', signout_path, { class: "nav-link", method: :delete  } %>
             </li>                    
           <% else %>
             <li class="nav-item">
