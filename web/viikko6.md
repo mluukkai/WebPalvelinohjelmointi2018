@@ -164,7 +164,7 @@ Gemin [asennusohjetta](https://github.com/twbs/bootstrap-rubygem#a-ruby-on-rails
 //= require bootstrap-sprockets
 ```
 
-Muutetaan myös tiedoston _app/assets/css/application.css_ pääte muotoon _scss_ ja lisätään tiedoston loppuun rivi
+Muutetaan myös tiedoston _app/assets/stylesheets/application.css_ pääte muotoon _scss_ ja lisätään tiedoston loppuun rivi
 
 ```
 @import "bootstrap";
