@@ -970,7 +970,7 @@ Lisätietoa http://www.railsdispatch.com/posts/security ja http://railscasts.com
 
 Tällä viikolla ei ole enää enempää tehtäviä. Riittää että luet tästä eteenpäin olevan materiaalin. Seuraavan viikon materiaali ei riipu millään tavalla tämän viikon päättävästä refaktoroinnista.
 
-Viikon 4 [tehtävissä 3 ja 4](ks. https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko4.md#teht%C3%A4v%C3%A4-3)  toteutettiin metodit henkilön suosikkipanimon ja oluttyylin selvittämiseen. Seuraavassa on eräs melko suoraviivainen ratkaisu metodien <code>favorite_style</code> ja <code>favorite_brewery</code> toteuttamiseen:
+Viikon 4 [tehtävissä 3 ja 4](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko4.md#teht%C3%A4v%C3%A4-3)  toteutettiin metodit henkilön suosikkipanimon ja oluttyylin selvittämiseen. Seuraavassa on eräs melko suoraviivainen ratkaisu metodien <code>favorite_style</code> ja <code>favorite_brewery</code> toteuttamiseen:
 
 ```ruby
 class User
