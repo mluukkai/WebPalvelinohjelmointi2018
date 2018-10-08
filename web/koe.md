@@ -4,6 +4,6 @@ Uuden käytännön takia kurssikokeeseen on *pakko* ilmoittautua viimeistään 1
 
 Koeykymyksiin vastataan kynällä. Kysymykset sisältävät pääosin "teoriaa", eli isoja koodauskysymyksiä ei ole. Tehtävien tekemisen lisäksi kokeesen valmistautuessa kannattaa ehkä hieman miettiä mitä on tullut tehtyä ja kenties kertailla materiaalissa olevia termejä.
 
-Hyväksytty suoritus kurssilta edellyttää, että kurssikoe on suoritettu hyväksyttävästi, eli noin puoliin koetehtävistä on vastattu oikein. Koe ei kuitenkaan vaikuta kurssin arvosanaan.
+Hyväksytty suoritus kurssilta edellyttää, että kurssikoe on suoritettu hyväksyttävästi, johon taas riittää 50% kokeen pisteistä. Koe ei kuitenkaan vaikuta kurssin arvosanaan.
 
 Kokeessa ei lisämateriaalin käyttö ole sallittua.
