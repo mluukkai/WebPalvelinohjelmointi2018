@@ -151,7 +151,7 @@ Aloitetaan sitten sovelluksemme bootstrappaaminen gemin <https://github.com/twbs
 
 ```ruby
 gem 'bootstrap', '~> 4.1.3'
-gem 'jquery-rails'
+gem 'jquery-rails', '>= 4.3.3
 ```
 
 Asennetaan gemit komennolla <code>bundle install</code>, asennuksen jälkeen sovellus tulee uudelleenkäynnistää.
