@@ -833,7 +833,7 @@ Luodaan indeksiä varten migraatio
 Migraatio on seuraavanlainen:
 
 ```ruby
-class AddConfirmedToMembership < ActiveRecord::Migration[5.2]
+class AddUserIndexBasedOnUsername < ActiveRecord::Migration[5.2]
   def change
     add_index :users, :username
   end
