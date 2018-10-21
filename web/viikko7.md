@@ -1070,7 +1070,7 @@ Käytämme tiedostossa normaalien olioiden luovien metodien <code>create</code> 
 
 Suorita seedaus komennolla
 
-    rails db:seed
+    rails db:reset
 
 Skriptin suorittamisessa kuluu tovi.
 
