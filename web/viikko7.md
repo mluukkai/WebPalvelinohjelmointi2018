@@ -132,7 +132,7 @@ class BeersController < ApplicationController
 end
 ```
 
-**HUOM** lisäsimme metodin <code>list</code> niiden joita ennen ei tarvitse suorittaa <code>ensure_that_signed_in</code>-metodia, eli oluiden javascriptilla tuotetun listan näkeminen ei edellytä sivulle kirjautumista!
+**HUOM** lisäsimme metodin <code>list</code> niihin, joita ennen ei tarvitse suorittaa <code>ensure_that_signed_in</code>-metodia, eli oluiden javascriptilla tuotetun listan näkeminen ei edellytä sivulle kirjautumista!
 
 Myös näkymä views/beers/list.html.erb on minimalistinen:
 
@@ -833,14 +833,14 @@ Luodaan indeksiä varten migraatio
 Migraatio on seuraavanlainen:
 
 ```ruby
-class AddConfirmedToMembership < ActiveRecord::Migration[5.2]
+class AddUserIndexBasedOnUsername < ActiveRecord::Migration[5.2]
   def change
     add_index :users, :username
   end
 end
 ```
 
-Suoritetaan migraatio komennolla <code>rake db:migrate</code> ja indeksi on valmis!
+Suoritetaan migraatio komennolla <code>rails db:migrate</code> ja indeksi on valmis!
 
 Indeksin huono puoli on se, että kun järjestelmään lisätään uusi käyttäjä tai olemassaoleva käyttäjä poistetaan, on indeksiä muokattava ja tähän luonnollisestsi kuluu aikaa. Indeksin lisäys on siis tradeoff sen suhteen, mitä operaatiota halutaan optimoida.
 
@@ -995,7 +995,7 @@ Huomaa, että elementin <code>td</code> sisällä olevan if:in ehdon toimivuus r
 >
 > Muutos aiheuttaa n+1-ongelman käyttäjien sivulle. Korjaa ongelma edellisen esimerkin tapaan eager loadaamalla tarvittavat oliot käyttäjien hakemisen yhteydessä. Varmista optimointisi onnistuminen miniprofilerilla.
 
-**Huom:** jos taulukkoon liitettäisi myös suosikkioluen kertova sarake
+**Huom:** jos taulukkoon liitettäisiin myös suosikkioluen kertova sarake
 
      <td><%= user.favorite_beer %></td>
 
@@ -1450,7 +1450,7 @@ Jos sovellus tarvitsee ainoastaan jonkin yksinkertaisen, tasaisin aikavälein su
 
 Kuten edellä todettiin, paras vaihtoehto asynkronisten operaatioiden suorittamiseen Railsilla on [Sidekiq](http://railscasts.com/episodes/366-sidekiq). Sidekiq kuitenkin vaatii oman prosessinsa, eli esim. Herokussa sidekiqia ei ole helppoa suorittaa varaamatta sille omaa prosessia eli [dynoa](https://devcenter.heroku.com/articles/dynos), ja se taas maksaa vähintään 7 dollaria kuussa.
 
-Ilmaisten Heroku-palveluiden yhteydessä on madollista [Sucker Punch](https://github.com/brandonhilkert/sucker_punch)- kirjastoa:
+Ilmaisten Heroku-palveluiden yhteydessä on mahdollista käyttää [Sucker Punch](https://github.com/brandonhilkert/sucker_punch)- kirjastoa:
 
 > Sucker Punch is a single-process Ruby asynchronous processing library. This reduces costs of hosting on a service like Heroku along with the memory footprint of having to maintain additional jobs if hosting on a dedicated server. All queues can run within a single application (eg. Rails, Sinatra, etc.) process.
 
