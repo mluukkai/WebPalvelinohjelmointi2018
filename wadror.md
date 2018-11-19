@@ -2,9 +2,7 @@
 
 ## Ajankohtaista
 
-* Kurssikoe pidetään tiistaina 23.10. klo 16.00 A111
-  * Kurssikokeeseen on *pakko* ilmoittautua viimeistään 13.10 [weboodissa](https://weboodi.helsinki.fi/hy/opettaptied.jsp?MD5avain=4c9ff576-f054-4672-91f1-2bbe39fadb2d&Kieli=1&OpetTap=126156500&takaisin=vl_kehys.jsp&vl_tila=3&Opas=6191&haettuOpas=6191&ooo_SortJarj=3&Org=116716376)
-  * [muutamia ohjeita kokeeseen](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/koe.md)
+* Koe korjattu, kurssin [tulokset](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/misc/rails2018.pdf)
 * materiaali ja tehtävät 
   * [viikko 1](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko1.md) deadline su 9.9 klo 23:59
   * [viikko 2](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko2.md) deadline su 16.9. klo 23.59
