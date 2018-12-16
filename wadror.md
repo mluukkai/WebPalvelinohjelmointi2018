@@ -90,7 +90,7 @@ Ohjelma on maksullinen, mutta kaikki @helsinki-emailosoitteen omaavat saavat opi
 
 Itse käytän RubyMineä ainoastaan editorina, Railsin komennot suoritan komentoriviltä.
 
-Myös useat tekstieditorit esim. [Visual Studio Code](https://code.visualstudio.com)tarjoavat kohtuullisen Rails-tuen.
+Myös useat tekstieditorit esim. [Visual Studio Code](https://code.visualstudio.com) tarjoavat kohtuullisen Rails-tuen.
 
 ## Hyödyllisiä Rails-linkkejä
 
