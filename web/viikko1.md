@@ -104,7 +104,7 @@ Asennusohje osoitteessa https://github.com/mluukkai/WebPalvelinohjelmointi2018/b
 
 ## Sovelluksen luominen
 
-Teemme kurssilla olutharrastajille tarkoitetun palvelun, jonka avulla olutharrastajat voivat selata olemassa olevia panimoja, oluita, oluttyylejä sekä "reitata" juomiaan oluita (eli antaa oluille oman mieltymyksensä mukaisen pistemäärän). Viikon 7 jälkeen sovellus näyttää suunilleen seuraavalta [http://wad-ratebeer.herokuapp.com/](http://wad-ratebeer.herokuapp.com/)
+Teemme kurssilla olutharrastajille tarkoitetun palvelun, jonka avulla olutharrastajat voivat selata olemassa olevia panimoja, oluita, oluttyylejä sekä "reitata" juomiaan oluita (eli antaa oluille oman mieltymyksensä mukaisen pistemäärän). Viikon 7 jälkeen sovellus näyttää suunnilleen seuraavalta [http://wad-ratebeer.herokuapp.com/](http://wad-ratebeer.herokuapp.com/)
 
 Rails tarjoaa sovelluskehittäjän avuksi useita generattoreita (ks. [http://guides.rubyonrails.org/generators.html](http://guides.rubyonrails.org/generators.html)), joiden avulla on helppo generoida hieman valmista toiminnallisuutta sisältäviä tiedostopohjia.
 
@@ -112,7 +112,7 @@ Uusi Rails-sovellus luodaan generaattorilla new. Mene sopivaan hakemistoon ja lu
 
     rails new ratebeer
 
-Komenton suoritus luo sovelluksen sisältämän hakemiston _ratebeer_.
+Komennon suoritus luo sovelluksen sisältämän hakemiston _ratebeer_.
 
 Huom: jatkon kannalta on kätevintä, että luodusta hakemistosta tehdään git-repositorio. Älä siis sijoita sovellusta minkään muun git-repositorion sisälle!
 
@@ -1048,7 +1048,7 @@ Syötä pyydettäessä Heroku-tunnuksesi.
 
 Sovelluksen URL tulee olemaan tässä tapauksessa https://young-escarpment-87255.herokuapp.com/. Sovelluksen URLin alkuosan saa haluamaansa muotoon antamalla komennon muodossa **heroku create urlin_alkuosa**.
 
-**Huomaa**, että sovelluksen juuressa, eli osoitteessa https://young-escarpment-87255.herokuapp.com/ ei ole (tällä hetkellä) mitään. Sovelluksemme oluet tulevat löytymääm osoitteesta https://young-escarpment-87255.herokuapp.com/beers ja panimot osoitteesta https://young-escarpment-87255.herokuapp.com/breweries
+**Huomaa**, että sovelluksen juuressa, eli osoitteessa https://young-escarpment-87255.herokuapp.com/ ei ole (tällä hetkellä) mitään. Sovelluksemme oluet tulevat löytymään osoitteesta https://young-escarpment-87255.herokuapp.com/beers ja panimot osoitteesta https://young-escarpment-87255.herokuapp.com/breweries
 
 Railsissa sovellukset käyttävät oletusarvoisesti sqlite-tietokantaa, mutta Herokussa käytössä on PostgreSQL-tietokanta. Rails-sovelluksen käyttämät kirjastot eli Rubyn termein gemit on määritelty sovelluksen juuressa olevassa Gemfile-nimisessä tiedostossa. Jotta saamme PostgreSQLn käyttöön, joudumme tekemään muutoksen Gemfileen.
 
@@ -1145,7 +1145,7 @@ Voimme koittaa selvittää vikaa katsomalla herokun lokeja komennolla <code>hero
 2018-09-01T18:20:29.453062+00:00 app[web.1]: pg_get_expr(d.adbin, d.adrelid), a.attnotnull, a.atttypid, a.atttypmod,
 </pre>
 
-Syynä on siis se, että tietokantaa ei ole luotu _PG::UndefinedTable: ERROR:  relation "breweries" does not exist_ Meidän on siis suoritettava migraatiot Herokussa olevalle sovellukselle. Tämä onnistuu komennolla <code>heroku run rails db:migrate</code>
+Syynä on siis se, että tietokantaa ei ole luotu _PG::UndefinedTable: ERROR:  relation "breweries" does not exist_. Meidän on siis suoritettava migraatiot Herokussa olevalle sovellukselle. Tämä onnistuu komennolla <code>heroku run rails db:migrate</code>
 
 Ja nyt sovellus toimii!
 
