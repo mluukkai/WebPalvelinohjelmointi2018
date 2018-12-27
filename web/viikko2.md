@@ -198,7 +198,7 @@ Lisää tiedostoon app/assets/stylesheets/application.css seuraava:
 }
 ```
 
-Kun reloadaan sivun, huomaat, että sovelluksesi antama vaikutelma on jo melko professionaali.
+Kun reloadaat sivun, huomaat, että sovelluksesi antama vaikutelma on jo melko professionaali.
 
 ## routes.rb
 
@@ -489,7 +489,7 @@ Panimoilla on nimi <code>name</code> ja perustamisvuosi <code>year</code>. Konso
 >
 ```
 
-Teknisesti ottaen esim. <code>b.year</code> on metodikutsu. Rails luo model-olioon jokaiselle vastaavan tietokantataulun skeeman määrittelemälle sarakkeelle kentän eli attribuutin ja metodit attribuutin arvon lukemista ja arvon muuttamista varten. Nämä automaattisesti generoidut metodit ovat sisällöltään suunilleen seuraavat:
+Teknisesti ottaen esim. <code>b.year</code> on metodikutsu. Rails luo model-olioon jokaiselle vastaavan tietokantataulun skeeman määrittelemälle sarakkeelle kentän eli attribuutin ja metodit attribuutin arvon lukemista ja arvon muuttamista varten. Nämä automaattisesti generoidut metodit ovat sisällöltään suunnilleen seuraavat:
 
 ```ruby
 class Brewery < ApplicationRecord
@@ -604,7 +604,7 @@ def restart
 end
 ```
 
-Panimon sisällä <code>year</code> siis on ActiveRecordin tietokantaan tallentama attribuutti, kun taas <code>@year</code> on olion instanssimuuttuja. Railsin modeleissa instanssimuutuujia ei juurikaan käytetä. Instanssimuuttujia käytetään Railsissa lähinnä tiedonvälitykseen kontrollereilta näkymille.
+Panimon sisällä <code>year</code> siis on ActiveRecordin tietokantaan tallentama attribuutti, kun taas <code>@year</code> on olion instanssimuuttuja. Railsin modeleissa instanssimuuttujia ei juurikaan käytetä. Instanssimuuttujia käytetään Railsissa lähinnä tiedonvälitykseen kontrollereilta näkymille.
 
 > ## Tehtävä 3
 >
@@ -751,7 +751,7 @@ eli generoituu normaali HTML-lomake (ks. tarkemmin http://www.w3.org/community/w
 
 Lomakkeen lähetystapahtuman kohdeosoite on /ratings ja käytettävä HTTP-metodi GET:in sijasta POST. Lomakkeessa on kaksi numeromuotoista kenttää ja niiden arvot lähetetään vastaanottajalle POST-kutsun mukana "muuttujien" <code>rating[beer_id]</code> ja <code>rating[score]</code> arvoina.
 
-Railsin metodi <code>form_for</code> siis muodostaa automaattisesti oikeaan osoitteeseen lähetettävän, oikeanlaisen lomakkeem, jossa on syöttökentät kaikille parametrina olevan tyyppisen olion attribuuteille.
+Railsin metodi <code>form_for</code> siis muodostaa automaattisesti oikeaan osoitteeseen lähetettävän, oikeanlaisen lomakkeen, jossa on syöttökentät kaikille parametrina olevan tyyppisen olion attribuuteille.
 
 Lisää lomakkeiden muodostamisesta <code>form_for</code>-metodilla osoitteessa
  http://guides.rubyonrails.org/form_helpers.html#dealing-with-model-objects
@@ -1092,7 +1092,7 @@ Kolmas parametri siis määrittelee miten yksittäiset valinnat näytetään lom
 
 ```ruby
 > b = Beer.all
-> helper.options_from_collection_for_select(beers, :id, :name)
+> helper.options_from_collection_for_select(b, :id, :name)
 => "<option value=\"1\">Iso 3</option>\n<option value=\"2\">Karhu</option>\n<option value=\"3\">Tuplahumala</option>\n<option value=\"4\">Huvila Pale Ale</option>\n<option value=\"5\">X Porter</option>\n<option value=\"6\">Hefeweizen</option>\n<option value=\"7\">Helles</option>\n<option value=\"8\">Lite</option>\n<option value=\"9\">IVB</option>\n<option value=\"10\">Extra Light Triple Brewed</option>\n<option value=\"13\">Punk IPA</option>\n<option value=\"14\">Nanny State</option>"
 >
 ```
@@ -1199,7 +1199,7 @@ Kuten jo aiemmin mainittiin, voi <code>rating_path(rating.id)</code>-kutsun sija
 
 Jotta saamme poiston toimimaan, tulee vielä määritellä kontrollerille poiston suorittava metodi <code>destroy</code>.
 
-Metodiin johtava url on muotoa ratings/[tuohottavan olion id]. metodi pääsee Railsin konvention mukaan käsiksi tuhottavan olion id:hen <code>params</code>-olion kautta. Tuhoaminen tapahtuu hakemalla olio tietokannasta ja kutsumalla sen metodia <code>delete</code>:
+Metodiin johtava url on muotoa ratings/[tuhottavan olion id]. Metodi pääsee Railsin konvention mukaan käsiksi tuhottavan olion id:hen <code>params</code>-olion kautta. Tuhoaminen tapahtuu hakemalla olio tietokannasta ja kutsumalla sen metodia <code>delete</code>:
 
 ```ruby
 def destroy
@@ -1299,7 +1299,7 @@ Huomaamme, että oluella ja panimolla on täsmälleen samalla tavalla toimiva ja
 >
 >  # ...
 >end
-```
+>```
 >
 > * HUOM: jos moduulisi nimi on ao. esimerkin tapaan <code>RatingAverage</code> tulee se Rubyn nimentäkonvention takia sijaita tiedostossa <code>app/models/concerns/rating_average.rb</code>, eli vaikka luokkien nimet ovat Rubyssä isolla alkavia CamelCase-nimiä, noudattavat niiden tiedostojen nimet snake_case.rb-tyyliä.
 
@@ -1328,7 +1328,7 @@ ja metodin <code>average_rating</code> tulisi edelleen toimia entiseen tyyliin:
 
 ## Yksinkertainen suojaus
 
-Haluamme viikon lopuksi tehdä sovelluksesta sellaisen, että ainoastaan ylläpitäjä pystyy poistamaan painimoita. Toteutamme viikolla 3 kattavamman tavan autentikointiin, teemme nyt nopean ratkaisun [http basic -autentikaatiota](http://en.wikipedia.org/wiki/Basic_access_authentication)  hyödyntäen. Ks. http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Basic.html
+Haluamme viikon lopuksi tehdä sovelluksesta sellaisen, että ainoastaan ylläpitäjä pystyy poistamaan panimoita. Toteutamme viikolla 3 kattavamman tavan autentikointiin, teemme nyt nopean ratkaisun [http basic -autentikaatiota](http://en.wikipedia.org/wiki/Basic_access_authentication)  hyödyntäen. Ks. http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Basic.html
 
 Tutustumme samalla nopeasti Railsin kontrollerien _filtterimetodeihin_ ks. http://guides.rubyonrails.org/action_controller_overview.html#filters, joiden avulla voidaan helposti määritellä toiminnallisuutta, mikä suoritetaan esim. ennen (before_action) tietyn kontrollerin joidenkin metodien suorittamista.
 
@@ -1384,7 +1384,7 @@ class BreweriesController < ApplicationController
   private
 
   def authenticate
-    authenticate_or_request_with_http_basic do |username, password| 
+    authenticate_or_request_with_http_basic do |username, password|
       if username == "admin" and password == "secret"
         login_ok = true
       else
@@ -1392,7 +1392,7 @@ class BreweriesController < ApplicationController
       end
 
       # koodilohkon arvo on sen viimeisen komennon arvo eli true/false riippuen kirjautumisen onnistumisesta
-      login_ok  
+      login_ok
     end
   end
 end
@@ -1410,13 +1410,13 @@ Koska koodilohko saa saman arvon kuin if:n ehto, voidaan se yksinkertaistaa seur
 def authenticate
   authenticate_or_request_with_http_basic do |username, password|
     username == "admin" and password == "secret"
-  end  
+  end
 end
 ```
 
 HTTP Basic -autentikaatio on kätevä tapa yksinkertaisiin sivujen suojaamistarpeisiin, mutta monimutkaisemmissa tilanteissa ja parempaa tietoturvaa edellytettäessä kannattaa käyttää muita ratkaisuja.
 
-Kannattaa huomata, että HTTP Basic -autentikaatiota ei tule käyttää kuin suojatun HTTPS-protokollan yli sillä käyttäjätunnus ja salasana lähtetään [Base64](http://en.wikipedia.org/wiki/Base64)-enkoodattuna, eli käytännössä kuka tahansa voi headereihin käsiksi päästyään selvittää salasanan. Hieman parempi vaihtoehto on [Digest-autentikaatio](http://en.wikipedia.org/wiki/Digest_access_authentication), jossa käyttäjätunnuksen ja salasanan sijaan tunnistautuminen tapahtuu yksisuuntaisella funktiolla laskettavan tunnisteen avulla. Digest-autentikaation käyttäminen Railsissa on helppoa, ks. http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Digest.html
+Kannattaa huomata, että HTTP Basic -autentikaatiota ei tule käyttää kuin suojatun HTTPS-protokollan yli sillä käyttäjätunnus ja salasana lähetetään [Base64](http://en.wikipedia.org/wiki/Base64)-enkoodattuna, eli käytännössä kuka tahansa voi headereihin käsiksi päästyään selvittää salasanan. Hieman parempi vaihtoehto on [Digest-autentikaatio](http://en.wikipedia.org/wiki/Digest_access_authentication), jossa käyttäjätunnuksen ja salasanan sijaan tunnistautuminen tapahtuu yksisuuntaisella funktiolla laskettavan tunnisteen avulla. Digest-autentikaation käyttäminen Railsissa on helppoa, ks. http://api.rubyonrails.org/classes/ActionController/HttpAuthentication/Digest.html
 
 > ## Tehtävä 16
 >
@@ -1424,7 +1424,7 @@ Kannattaa huomata, että HTTP Basic -autentikaatiota ei tule käyttää kuin suo
 >
 >```ruby
 >   def authenticate
->    admin_accounts = { "pekka" => "beer", "arto" => "foobar", "matti" => "ittam", "vilma" => "kangas" } 
+>    admin_accounts = { "pekka" => "beer", "arto" => "foobar", "matti" => "ittam", "vilma" => "kangas" }
 >
 >    authenticate_or_request_with_http_basic do |username, password|
 >      # do something here
