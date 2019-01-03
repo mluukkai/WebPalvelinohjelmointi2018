@@ -299,7 +299,7 @@ def average
 end
 ```
 
-Käytämme onliner-if:iä ja kokoelman metodia <code>empty?</code> joka evaluoituu todeksi kokoelman ollessa tyhjä. Kyseessä on rubymainen tapa toteuttaa tyhjyystarkastus, joka "javamaisesti" kirjotettuna olisi:
+Käytämme oneliner-if:iä ja kokoelman metodia <code>empty?</code> joka evaluoituu todeksi kokoelman ollessa tyhjä. Kyseessä on rubymainen tapa toteuttaa tyhjyystarkastus, joka "javamaisesti" kirjotettuna olisi:
 
 ```ruby
 def average
@@ -330,7 +330,7 @@ Rubocop asennetaan antamalla komentoriviltä komento
 
 Rubocopin tarkastama säännöstö määritellään projektin juureen sijoitettavassa tiedostossa _.rubocop.yml_. Luo tiedosto projektiisi (huomaa, että tiedoston nimen alussa on piste) ja kopioi sille sisältö [täältä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/misc/.rubocop.yml)
 
-Tiedoston määrittelemä säännöstö perustuu [Relaxed Ruby](https://relaxed.ruby.style/) -tyyliin, jota se tiukentaa muutamien sääntöjen osalta. Tiedostossa myös jätetääm osa projektin tiedostoista tyylitarkastuksen ulkopuolelle.
+Tiedoston määrittelemä säännöstö perustuu [Relaxed Ruby](https://relaxed.ruby.style/) -tyyliin, jota se tiukentaa muutamien sääntöjen osalta. Tiedostossa myös jätetään osa projektin tiedostoista tyylitarkastuksen ulkopuolelle.
 
 Tyylitarkastus suoritetaan komentoriviltä komennolla _rubocop_. 
 
@@ -809,7 +809,7 @@ end
 
 Jos nyt yritetään luoda uudelleen jo olemassaoleva käyttäjä, huomataan että Rails osaa generoida sopivan virheilmoituksen automaattisesti.
 
-Rails (tarkemmin sanoen ActiveRecord) suorittaa oliolle määritellyt validoinnit juuri ennen kuin olio yritetään tallettaa tietokantaan esim. operaatioiden <code>create</code> tai <code>save</code> yhteydessä. Jos validointi epäonnistuu, olioa ei tallenneta.
+Rails (tarkemmin sanoen ActiveRecord) suorittaa oliolle määritellyt validoinnit juuri ennen kuin olio yritetään tallettaa tietokantaan esim. operaatioiden <code>create</code> tai <code>save</code> yhteydessä. Jos validointi epäonnistuu, oliota ei tallenneta.
 
 Lisätään saman tien muitakin validointeja sovellukseemme. Lisätään käyttäjälle vaatimus, että käyttäjätunnuksen pituuden on oltava vähintään 3 merkkiä, eli lisätään User-luokkaan rivi:
 
@@ -1133,7 +1133,7 @@ Lisää asiaa yhteyksien määrittelemisestä normaaleissa ja hieman monimutkais
 
 Huom: Railsissa on myös toinen tapa many to many -yhteyksien luomiseen <code>has_and_belongs_to_many</code> ks. http://guides.rubyonrails.org/association_basics.html#the-has-and-belongs-to-many-association jonka käyttö saattaa tulla kyseeseen jos liitostaulua ei tarvita mihinkään muuhun kuin yhteyden muodostamiseen.
 
-Trendinä kuitenkin on, että metodin has_and_belongs_to_many sijaan käytetään (sen monien ongelmien takia)  has_many through -yhdistelmää ja eksplisiittisesti määriteltyä yhteystaulua. Mm. Chad Fowler kehottaa kirjassaan [Rails recepies](http://pragprog.com/book/rr2/rails-recipes) välttämään has_and_belongs_to_many:n käyttöä, sama neuvo annetaan Obie Fernandezin autoritiivisessa teoksessa [Rails 5 Way](https://leanpub.com/tr5w)
+Trendinä kuitenkin on, että metodin has_and_belongs_to_many sijaan käytetään (sen monien ongelmien takia) has_many through -yhdistelmää ja eksplisiittisesti määriteltyä yhteystaulua. Mm. Chad Fowler kehottaa kirjassaan [Rails recepies](http://pragprog.com/book/rr2/rails-recipes) välttämään has_and_belongs_to_many:n käyttöä, sama neuvo annetaan Obie Fernandezin autoritiivisessa teoksessa [Rails 5 Way](https://leanpub.com/tr5w)
 
 > ## Tehtävät 9-10: Olutseurat
 >
@@ -1145,7 +1145,7 @@ Trendinä kuitenkin on, että metodin has_and_belongs_to_many sijaan käytetää
 >
 > Muodosta <code>BeerClub</code>in ja <code>User</code>ien välille monen suhde moneen -yhteys. Luo tätä varten liitostauluksi model <code>Membership</code>, jolla on attribuutteina vierasavaimet <code>User</code>- ja <code>BeerClub</code>-olioihin (eli <code>beer_club_id</code> ja <code>user_id</code>, huomaa miten iso kirjain olion keskellä muuttuu alaviivaksi!). Tämänkin modelin voit luoda scaffoldingilla.
 >
-> Voit toteuttaa tässä vaiheessa jäsenien liittämisen olutseuroihin esim. samalla tavalla kuten oluiden reittaus tapahtuu tällä hetkellä, eli lisäämällä navigointipalkkiin linkin "join a club", jonka avulla kirjautunut käyttäjä voidaan littää johonkin listalla näytettävistä olutseuroista.
+> Voit toteuttaa tässä vaiheessa jäsenien liittämisen olutseuroihin esim. samalla tavalla kuten oluiden reittaus tapahtuu tällä hetkellä, eli lisäämällä navigointipalkkiin linkin "join a club", jonka avulla kirjautunut käyttäjä voidaan liittää johonkin listalla näytettävistä olutseuroista.
 >
 > Listaa olutseuran sivulla kaikki jäsenet ja vastaavasti henkilöiden sivulla kaikki olutseurat, joiden jäsen henkilö on. Lisää navigointipalkkiin linkki kaikkien olutseurojen listalle.
 >
@@ -1352,7 +1352,7 @@ Huomaa, että pelkkä **delete**-linkin poistaminen ei estä poistamasta muiden 
 >
 > Luo uusi käyttäjätunnus, kirjaudu käyttäjänä ja tuhoa käyttäjä. Käyttäjätunnuksen tuhoamisesta seuraa ikävä virhe. **Pääset virheestä eroon tuhoamalla selaimesta cookiet.** Mieti mistä virhe johtuu ja korjaa asia myös sovelluksesta siten, että käyttäjän tuhoamisen jälkeen sovellus ei joudu virhetilanteeseen.
 >
-> Tämä tehtävä on vuosien varrella osoittautunut hankalaksi. Jos et pääse eteenpäin, kysy apua pajassa, kurssin telegram--kanavalta, ks. kurssisivu
+> Tämä tehtävä on vuosien varrella osoittautunut hankalaksi. Jos et pääse eteenpäin, kysy apua pajassa, kurssin telegram-kanavalta, ks. kurssisivu
 
 > ## Tehtävä 15
 >
@@ -1405,7 +1405,7 @@ eli ensin se renderöi _form-templatessa olevat elementit ja sen jälkeen pari l
   
   <div class="field">
     <%= form.label :password_confirmation %><br />
-    <%= form.password_field :password_confirmation  %>
+    <%= form.password_field :password_confirmation %>
   </div>
 
   <div class="actions">
