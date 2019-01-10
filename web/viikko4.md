@@ -830,7 +830,7 @@ Muuta metodin toteutus nyt seuraavanlaiseksi:
 ```ruby
 def favorite_beer
   return nil if ratings.empty?
-  
+
   ratings.sort_by{ |r| r.score }.last.beer
 end
 ```
@@ -1614,7 +1614,7 @@ Suurikaan rivikattavuus ei tietysti vielä takaa että testit testaavat järkevi
 
 ## Jatkuva integraatio
 
-[Jatkuvalla integraatiolla](http://martinfowler.com/articles/continuousIntegration.html) (engl. continuous integration) tarkoitetaan käytännettä, jossa ohjelmistokehittäjät integroivat koodin tekemänsä muutokset yhteiseen kehityshaaraan mahdollisimman usein. Periaatteena on pitää ohjelman kehitysversio koko ajan toimivana eliminoiden näin raskas erillinen integrointivaihe. Toimiakseen jatkuva integraatio edellyttää kattavaa automaattisten testien joukkoa. Yleensä jatkuvan integraation yhteydessä käytetään keskitettyä palvelinta, joka tarkkailee repositorioa, jolla kehitysversio sijaitsee. Kun kehittäjä integroi koodin kehitysversioon, integraatiopalvelin huomaa muutoksen, buildaa koodin ja ajaa testit. Jos testit eivät mene läpi, tiedottaa integraatiopalvelin tästä tavalla tai toisella asianomaisia.
+[Jatkuvalla integraatiolla](http://martinfowler.com/articles/continuousIntegration.html) (engl. continuous integration) tarkoitetaan käytännettä, jossa ohjelmistokehittäjät integroivat koodiin tekemänsä muutokset yhteiseen kehityshaaraan mahdollisimman usein. Periaatteena on pitää ohjelman kehitysversio koko ajan toimivana eliminoiden näin raskas erillinen integrointivaihe. Toimiakseen jatkuva integraatio edellyttää kattavaa automaattisten testien joukkoa. Yleensä jatkuvan integraation yhteydessä käytetään keskitettyä palvelinta, joka tarkkailee repositorioa, jolla kehitysversio sijaitsee. Kun kehittäjä integroi koodin kehitysversioon, integraatiopalvelin huomaa muutoksen, buildaa koodin ja ajaa testit. Jos testit eivät mene läpi, tiedottaa integraatiopalvelin tästä tavalla tai toisella asianomaisia.
 
 Travis https://travis-ci.org/ on SaaS (software as a service) -periaatteella toimiva jatkuvan integraation palvelu, joka on noussut nopeasti suosituksi Open Source -projektien käytössä.
 
@@ -1633,7 +1633,7 @@ Githubissa olevat Rails-projektit on helppo asettaa Travisin tarkkailtavaksi.
 > - 2.5.1
 >
 >script:
-> - bundle exec rails db:migrate 
+> - bundle exec rails db:migrate
 > - bundle exec rspec -fd spec
 >```
 > 
@@ -1703,7 +1703,7 @@ Sovelluskehittäjän elämää helpottavien pilvipalveluiden määrä kasvaa kov
 
 ## Kirjautuneiden toiminnot
 
-Jätetään testien teko hetkeksi ja palataan muutamaan aiempaan teemaan. Viikolla 2 rajoitimme http basic -autentikaation avulla sovellustamme siten, että ainoastaan admin-salasanan syöttämällä oli mahdollista  poistaa panimoita. [Viikolla 3](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko3.md#vain-omien-reittausten-poisto) rajoitimme sovelluksen toiminnallisuutta siten, että reittausten poistaminen ei ole mahdollista kuin reittauksen tehneelle käyttäjälle. Sen sijaan esim.  olutkerhojen ja oluiden luominen, poistaminen ja editionti on tällä hetkellä mahdollista jopa ilman kirjautumista.
+Jätetään testien teko hetkeksi ja palataan muutamaan aiempaan teemaan. Viikolla 2 rajoitimme http basic -autentikaation avulla sovellustamme siten, että ainoastaan admin-salasanan syöttämällä oli mahdollista  poistaa panimoita. [Viikolla 3](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko3.md#vain-omien-reittausten-poisto) rajoitimme sovelluksen toiminnallisuutta siten, että reittausten poistaminen ei ole mahdollista kuin reittauksen tehneelle käyttäjälle. Sen sijaan esim.  olutkerhojen ja oluiden luominen, poistaminen ja editointi on tällä hetkellä mahdollista jopa ilman kirjautumista.
 
 Luovutaan http basic -autentikoinnin käytöstä ja muutetaan sovellusta siten, että oluita, panimoita ja olutkerhoja voivat luoda, muokata ja poistaa ainoastaan kirjautuneet käyttäjät.
 
