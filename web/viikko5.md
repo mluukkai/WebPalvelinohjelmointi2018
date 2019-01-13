@@ -619,7 +619,7 @@ Kun nyt testissä tehdään HTTP-pyyntö places-kontrollerille, ja kontrolleri k
 > * jos API palauttaa useita olutpaikkoja, kaikki näistä näytetään sivulla
 > * jos API ei löydä paikkakunnalta yhtään olutpaikkaa (eli paluuarvo on tyhjä taulukko), sivulla näytetään ilmoitus "No locations in _etsitty paikka_"
 >
-> Viikon 3 luku [kirjautumisen hienosaäätöä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko3.md#kirjautumisen-hienos%C3%A4%C3%A4t%C3%B6%C3%A4) antaa vihjeitä toista kohtaa varte.
+> Viikon 3 luku [kirjautumisen hienosäätöä](https://github.com/mluukkai/WebPalvelinohjelmointi2018/blob/master/web/viikko3.md#kirjautumisen-hienos%C3%A4%C3%A4t%C3%B6%C3%A4) antaa vihjeitä toista kohtaa varte.
 
 Siirrytään sitten luokan <code>BeermappingApi</code> testaamiseen. Luokka siis tekee HTTP GET -pyynnön HTTParty-kirjaston avulla Beermapping-palveluun. Voisimme edellisen esimerkin tapaan stubata HTTPartyn get-metodin. Tämän on kuitenkin hieman ikävää, sillä metodi palauttaa <code>HTTPartyResponse</code>-olion ja sellaisen muodostaminen stubauksen yhteydessä käsin ei välttämättä ole kovin mukavaa.
 
@@ -818,7 +818,7 @@ class BeermappingApi
 end
 ```
 
-Avaimena käytetään pienillä kirjaimilla kirjoitettua kaupungin nimeä. Koodi on melki suoraviivainen, jos avainta vastaavat olutpaikat löytyvät cachesta (eli arvo ei ole nil), palautetaan ne. Jos taas cachessa ei ole kaupungin olutpaikkoja, haetaan ne metodilla <code>get_places_in(city)</code> talletetaan cacheen ja palautetaan metodin kutsujalle.
+Avaimena käytetään pienillä kirjaimilla kirjoitettua kaupungin nimeä. Koodi on melko suoraviivainen, jos avainta vastaavat olutpaikat löytyvät cachesta (eli arvo ei ole nil), palautetaan ne. Jos taas cachessa ei ole kaupungin olutpaikkoja, haetaan ne metodilla <code>get_places_in(city)</code> talletetaan cacheen ja palautetaan metodin kutsujalle.
 
 Jos teemme nyt haun kaksi kertaa peräkkäin esim. New Yorkin oluista, huomaamme, että toisella kerralla vastaus tulee huomattavasti nopeammin.
 
@@ -855,7 +855,7 @@ class BeermappingApi
 end
 ```
 
-Fetch toimii siten, että jos välimuiststa löytyy dataa sen parametrina olevalla avaimella, palauttaa metodi välimuistissa olevan datan. Jos välimuistissa ei ole avainta vastaavaa dataa, suoritetaan komennon mukana oleva koodilohko ja talletetaan koodilohkon paluuarvo välimuitiin. Myös itse komento _fetch_ palauttaa lohkon saaman arvon. 
+Fetch toimii siten, että jos välimuiststa löytyy dataa sen parametrina olevalla avaimella, palauttaa metodi välimuistissa olevan datan. Jos välimuistissa ei ole avainta vastaavaa dataa, suoritetaan komennon mukana oleva koodilohko ja talletetaan koodilohkon paluuarvo välimuistiin. Myös itse komento _fetch_ palauttaa lohkon saaman arvon. 
 
 ## Vanhentunut data
 
@@ -1005,7 +1005,7 @@ http://docs.travis-ci.com/user/environment-variables/
 
 Muutamien osalla on ollut havaittavissa hienoista epäselvyyttä kontrollereiden <code>show</code>-metodien toimintaperiaatteessa. Seuraavaakin tehtävää silmälläpitäen kerrataan asiaa hieman.
 
-Tarkastellaan panimon kontorolleria. Yksittäisen panimon näyttämisestä vastaava kontrollerimetodi ei sisällä mitään koodia:
+Tarkastellaan panimon kontrolleria. Yksittäisen panimon näyttämisestä vastaava kontrollerimetodi ei sisällä mitään koodia:
 
 ```ruby
 def show
@@ -1137,7 +1137,7 @@ eli tällä kertaa routeissa määriteltiin, että panimon id:hen viitataan <cod
 ></table>
 >```
 >
-> Kokeile hajottaako ravointoloiden sivun lisääminen mitään olemassaolevaa testiä. Jos, niin voit yrittää korjata testit. Välttämätöntä se ei kuitenkaan tässä vaiheessa ole.
+> Kokeile hajottaako ravintoloiden sivun lisääminen mitään olemassaolevaa testiä. Jos, niin voit yrittää korjata testit. Välttämätöntä se ei kuitenkaan tässä vaiheessa ole.
 
 Tehtävän jälkeen sovelluksesi voi näyttää esim. seuraavalta:
 
@@ -1250,7 +1250,7 @@ Sama ongelma itse asiassa vaivaa muutamia sovelluksemme lomakkeita, kokeile esim
 
 > ## Tehtävä 7
 >
-> Tee myös olutkerhoihin liitttyminen mahdolliseksi suoraan olutkerhon sivulta.
+> Tee myös olutkerhoihin liittyminen mahdolliseksi suoraan olutkerhon sivulta.
 >
 > Kannattaa noudattaa samaa toteutusperiaatetta kuin oluen sivulta tapahtuvassa reittaamisessa, eli lisää olutseuran sivulle lomake, jonka avulla voidaan luoda uusi <code>Membership</code>-olio, joka liittyy olutseuraan ja kirjautuneena olevaan käyttäjään. Lomakkeeseen ei tarvita muuta kuin 'submit'-painike:
 >
@@ -1294,7 +1294,7 @@ Hienosäädetään olutseuraan liittymistä
 >
 > Lomaketta käytettäessä on siis kontrollerissa asetettava muuttujan <code>@membership</code> arvoksi käyttäjän seuraan liittävä olio.
 
-Jos käyttäjä on seuran jäsen, näytetän seuran sivulla eroamisen mahdollistava painike:
+Jos käyttäjä on seuran jäsen, näytetään seuran sivulla eroamisen mahdollistava painike:
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w5-5a.png)
 
@@ -1341,7 +1341,7 @@ Olemme käyttäneet Railsin migraatioita jo ensimmäisestä viikosta alkaen. On 
 >
 > Tyylien sivulle kannattaa lisätä lista kaikista tyylin oluista.
 >
-> **HUOM1** Jos lisäät luokalle _Beer_ määreen <code>belongs_to :style</code> et enää pääse käsiksi _style_-nimiseen merkkijonomuotoiseen attribuuttiin pistenotaatiolla _beer.style_, vaan joudut muotoa _beer['style']_
+> **HUOM1** Jos lisäät luokalle _Beer_ määreen <code>belongs_to :style</code> et enää pääse käsiksi _style_-nimiseen merkkijonomuotoiseen attribuuttiin pistenotaatiolla _beer.style_, vaan joudut käyttämään muotoa _beer['style']_
 >
 > **HUOM2** Jos et tee myös datan migraatiota migraatiotiedostojen avulla, tämä tehtävä todennäköisesti hajottaa Travisin. Voit merkitä tehtävän siitä huolimatta. Travisia ei ole pakko pitää toimintakunnossa kurssin seuraavilla viikoilla. Toki on syytä potea hieman huonoa omaatuntoa, jos Travis-build rikkoutuu.
 >
