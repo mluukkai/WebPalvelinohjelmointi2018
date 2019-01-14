@@ -91,10 +91,11 @@ Debuggerin voi siis käynnistää _mistä tahansa kohtaa_ sovelluksen koodia, my
   "Similar to Munich Helles, many European countries reacted to the popularity of early pale lagers by brewing their own. Hop flavor is significant and of noble varieties, bitterness is moderate, and both are backed by a solid malt body and sweet notes from an all-malt base.",
  created_at: Thu, 20 Sep 2018 10:17:39 UTC +00:00,
  updated_at: Thu, 20 Sep 2018 10:35:04 UTC +00:00>
+````
 
 Näkymätemplateen on siis lisätty <code><% binding.pry %></code>. Kuten huomaamme, on jopa näkymän apumetodin <code>options_from_collection_for_select</code> kutsuminen mahdollista debuggerista käsin:
 
-``` ruby
+```ruby
 > options_from_collection_for_select(@styles, :id, :name, selected: @beer.style_id)
   Style Load (0.2ms)  SELECT "styles".* FROM "styles"
 => "<option value=\"1\">European pale lager</option>\n<option value=\"2\">Pale Ale</option>\n<option value=\"3\">Porter</option>\n<option value=\"4\">German hefeweizen</option>\n<option value=\"5\">IPA</option>\n<option value=\"6\">Ilowalcohol</option>\n<option value=\"7\">Pale ale</option>"
@@ -134,7 +135,7 @@ Määrittelimme jo muutama viikko sitten, että application layoutiin sijoittama
 </div>
 ```
 
-Määrittelimme viikolla 2 navigointipalkille tyylin lisäämällä hakemistossa app/assets/stylesheats/ sijaitsevaan tiedostoon application.css seuraavat:
+Määrittelimme viikolla 2 navigointipalkille tyylin lisäämällä hakemistossa app/assets/stylesheets/ sijaitsevaan tiedostoon application.css seuraavat:
 
 ```css
 .navibar {
@@ -151,7 +152,7 @@ Aloitetaan sitten sovelluksemme bootstrappaaminen gemin <https://github.com/twbs
 
 ```ruby
 gem 'bootstrap', '~> 4.1.3'
-gem 'jquery-rails', '>= 4.3.3
+gem 'jquery-rails', '>= 4.3.3'
 ```
 
 Asennetaan gemit komennolla <code>bundle install</code>, asennuksen jälkeen sovellus tulee uudelleenkäynnistää.
@@ -201,45 +202,45 @@ Muutetaan tiedosto _app/views/layouts/application.html.erb_  seuraavaan muotoon:
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
             <%= link_to 'breweries', breweries_path, { class: "nav-link" } %>
-          </li>      
+          </li>
           <li class="nav-item">
             <%= link_to 'beers', beers_path, { class: "nav-link" } %>
-          </li>     
+          </li>
           <li class="nav-item">
             <%= link_to 'styles', styles_path, { class: "nav-link" } %>
-          </li>   
+          </li>
           <li class="nav-item">
             <%= link_to 'ratings', ratings_path, { class: "nav-link" } %>
-          </li>       
+          </li>
           <li class="nav-item">
             <%= link_to 'users', users_path, { class: "nav-link" } %>
-          </li>  
+          </li>
           <li class="nav-item">
             <%= link_to 'clubs', beer_clubs_path, { class: "nav-link" } %>
-          </li>   
+          </li>
           <li class="nav-item">
             <%= link_to 'places', places_path, { class: "nav-link" } %>
-          </li> 
+          </li>
           <% if current_user %>
             <li class="nav-item">
               <%= link_to current_user.username, current_user, { class: "nav-link" } %>
-            </li> 
+            </li>
             <li class="nav-item">
               <%= link_to 'rate a beer ', new_rating_path, { class: "nav-link" } %>
-            </li>   
+            </li>
             <li class="nav-item">
               <%= link_to 'join a club ', new_membership_path, { class: "nav-link" } %>
-            </li> 
+            </li>
             <li class="nav-item">
               <%= link_to 'signout', signout_path, { class: "nav-link", method: :delete  } %>
-            </li>                    
+            </li>
           <% else %>
             <li class="nav-item">
               <%= link_to 'signin', signin_path, { class: "nav-link" } %>
-            </li>  
+            </li>
             <li class="nav-item">
               <%= link_to 'signup', signup_path, { class: "nav-link" } %>
-            </li>                        
+            </li>
           <% end %>                            
         </ul>
       </div>
@@ -252,11 +253,11 @@ Muutetaan tiedosto _app/views/layouts/application.html.erb_  seuraavaan muotoon:
 
 Bootstrapin dokumentaatio ei ole ihan selkein mahdollinen, mutta pienellä ihmettelyllä saimme aikaan navigaatiopalkin, joka on sisällöltään samanlainen entisen kaltainen.
 
-Vaikka bootstrapilla muotoiltu navigaatiopalkki on koodina pidempi ja sotkuisempikin kuin aiempi navigaatiopalkkimme, on sillä kuitenkin eräs merkittävä etu. Jos sovellusta tarkastellaan "isota" näytöltä, näkyy navigaatiopalkki normaalisti:
+Vaikka bootstrapilla muotoiltu navigaatiopalkki on koodina pidempi ja sotkuisempikin kuin aiempi navigaatiopalkkimme, on sillä kuitenkin eräs merkittävä etu. Jos sovellusta tarkastellaan "isolta" näytöltä, näkyy navigaatiopalkki normaalisti:
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-0a.png)
 
-Jos taas sovellusta tarkastellaan pienemmältä näytöltä, esim. mobiililaitteelta, näytetään navigaatiopalkin sijaan symboli, jota klikkaamalla navigaatiopalkki aujeaa alaspäin:
+Jos taas sovellusta tarkastellaan pienemmältä näytöltä, esim. mobiililaitteelta, näytetään navigaatiopalkin sijaan symboli, jota klikkaamalla navigaatiopalkki aukeaa alaspäin:
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-0b.png)
 
@@ -281,8 +282,8 @@ muotoon
       <%= yield %>
     </div>
     <div class="col-sm-4">
-      <img 
-        src="http://www.cs.helsinki.fi/u/mluukkai/wadror/pint.jpg" 
+      <img
+        src="http://www.cs.helsinki.fi/u/mluukkai/wadror/pint.jpg"
         width="200"
         style="padding-top:30px"
       >
@@ -335,7 +336,7 @@ Sen sijaan että tekisimme lisäisimme muutoksen jokaiselle sivulle, millä noti
 
 ja poistaa se muista näkymätiedostoista, kuten _app/views/beers/index.html.erb_
 
-Jos käytät Visual Studio Codea, niin voit käyttää _replace in files_ -toimintoa poistamaan ylimääräiseksi jääneet <code><p id="notice"><%= notice %></p></code> -komennot. 
+Jos käytät Visual Studio Codea, niin voit käyttää _replace in files_ -toimintoa poistamaan ylimääräiseksi jääneet `<p id="notice"><%= notice %></p>` -komennot.
 
 ### lisää komponentteja
 
@@ -403,7 +404,7 @@ Luokka voidaan lisätä myös niihin linkkeihin, jotka halutaan napin painikkeen
 >
 > ```
 > <%= link_to 'signout', signout_path, { class: "dropdown-item", method: :delete } %>
-> 
+> ```
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2018/raw/master/images/ratebeer-w6-3c.png)
 
@@ -464,8 +465,8 @@ Muutetaan sitten panimon sivua siten, että se kertoo panimon mahdollisen epäak
 </p>
 
 <% if current_user %>
-  <%= link_to 'Edit', edit_brewery_path(@brewery), class:"btn btn-primary"  %>
-  <%= link_to 'Destroy', @brewery, method: :delete, data: { confirm: 'Are you sure?' }, class:"btn btn-danger"  %>
+  <%= link_to 'Edit', edit_brewery_path(@brewery), class:"btn btn-primary" %>
+  <%= link_to 'Destroy', @brewery, method: :delete, data: { confirm: 'Are you sure?' }, class:"btn btn-danger" %>
 <% end %>
 
 ```
@@ -575,7 +576,7 @@ Copypastetaan näkymään taulukko kahteen kertaan, erikseen aktiivisille ja el�
 
 <br>
 
-<%= link_to 'New Brewery', new_brewery_path, class:"btn btn-primary"  %>
+<%= link_to 'New Brewery', new_brewery_path, class:"btn btn-primary" %>
 ```
 
 Ratkaisu on toimiva, mutta siinä on parillakin tapaa parantamisen varaa. Parannellaan ensin kontrolleria.
@@ -637,7 +638,7 @@ ja tuloksena olisi SQL-kysely
 SELECT "breweries".* FROM "breweries" WHERE "breweries"."active" = ? AND (year>2000)
 ```
 
-ActiveRecord osaa siis optimoida ketjutetut metodikutsut yhdeksi SQL-operaatioksi. Myös scope toimii osana ketjutusta, eli vuoden 2000 jälkeen perustetut, edelleen aktiiviset panimot saataisiin selville myös seuraavalla 'onlinerilla':
+ActiveRecord osaa siis optimoida ketjutetut metodikutsut yhdeksi SQL-operaatioksi. Myös scope toimii osana ketjutusta, eli vuoden 2000 jälkeen perustetut, edelleen aktiiviset panimot saataisiin selville myös seuraavalla 'onelinerilla':
 
 ```ruby
 Brewery.active.where("year>2000")
@@ -659,13 +660,13 @@ Annetaan partialille nimi views/breweries/_list.html.erb (Huom: partialien nimet
   </thead>
 
   <tbody>
-  <% breweries.each do |brewery| %>
+    <% breweries.each do |brewery| %>
       <tr>
         <td><%= link_to brewery.name, brewery %></td>
         <td><%= brewery.year %></td>
         <td></td>
       </tr>
-  <% end %>
+    <% end %>
   </tbody>
 </table>
 ```
@@ -691,7 +692,7 @@ Kaikki panimot renderöivä template ainoastaan *renderöi partiaalin* ja lähet
 
 <br>
 
-<%= link_to 'New Brewery', new_brewery_path, class:"btn btn-primary"  %>
+<%= link_to 'New Brewery', new_brewery_path, class:"btn btn-primary" %>
 ```
 
 Panimoiden sivun template on nyt lähes silmiä hivelevä!
@@ -704,7 +705,7 @@ Panimoiden sivun template on nyt lähes silmiä hivelevä!
 >
 > **Vihjeitä:**
 >
-> Jos panimolla/oluella ei ole yhtään ratingia, tuottaa ratingien keskiarvon laskeminen eli metodin <code>average_rating</code> kutsuminen todennäköisestsi virheen (järjestäessäsi panimoita reittauksen perusteella). Korjaa metodi siten, että se osaa laskea reittausten keskiarvon myös reittaamattomille oluille/panimoille.
+> Jos panimolla/oluella ei ole yhtään ratingia, tuottaa ratingien keskiarvon laskeminen eli metodin <code>average_rating</code> kutsuminen todennäköisesti virheen (järjestäessäsi panimoita reittauksen perusteella). Korjaa metodi siten, että se osaa laskea reittausten keskiarvon myös reittaamattomille oluille/panimoille.
 >
 > Tee luokalle <code>Rating</code> scope <code>:recent</code>, joka palauttaa viisi viimeisintä reittausta. Scopen vaatimaan tietokantakyselyyn löydät apuja linkistä http://guides.rubyonrails.org/active_record_querying.html, ks. order ja limit. Kokeile ensin kyselyn tekoa konsolista!
 >
@@ -867,7 +868,7 @@ http://guides.rubyonrails.org/routing.html#adding-more-restful-actions
 
 > ## Tehtävä 10
 >
-> Tällä hetkellä kuka tahansa kirjautunut käyttäjä voi poistaa panimoja, oluita ja olutseuroja. Laajennetaan järjestelmää siten, että osa käyttäjistä on administraattoreja, ja poisto-operaatioit ovat vain sallittuja vain heille
+> Tällä hetkellä kuka tahansa kirjautunut käyttäjä voi poistaa panimoja, oluita ja olutseuroja. Laajennetaan järjestelmää siten, että osa käyttäjistä on administraattoreja, ja poisto-operaatiot ovat vain sallittuja vain heille
 >
 > * luo User-modelille uusi boolean-muotoinen kenttä <code>admin</code>, jonka avulla merkataan ne käyttäjät joilla on ylläpitäjän oikeudet järjestelmään
 > * riittää, että käyttäjän voi tehdä ylläpitäjäksi ainoastaan konsolista
