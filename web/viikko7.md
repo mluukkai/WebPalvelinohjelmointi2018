@@ -123,7 +123,7 @@ Käytämme siis olutkontrollerissa olevaa <code>list</code>-metodia. Metodin ei 
 ```ruby
 class BeersController < ApplicationController
   before_action :ensure_that_signed_in, except: [:index, :show, :list]
-  # muut before_actionit enallaan
+  # muut before_actionit ennallaan
 
   def list
   end
@@ -504,7 +504,6 @@ document.addEventListener("turbolinks:load", () => {
     e.preventDefault()
     BEERS.sort_by_name()
     BEERS.show();
-    
   })
 
   $("#style").click((e) => {
@@ -540,7 +539,6 @@ document.addEventListener("turbolinks:load", () => {
     e.preventDefault()
     BEERS.sort_by_name()
     BEERS.show();
-    
   })
 
   $("#style").click((e) => {
@@ -572,7 +570,7 @@ Javascript-frontendsovelluskehykset tuovat asiaan helpotusta. Tämän hetken suo
 
 > ## Tehtävä 2
 >
-> Toteuta edellisten esimerkkien tyyliin javascriptillä kaikki panimot listaava sivu http:localhost:3000/brewerylist  
+> Toteuta edellisten esimerkkien tyyliin javascriptillä kaikki panimot listaava sivu http://localhost:3000/brewerylist
 >
 > Sivulla näytetään jokaisesta panimosta nimi, perustusvuosi, panimon valmistamien oluiden lukumäärä ja tieto siitä onko panimo lopettanut. Sivun siis **ei** tarvitse eritellä lopettaneita panimoita omaan taulukkoonsa.
 >
@@ -580,7 +578,7 @@ Javascript-frontendsovelluskehykset tuovat asiaan helpotusta. Tämän hetken suo
 >
 > **Muista pitää Javascript-konsoli koko ajan auki tehtävää tehdessäsi!** Voit debugata Javasriptia tulostelemalla konsoliin komennolla <code>console.log()</code>
 >
-> **HUOM:** edellisellä viikolla tekmämme muutoksen takia panimoiden json-lista http://localhost:3000/breweries.json ei toimi, sillä breweries#index-kontrolleri ei enää aseta kaikkien panimoiden listaa muuttujaan <code>@breweries</code>. Korjaa tilanne.
+> **HUOM:** edellisellä viikolla tekemämme muutoksen takia panimoiden json-lista http://localhost:3000/breweries.json ei toimi, sillä breweries#index-kontrolleri ei enää aseta kaikkien panimoiden listaa muuttujaan <code>@breweries</code>. Korjaa tilanne.
 >
 > **HUOM2:** tehtävä kannattaa tehdä yksi pieni askel kerrallaan, samaan tapaan kuin oluiden lista tehtiin yllä olevassa esimerkissä. Javascriptin debuggaus saattaa olla haasteellista ja **varmin tapa aiheuttaa iso turhautuma onkin yrittää tehdä tehtävä nopeasti copypasteamalla beerlistin koodi**.
 
@@ -714,18 +712,18 @@ Nyt capybara odottaa taulukon valmistumista ja siirtyy sivun avaavaan komentoon 
 
 Testien suorittaminen todellisessa selaimella on melko hidasta. Saat nopeutettua testejä käyttämällä Chromen Headless- moodia, eli "käyttöliittymätöntä versiota". Headless-selaimen käyttöönotto onnistuu muuttamalla <code>before :all</code> -lohko muotoon 
 
-``` ruby
+```ruby
 before :all do
   Capybara.register_driver :selenium do |app|
     capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
-      chromeOptions: { args: ['headless', 'disable-gpu']  }
+      chromeOptions: { args: ['headless', 'disable-gpu'] }
     )
 
     Capybara::Selenium::Driver.new app,
       browser: :chrome,
-      desired_capabilities: capabilities      
+      desired_capabilities: capabilities
   end
-  WebMock.disable_net_connect!(allow_localhost: true) 
+  WebMock.disable_net_connect!(allow_localhost: true)
 end
 ```
 
@@ -749,7 +747,7 @@ Konfiguraation muutoksen jälkeen suoritus normaalilla selaimella onnistuu poist
 > * klikattaessa saraketta 'style' järjestyvät oluet tyylin nimen mukaiseen aakkosjärjestykseen
 > * klikattaessa saraketta 'brewery' järjestyvät oluet panimon nimen mukaiseen aakkosjärjestykseen
 
-**Huom.** Travis ei osaa suoraan ajaa Selenium-testejä. Ongelmaan löytyy vastaus täältä  http://about.travis-ci.org/docs/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-GUI-(e.g.-a-Web-browser)
+**Huom.** Travis ei osaa suoraan ajaa Selenium-testejä. Ongelmaan löytyy vastaus täältä http://about.travis-ci.org/docs/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-GUI-(e.g.-a-Web-browser)
 Travisin toimintaansaattaminen muutosten jälkeen on vapaaehtoista.
 
 ## Asset pipeline
@@ -884,7 +882,7 @@ Miniprofilerin käyttöönotto on helppoa, riittää että Gemfileen lisätään
 
     gem 'rack-mini-profiler'
 
-Suorita <code>bundle install</code> ja käynnistä rails server uudelleen. Kun menet tämän jälkeen osoitteeseen http:localhost:300/beers huomaat, että sivun yläkulmaan ilmestyy aikalukema joka kuvaa HTTP-pyynnön suoritukseen käytettyä aikaa. Numeroa klikkaamalla avautuu tarkempi erittely ajankäytöstä:
+Suorita <code>bundle install</code> ja käynnistä rails server uudelleen. Kun menet tämän jälkeen osoitteeseen http://localhost:3000/beers huomaat, että sivun yläkulmaan ilmestyy aikalukema joka kuvaa HTTP-pyynnön suoritukseen käytettyä aikaa. Numeroa klikkaamalla avautuu tarkempi erittely ajankäytöstä:
 
 ![kuva](https://github.com/mluukkai/WebPalvelinohjelmointi2017/raw/master/images/ratebeer-w6-7.png)
 
@@ -1008,7 +1006,7 @@ def favorite_beer
 end
 ```
 
-Nyt edes eager loadaaminen ei auta, sillä metodikutsu auheuttaa joka tapauksessa SQL-kyselyn. Jos sen sijaan toteuttaisimme metodin keskusmuistissa olueeseen liittyviä reittauksia (kuten teimme aluksi viikolla 4):
+Nyt edes eager loadaaminen ei auta, sillä metodikutsu aiheuttaa joka tapauksessa SQL-kyselyn. Jos sen sijaan toteuttaisimme metodin keskusmuistissa olueeseen liittyviä reittauksia (kuten teimme aluksi viikolla 4):
 
 ```ruby
 def favorite_beer
@@ -1463,7 +1461,7 @@ Lisää gemfileen <code>gem 'sucker_punch', '~> 2.0'</code> ja suorita bundle in
 
 eli määritellään Rails lataamaan automaattisesti luomaamme hakemistoon määritelty koodi.
 
-Luodaan nyt Sucker Punch -operatio, eli tiedosto _test_job.rb_ jolla on seuraava sisältö:
+Luodaan nyt Sucker Punch -operaatio, eli tiedosto _test_job.rb_ jolla on seuraava sisältö:
 
 ```ruby
 class TestJob
@@ -1526,7 +1524,7 @@ ja annat komennon <code>TestJob.perform_async</code> operaatio suoritetaan toist
 
 > ## Tehtävä 12
 >
-> Nopeuta ratings-sivun toimintaa haluamasi tekniikan. Voit olettaa, että käyttäjät ovat tyytyväisiä eventual consistency -mallin mukaiseen tiedon ajantasaisuuteen.  
+> Nopeuta ratings-sivun toimintaa haluamallasi tekniikalla. Voit olettaa, että käyttäjät ovat tyytyväisiä eventual consistency -mallin mukaiseen tiedon ajantasaisuuteen.  
 >
 >Kirjoita ratings-kontrollerin <code>index</code>-metodiin pieni selitys nopeutusstrategiastasi jos se ei ole koodin perusteella muuten ilmeistä.
 >
@@ -1550,7 +1548,7 @@ Viime aikoina onkin noussut suosioon tyyli, jossa sovellus koostetaan [mikropalv
 
 Relaatiotietokannat ovat dominoineet tiedon tallennusta jo vuosikymmenten ajan. Viime aikoina on kuitenkin alkanut jälleen tapahtumaan tietokantarintamalla, ja kattotermin [NoSQL](https://en.wikipedia.org/wiki/NoSQL) alla kulkevat "ei relaatiotietokannat" ovat alkaneet nostaa suosiotaan.
 
-Yhtenä motivaationa NoSQL-tietokannoilla on ollut se, että relaatiotietokantoja on vaikea skaalata massivisten internetsovellusten vaatimaan suorituskykyyn. Toisaalta myös tiettyjen NoSQL-tietokantojen skeemattomuus tarjoaa sovellukselle joustavuutta verrattuna SQL-tietokantojen tarkastimääriteltyihin tietokantaskeemoihin.
+Yhtenä motivaationa NoSQL-tietokannoilla on ollut se, että relaatiotietokantoja on vaikea skaalata massiivisten internetsovellusten vaatimaan suorituskykyyn. Toisaalta myös tiettyjen NoSQL-tietokantojen skeemattomuus tarjoaa sovellukselle joustavuutta verrattuna SQL-tietokantojen tarkastimääriteltyihin tietokantaskeemoihin.
 
 NoSQL-tietokantoja on useita, keskenään aivan erilaisilla toimintaperiaatteilla toimivia, mm.
 * avain/arvotietokannat (key-value databases)
