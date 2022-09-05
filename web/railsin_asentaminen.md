@@ -46,7 +46,7 @@ Uudelleenkäynnistä terminaali
 
 Käynnistä terminaali ja varmista seuraavan komennon avulla, että kaikki on kunnossa
 
-* curl -fsSL https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-doctor | bash
+* curl -fsSL https://github.com/rbenv/rbenv-installer/raw/main/bin/rbenv-doctor | bash
 
 Komennon tulostuksen pitäisi näyttää suunilleen seuraavalta:
 
